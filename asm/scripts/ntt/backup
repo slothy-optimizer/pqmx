@@ -1,0 +1,977 @@
+# Copyright (c) 2021 Arm Limited
+# SPDX-License-Identifier: MIT
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+import core
+import core.asm
+import core.rw
+import core.markers
+import mve
+import mve.regs
+import mve.rw
+
+import math
+
+class NTT():
+
+    def __init__(self,src,size,modulus,root,base=None, rounding=True,
+                 layers=None, inverse=False):
+        """Helper class for the generation of MVE assembly for complete and incomplete
+           Number Theoretic Transform (NTT).
+
+           TODO: Allow specification of the bitwidth
+
+           @param src          The register holding the base address of the buffer on which
+                               the NTT should be performed.
+           @param size:        The dimension of the NTT
+           @param modulus:     The <32-bit prime modulus defining the base field for the NTT.
+                               TODO: Specify precise bounds which ensure that the rounding
+                                     and doubling Montgomery multiplication works.
+           @param root:        The modular root of unity to use for the NTT. This must be
+                               a root of unity of order 2 ** (2*size).
+           @param base:        The register Allocator to use. This must be None or an instance
+                               of gen.core.regs.Allocator. If it is None, a new Allocator will
+                               be used, that is, it will be assumed that all GPRs and vector
+                               registers are available.
+           @param rounding:    Use rounding strategy for Montgomery arithmetic.
+           @param layers:      The number of NTT layers to perform.
+        """
+
+        self._src = src
+
+        self._rounding = rounding
+        self._modulus = modulus
+        self._root = root
+        self._size = size
+
+        self.inverse = inverse
+
+        if not self.inverse:
+            self.roots_array_name = "roots"
+            self.roots_twisted_array_name = "roots_twisted"
+        else:
+            self.roots_array_name = "roots_inv"
+            self.roots_twisted_array_name = "roots_inv_twisted"
+
+        if not base:
+            self._asm = mve.regs.Allocator()
+        else:
+            self._asm = base
+
+        #
+        # Parameter sanity checks
+        #
+
+        # Need an odd prime modulus
+        if self._modulus % 2 == 0:
+            raise Exception("Modulus must be odd")
+        # Check that we've indeed been given a root of unity
+        if pow(root, 2*size, modulus) != 1:
+            raise Exception(f"{root} is not a {size}-th root of unity modulo {modulus}")
+
+        # Size must be a power of 2
+        def is_power_of_2(n):
+            if n == 1:
+                return True
+            if n % 2 == 1:
+                raise False
+            return is_power_of_2(int(n/2))
+        if not is_power_of_2(size) or size <= 4:
+            raise Exception(f"NTT size must be a power of 2, but {size} isn't")
+
+        # Compute modular inverse of modulus w.r.t 2^32, which is the
+        # fixed point of the iteration x |-> x^2 * modulus mod 2^32
+        # stabilizing in less than 32 steps.
+        # [ Reason: If a=b mod p^k, then a^p = b^p mod p^(k+1),
+        #           so for odd p=2 and odd a, we have a^{2^k}=1 mod 2^{k+1} ]
+        self._inv_mod = self._modulus
+        for i in range(0,32):
+            self._inv_mod = (self._inv_mod * self._inv_mod * self._modulus) % 2**32
+        # This test should never fail for an odd modulus, but double-check anyway.
+        if (self._inv_mod * self._modulus - 1) % 2**32 != 0:
+            raise Exception("Failed to compute modular inverse")
+
+        # The number of iterations to perform on the NTT.
+        # Choosing a number smaller than log2(size) leads to an imcomplete NTT.
+        #
+        # TODO: Make this configurable
+
+        self.log2size   = int(math.log(size,2))
+        if layers == None:
+            self.iterations = self.log2size
+        else:
+            self.iterations = layers
+
+    def prepare_constants(self):
+        """Allocate and setup GPRs for static constants
+          - Modulus
+          - Inverse of modulus modulo 2^32
+        """
+
+        self.q = core.regs.Reg(self._asm.gprs, str_name="modulus")
+        self.q_inv_u32 = core.regs.Reg(self._asm.gprs, str_name="modulus_inv_u32")
+
+        yield from self.q.alloc()
+        yield from self.q_inv_u32.alloc()
+
+        yield f"// Using modulus {self._modulus}"
+        yield f".equ modulus, {self._modulus}"
+        yield f"movw {self.q.name()}, #:lower16:modulus"
+        yield f"movt {self.q.name()}, #:upper16:modulus"
+        yield f"// Modular inverse of {self._modulus} mod 2^32 = {self._inv_mod}"
+        yield f".equ modulus_inv, {2**32 - self._inv_mod}"
+        yield f"movw {self.q_inv_u32.name()}, #:lower16:modulus_inv"
+        yield f"movt {self.q_inv_u32.name()}, #:upper16:modulus_inv"
+
+    def free_constants(self):
+        """Free the GPRs holding static constants which have been allocated
+           by prepare_constants()
+        """
+        self.q.free()
+        self.q_inv_u32.free()
+
+    def montgomery(self,src,root,root_twisted,tmp,step=0):
+        """Perform a scalar-vector Montgomery multiplication
+
+           @param src:          The vector register holding the first operands
+           @param root:         The name of the GPR holding the root of unity to multiply with
+           @param root_twisted: The name of the GPR holding the twisted form of the root of
+                                unity to multiply with. Here, 'twisted' means the precomputed
+                                product of `root` with the modular inverse of the prime modulus
+                                modulo `2^{bitwidth}` -- this naturally occurs during Montgomery
+                                multiplication.
+           @param tmp:          The name of a free vector register to use for intermediate
+                                values during the Montgomery multiplication. This must have
+                                been allocated previously.
+           @param all:          If set, emits all assembly for the Montgomery multiplication
+                                at once. Useful for initial functional testing.
+        """
+
+        if self._rounding:
+            yield f"vqrdmulh.s32 {tmp}, {src}, {root}"
+            yield f"vmul.u32 {src}, {src}, {root_twisted}"
+            yield f"vqrdmlah.s32 {tmp}, {src}, {self.q.name()}"
+        else:
+            yield f"vqdmulh.s32 {tmp}, {src}, {root}"
+            yield f"vmul.u32 {src}, {src}, {root_twisted}"
+            yield f"vqdmulh.s32 {src}, {src}, {self.q.name()}"
+            yield f"vsub.s32 {tmp}, {tmp}, {src}"
+
+    def _add_sub(self, a, b, c):
+        """Emits code to perform the following operations:
+           b <- a - c
+           a <- a + c
+        """
+        yield f"vsub.s32 {b}, {a}, {c}"
+        yield f"vadd.s32 {a}, {a}, {c}"
+
+    def _root_of_unity_for_block(self,layer,block):
+        """Compute the root of unity to use for a given butterfly operation,
+           identified by NTT layer and index within the layer.
+
+           TODO: Say more about this...
+        """
+
+        def reverse_bit(num,width):
+            result = 0
+            while width > 0:
+                result = (result << 1) + (num & 1)
+                num >>= 1
+                width -= 1
+            return result
+
+        # Every butterfly computes an isomorphism
+        # R[X]/(X^2 - \zeta^{2i}) = R[X]/(X-\zeta^i) x R[X]/(X+\zeta^i)
+        #
+        # In the first iteration of a negacyclic NTT, the ring to split
+        # is k[X]/(X^{2^n}+1) = k[X]/(X^{2^n} - \zeta^{2^n}), and we split into
+        #
+        # k[X]/(X^{2^{n-1}}-\zeta^{2^{n-1}}) x k[x]/(X^{2^{n-1}}+\zeta^{2^{n-1}})
+        log = reverse_bit(pow(2,layer) + block, self.log2size)
+
+        # For the inverse NTT, we need the inverse twiddle factors
+        if self.inverse:
+            log = -log
+
+        root = pow(self._root, log, self._modulus)
+
+        # Our Montgomery multiplication computes x * zeta * 2^{-31}, so multiply roots
+        # by 2^{31} modulo q to cancel out the 2^{-31} factor.
+        root = (root * pow(2,31)) % self._modulus
+
+        if self._rounding:
+            # The rounding trick for Montgomery multiplication only works if
+            # one factor is odd. Enforce this at code-generation time by
+            # shifting even roots by the (odd) modulus, yielding (non-canonical)
+            # odd representatives for all roots of unity.
+            if root % 2 == 0:
+               root += self._modulus
+
+        root_twisted = ( pow(2,32) - root * self._inv_mod ) % pow(2,32)
+
+        return log, root, root_twisted
+
+    def roots_of_unity(self):
+
+        # A "block" is a sequence of butterflies using the same roots of unity.
+        # For example, in the very first layer of the NTT, there's only
+        # one block as there's only one polynomial ring to split into two.
+        # In the k-th layer, there are 2^k blocks.
+
+        # TODO: Allow some flexibility here - at the moment the code below
+        #       only works for `merge_layers == 2`.
+        merge_layers = 2
+        radix = pow(2,merge_layers)
+
+        if self.iterations % merge_layers != 0:
+            raise Exception(f"Merge-2 doesn't work for {self.iterations}-layer NTT")
+
+        root_asm = []
+        root_twisted_asm = []
+
+        for cur_iter in range(0,self.iterations, merge_layers):
+
+            # The layers we are handling in this iteration
+            iters = [ 1 + cur_iter + i for i in range(0,merge_layers) ]
+
+            # The number of blocks in this layer
+            num_blocks = pow(2,cur_iter)
+            # The number of butterflies in this block
+            block_size = int(self._size / num_blocks)
+            # The distance between coefficients that are combined in the
+            # butterflies of this block.
+            butterfly_size = int(block_size / radix)
+
+            # We're working with 128-bit vectors storing four 32-bit lanes.
+            # Thus, as long as the distance between the coefficients combined
+            # in a butterfly is at least 4, we can implement it without
+            # intra-vector shuffling, and with scalar-vector variants for
+            # the multiplications by roots of unity.
+            #
+            # For butterflies of distance 1, we need to load the roots of
+            # unities into vectors as well.
+
+            if butterfly_size >= 4:
+
+                #
+                # In this case, we load the roots into GPRs
+                # and use scalar-vector instructions.
+                #
+
+                for cur_block in range(0, num_blocks):
+
+                    block_start = cur_block * block_size
+                    block_end   = block_start + block_size
+
+                    # Compute the roots of unity that we need at this stage
+                    fst_layer = cur_iter + 0
+                    snd_layer = cur_iter + 1
+
+                    root0_log, root0, root0_twisted = \
+                        self._root_of_unity_for_block(fst_layer, cur_block)
+                    root1_log, root1, root1_twisted = \
+                        self._root_of_unity_for_block(snd_layer, 2*cur_block+0)
+                    root2_log, root2, root2_twisted = \
+                        self._root_of_unity_for_block(snd_layer, 2*cur_block+1)
+
+                    root0 = "{:10d}".format(root0)
+                    root1 = "{:10d}".format(root1)
+                    root2 = "{:10d}".format(root2)
+
+                    root0_twisted = "{:10d}".format(root0_twisted)
+                    root1_twisted = "{:10d}".format(root1_twisted)
+                    root2_twisted = "{:10d}".format(root2_twisted)
+
+                    root0_log_str = "{:3d}".format(root0_log)
+                    root1_log_str = "{:3d}".format(root1_log)
+                    root2_log_str = "{:3d}".format(root2_log)
+
+                    r0_no_twist = pow(self._root, root0_log, self._modulus)
+
+                    root_asm.append(f".word {root0} // zeta^{root0_log_str} * 2^31 = "\
+                                    f"{self._root}^{root0_log_str} * 2^31 = "          \
+                                    f"{r0_no_twist} * 2^31")
+                    root_asm.append(f".word {root1} // zeta^{root1_log_str} * 2^31 = "\
+                                    f"{self._root}^{root1_log_str} * 2^31")
+                    root_asm.append(f".word {root2} // zeta^{root2_log_str} * 2^31 = "\
+                                    f"{self._root}^{root2_log_str} * 2^31")
+
+                    root_twisted_asm.append                                           \
+                        (f".word {root0_twisted} // zeta^{root0_log_str} * f"         \
+                         f"(q^(-1) mod 2^32) * 2^31 = {self._root}^{root0_log_str} * "\
+                         f"{self._inv_mod} * 2^31")
+                    root_twisted_asm.append                                           \
+                        (f".word {root1_twisted} // zeta^{root0_log_str} * f"         \
+                         f"(q^(-1) mod 2^32) * 2^31 = {self._root}^{root1_log_str} * "\
+                         f"{self._inv_mod} * 2^31")
+                    root_twisted_asm.append                                           \
+                        (f".word {root2_twisted} // zeta^{root0_log_str} * f"         \
+                         f"(q^(-1) mod 2^32) * 2^31 = {self._root}^{root2_log_str} * "\
+                         f"{self._inv_mod} * 2^31")
+
+            else: # butterfly_size = 1
+
+                #
+                # In this case, we need to load the three roots into vectors
+                #
+
+                root_asm.append(f".word 0")
+                root_twisted_asm.append(f".word 0")
+
+                for cur_block in range(0, num_blocks,4):
+
+                    block_start = cur_block * block_size
+                    block_end   = block_start + block_size
+
+                    # Compute the roots of unity that we need at this stage
+                    fst_layer = cur_iter + 0
+                    snd_layer = cur_iter + 1
+
+                    root_blocks, root_res, root_logs, roots, roots_twisted = {}, {}, {}, {}, {}
+
+                    root_blocks[0] = [ (fst_layer,    cur_block + i   ) for i in range(0,4) ]
+                    root_blocks[1] = [ (snd_layer, 2*(cur_block + i)+0) for i in range(0,4) ]
+                    root_blocks[2] = [ (snd_layer, 2*(cur_block + i)+1) for i in range(0,4) ]
+
+                    for i in range(0,3):
+                        root_res[i] = map(lambda x: self._root_of_unity_for_block(*x), root_blocks[i])
+                        root_logs[i], roots[i], roots_twisted[i] = list(zip(*root_res[i]))
+
+                        # Stringify for printing
+                        def to_string(lst,width):
+                            return list(map(lambda x: f"{{:{width}d}}".format(x), lst))
+
+                        roots[i] = to_string(roots[i],10)
+                        roots_twisted[i] = to_string(roots_twisted[i],10)
+                        root_logs[i] = to_string(root_logs[i],3)
+
+                    for i in range(0,4):
+                        root_asm.append(f".word {roots[0][i]} // zeta^{root_logs[0][i]} * 2^31 = "  \
+                                        f"{self._root}^{root_logs[0][i]} * 2^31")
+                        root_twisted_asm.append(f".word {roots_twisted[0][i]} // zeta^{root_logs[0][i]} * "    \
+                                                f"(q^(-1) mod 2^32) * 2^31 = {self._root}^{root_logs[0][i]} " \
+                                                f"* {self._inv_mod} * 2^31")
+
+                    for i in range(0,4):
+                        root_asm.append(f".word {roots[1][i]} // zeta^{root_logs[1][i]} * 2^31 = "  \
+                                         f"{self._root}^{root_logs[1][i]} * 2^31")
+                        root_twisted_asm.append(f".word {roots_twisted[1][i]} // zeta^{root_logs[1][i]} * "    \
+                                                f"(q^(-1) mod 2^32) * 2^31 = {self._root}^{root_logs[1][i]} "  \
+                                                f"* {self._inv_mod} * 2^31")
+
+                    for i in range(0,4):
+                        root_asm.append(f".word {roots[2][i]} // zeta^{root_logs[2][i]} * 2^31 = "  \
+                                        f"{self._root}^{root_logs[2][i]} * 2^31")
+                        # root_twisted_asm.append(f".word {roots2_twisted[i]} // zeta^{root2_logs[i]} * "    \
+                        #                         f"(q^(-1) mod 2^32) * 2^31 = {self._root}^{root2_logs[i]} " \
+                        #                         f"* {self._inv_mod} * 2^31")
+
+
+        yield ".data"
+        yield ".word 0"
+        yield f"{self.roots_array_name}:"
+        yield from root_asm
+        self._root_size = 4*len(root_asm)
+
+        yield f"{self.roots_twisted_array_name}:"
+        yield from root_twisted_asm
+
+    def init_roots(self):
+        """Allocate and initialize GPRs for roots of unities:
+           - GPRs holding base addresses for (twisted) roots of unity arrays
+           - GPRs holding (twisted) roots of unities during the NTT itself.
+
+           We currently need 2 GPRs for the base addresses and 8 GPRs for the
+           roots and twisted roots used in two merged NTT layers.
+        """
+
+        self._root_base = core.regs.Reg(self._asm.gprs, str_name="root_base")
+        yield from self._root_base.alloc()
+        yield f"ldr {self._root_base.name()}, roots_addr"
+
+        self._root_base_twisted = core.regs.Reg(self._asm.gprs, str_name="root_base_twisted")
+        yield from self._root_base_twisted.alloc()
+        yield f"ldr {self._root_base_twisted.name()}, roots_twisted_addr"
+
+        self._roots = {}
+        self._roots_twisted = {}
+        for i in range(0,4):
+            self._roots[i] = core.regs.Reg(self._asm.gprs, str_name=f"root{i}")
+            self._roots_twisted[i] = core.regs.Reg(self._asm.gprs, str_name=f"root_twisted{i}")
+            yield from self._roots[i].alloc()
+            yield from self._roots_twisted[i].alloc()
+
+        self.cur_root         = {}
+        self.cur_root_twisted = {}
+        self._root_index      = 0
+        self._root_offset     = 0
+
+    def _load_next_roots(self):
+
+        yield f"// Load (twisted) roots of unity for next block"
+        yield f"// {self._root_index % 2} already loaded"
+
+        if self._root_index == 0:
+            yield f"ldrd {self._roots[2].name()}, {self._roots[3].name()}, " \
+                  f"[{self._root_base.name()},#{self._root_offset+8}]"
+            yield f"ldrd {self._roots[0].name()}, {self._roots[1].name()}, " \
+                  f"[{self._root_base.name()},#{self._root_offset+0}]"
+            yield f"ldrd {self._roots_twisted[0].name()}, {self._roots_twisted[1].name()}, " \
+                  f"[{self._root_base_twisted.name()},#{self._root_offset+0}]"
+            yield f"ldrd {self._roots_twisted[2].name()}, {self._roots_twisted[3].name()}, " \
+                  f"[{self._root_base_twisted.name()},#{self._root_offset+8}]"
+
+            self._root_offset += 16
+
+        elif self._root_index == 1:
+            yield f"ldrd {self._roots_twisted[2].name()}, {self._roots_twisted[3].name()}, " \
+                  f"[{self._root_base_twisted.name()},#{self._root_offset}]"
+            yield f"ldrd {self._roots[2].name()}, {self._roots[3].name()}, "\
+                  f"[{self._root_base.name()},#{self._root_offset}]"
+            self._root_offset += 8
+
+        elif self._root_index == 2:
+            yield f"ldrd {self._roots[2].name()}, {self._roots[3].name()}, "\
+                  f"[{self._root_base.name()},#{self._root_offset+0}]"
+            yield f"ldrd {self._roots[0].name()}, {self._roots[1].name()}, "\
+                  f"[{self._root_base.name()},#{self._root_offset+8}]"
+            yield f"ldrd {self._roots_twisted[2].name()}, {self._roots_twisted[3].name()}, " \
+                  f"[{self._root_base_twisted.name()},#{self._root_offset+0}]"
+            yield f"ldrd {self._roots_twisted[0].name()}, {self._roots_twisted[1].name()}, " \
+                  f"[{self._root_base_twisted.name()},#{self._root_offset+8}]"
+
+            self._root_offset += 16
+
+        elif self._root_index == 3:
+            yield f"ldrd {self._roots[0].name()}, {self._roots[1].name()}, "\
+                  f"[{self._root_base.name()}, #{self._root_offset}]"
+            yield f"ldrd {self._roots_twisted[0].name()}, {self._roots_twisted[1].name()}, " \
+                  f"[{self._root_base_twisted.name()}, #{self._root_offset}]"
+
+            self._root_offset += 8
+
+        self.cur_root[0] = self._roots[(self._root_index + 0) % 4].name()
+        self.cur_root[1] = self._roots[(self._root_index + 1) % 4].name()
+        self.cur_root[2] = self._roots[(self._root_index + 2) % 4].name()
+
+        self.cur_root_twisted[0] = self._roots_twisted[(self._root_index + 0) % 4].name()
+        self.cur_root_twisted[1] = self._roots_twisted[(self._root_index + 1) % 4].name()
+        self.cur_root_twisted[2] = self._roots_twisted[(self._root_index + 2) % 4].name()
+
+        self._root_index = (self._root_index + 3) % 4
+
+    def _iter_butterflies(self, filter=lambda _: True):
+        """Yields all butterflies to be performed by the NTT in order.
+
+           More precisely, it returns triples of:
+           - The coefficient indices the butterfly operates on
+           - A boolean indicating whether the butterfly is the first in its
+             block, in which case the roots of unity need to be loaded first.
+           - The distance between coefficients the butterfly combines.
+        """
+
+        merge_layers = 2
+        radix = pow(2,merge_layers)
+
+        # Precompute flattened array of butterflies.
+        # This makes it easier to interleave the assembly for the individual
+        # butterflies by querying the next and previous butterfly.
+        for cur_iter in range(0,self.iterations, merge_layers):
+            num_blocks = pow(2,cur_iter)
+            block_size = int(self._size / num_blocks)
+            butterfly_size = int(block_size / radix)
+            for cur_block in range(0, num_blocks):
+                block_start = cur_block * block_size
+                load_roots = True
+                for cur_butterfly in range(0,butterfly_size,4):
+                    cur_idx_lo = block_start + cur_butterfly
+                    cur_idxs = [ cur_idx_lo + i*butterfly_size for i in range(0,radix)]
+                    res = (cur_idxs, load_roots, butterfly_size)
+                    if filter(res):
+                        yield res
+                    load_roots = False
+
+    def _iter_invNTT_butterflies(self, filter=lambda _: True):
+        """Yields all butterflies to be performed by the inverse NTT in order.
+
+           More precisely, it returns triples of:
+           - The coefficient indices the butterfly operates on
+           - A boolean indicating whether the butterfly is the first in its
+             block, in which case the roots of unity need to be loaded first.
+           - The distance between coefficients the butterfly combines.
+        """
+        butterflies = self._iter_butterflies(filter=filter)
+        butterflies.reverse()
+        return butterflies
+
+    def core_forward(self):
+
+        yield from self.init_roots()
+
+        tmp = [ core.regs.Reg(self._asm.vregs) for _ in range(0,4) ]
+
+        # TODO: Would be nicer to use the butterfly iterator directly
+        butterflies = list(self._iter_butterflies(filter = lambda x: x[2] > 1))
+        for i in range(0, len(butterflies)):
+
+            cur_idxs, load_roots, size = butterflies[i]
+
+            # Get next and last butterfly for pipelining optimizations
+            # across butterflies.
+
+            if i == len(butterflies) - 1:
+                last_butterfly = True
+            else:
+                last_butterfly = False
+                next_idxs, _, _ = butterflies[i+1]
+
+            if i == 0:
+                first_butterfly = True
+            else:
+                first_butterfly = False
+                last_idxs, _,_  = butterflies[i-1]
+
+            if load_roots:
+                yield from self._load_next_roots()
+
+            yield from tmp[0].alloc()
+            yield from tmp[1].alloc()
+            yield from tmp[2].alloc()
+
+            # Logically, the following needs to be done:
+            # 1: c[3] <- c[3] * root (Montgomery)
+            # 2: c[2] <- c[2] * root (Montgomery)
+            # 3: (c[0],c[2]) <- (c[0] + c[2], c[0] - c[2])
+            # 4: (c[1],c[3]) <- (c[1] + c[3], c[1] - c[3])
+            # 5: c[3] <- c[3] * root' (Montgomery)
+            # 6: c[1] <- c[1] * root' (Montgomery)
+            # 7: (c[0],c[1]) <- (c[0] + c[1], c[0] - c[1])
+            # 8: (c[2],c[3]) <- (c[2] + c[3], c[2] - c[3])
+            #
+            # We interleave those steps and the necessary loads for better pipelining.
+
+            # Step 1: c[3] <- c[3] * root (Montgomery)
+
+
+            # Step 2: c[2] <- c[2] * root (Montgomery)
+
+
+            # Step 3: (c[0],c[2]) <- (c[0] + c[2], c[0] - c[2])
+
+
+            # Step 4: (c[1],c[3]) <- (c[1] + c[3], c[1] - c[3])
+
+
+            # Step 5: c[3] <- c[3] * root' (Montgomery)
+
+
+            # Step 6: c[1] <- c[1] * root' (Montgomery)
+
+
+            # Step 7: (c[0],c[1]) <- (c[0] + c[1], c[0] - c[1])
+
+
+            # Step 8: (c[2],c[3]) <- (c[2] + c[3], c[2] - c[3])
+
+            tmp[0].free()
+            tmp[1].free()
+            tmp[2].free()
+
+        last_butterflies = list(self._iter_butterflies(filter = lambda x: x[2] == 1))
+        input = [ core.regs.Reg(self._asm.vregs) for _ in range(0,4) ]
+
+        yield f"add {self._root_base.name()}, {self._root_base.name()}, {self._root_offset}"
+        yield f"add {self._root_base_twisted.name()}, {self._root_base_twisted.name()}, {self._root_offset}"
+
+        for k in range(0, len(last_butterflies), 4):
+
+            if k == 0:
+                first_iteration = True
+            else:
+                first_iteration = False
+
+            if k == len(last_butterflies) - 4:
+                last_iteration = True
+            else:
+                last_iteration = False
+
+            # Our goal will be to free up Q0-Q3 as early as possible in order
+            # to be able to preload the inputs for the next iteration, so we'll
+            # restrict other vector allocations to the upper half of the vector file.
+            def high_half_vreg(x):
+                return x in [ f"Q{i}" for i in range(4,8) ]
+
+            if first_iteration:
+                for i in range(0,4):
+                    yield from input[i].alloc(f"Q{i}")
+
+                yield f"vld40.s32 {{{input[0].name()},{input[1].name()},"      \
+                    f"{input[2].name()},{input[3].name()}}}, [{self._src}]"
+                yield f"vld41.s32 {{{input[0].name()},{input[1].name()},"      \
+                    f"{input[2].name()},{input[3].name()}}}, [{self._src}]"
+                yield f"vld42.s32 {{{input[0].name()},{input[1].name()},"      \
+                    f"{input[2].name()},{input[3].name()}}}, [{self._src}]"
+                yield f"vld43.s32 {{{input[0].name()},{input[1].name()},"      \
+                    f"{input[2].name()},{input[3].name()}}}, [{self._src}]!"
+
+                src_offset_from_cur = 64
+
+            # Vector registers to be used for the three bunches of roots of unity, as
+            # well as their twisted variants, that we need for the last two iterations.
+            r  = [ core.regs.Reg(self._asm.vregs) for _ in range(0,3) ]
+            rt = [ core.regs.Reg(self._asm.vregs) for _ in range(0,3) ]
+
+            # Temporaries for use in the Montgomery multiplications
+            tmp[0] = core.regs.Reg(self._asm.vregs)
+            tmp[1] = core.regs.Reg(self._asm.vregs)
+            tmp[2] = core.regs.Reg(self._asm.vregs)
+            tmp[3] = core.regs.Reg(self._asm.vregs)
+
+            yield from tmp[0].alloc()
+            input_old = {}
+            input_old[3] = core.regs.Reg(self._asm.vregs)
+            input_old[2] = core.regs.Reg(self._asm.vregs)
+
+            yield from input_old[3].alloc(move=input[3])
+
+            yield from r[0].alloc()
+            yield from rt[0].alloc()
+            yield f"vldrw.s32 {r[0].name()}, [{self._root_base.name()}], #16"
+            montgomery = self.montgomery(input_old[3].name(), r[0].name(),
+                                         rt[0].name(), tmp[0].name())
+            yield next(montgomery)
+            yield f"vldrw.s32 {rt[0].name()}, [{self._root_base_twisted.name()}], #16"
+            yield next(montgomery)
+            # Late store? Using 4 (input) + 2 (root) + 1 (tmp) vector registers so far, so one is free
+            if not first_iteration:
+                yield f"vstrw.s32 {late_store_input2.name()}, [{self._src}, #{32 - src_offset_from_cur - 64}]"
+                late_store_input2.free()
+            yield next(montgomery)
+            input_old[3].free()
+
+            yield from r[1].alloc()
+            yield f"vldrw.s32 {r[1].name()}, [{self._root_base.name()}], #16"
+
+            yield from input_old[2].alloc(move=input[2])
+            # Can use root vector as temporary because it's the last time we use it
+            yield from tmp[1].alloc(move=r[0])
+            montgomery = self.montgomery(input_old[2].name(), tmp[1].name(),
+                                         rt[0].name(), tmp[1].name())
+            yield next(montgomery)
+            # Move input[3] to high-half to have Q0-Q3 free for preloading at the end of the loop
+            yield from input[3].alloc(constraint=high_half_vreg)
+            yield f"vsub.s32 {input[3].name()}, {input[1].name()}, {tmp[0].name()}"
+
+            yield next(montgomery)
+            rt[0].free()
+
+            yield f"vadd.s32 {input[1].name()}, {input[1].name()}, {tmp[0].name()}"
+            tmp[0].free()
+
+            yield next(montgomery)
+            input_old[2].free()
+
+            # Move input[2] to high-half to have Q0-Q3 free for preloading at the end of the loop
+            yield from input[2].alloc(constraint=high_half_vreg)
+
+            yield from rt[1].alloc()
+            yield f"vldrw.s32 {rt[1].name()}, [{self._root_base_twisted.name()}], #16"
+
+            # Can use root vector as temporary because we need it only once
+            yield from tmp[2].alloc(move=r[1])
+            montgomery = self.montgomery(input[1].name(), tmp[2].name(),
+                                         rt[1].name(), tmp[2].name())
+            yield next(montgomery)
+
+#            yield from rt[1].alloc()
+#            yield f"vldrw.s32 {rt[1].name()}, [{self._root_base_twisted.name()}], #16"
+            # Late work from last multiplication, part 1
+            yield f"vsub.s32 {input[2].name()}, {input[0].name()}, {tmp[1].name()}"
+
+            yield next(montgomery)
+            rt[1].free()
+
+            # Late work from last multiplication, part 2
+            yield f"vadd.s32 {input[0].name()}, {input[0].name()}, {tmp[1].name()}"
+            tmp[1].free()
+
+            yield next(montgomery)
+
+            # Preload for last Montgomery multiplication
+            yield from r[2].alloc(constraint=high_half_vreg)
+            yield f"vldrw.s32 {r[2].name()}, [{self._root_base.name()}], #16"
+
+            yield f"vsub.s32 {input[1].name()}, {input[0].name()}, {tmp[2].name()}"
+            yield f"vstrw.s32 {input[1].name()}, [{self._src},#{16 - src_offset_from_cur}]"
+            input[1].free()
+            yield f"vadd.s32 {input[0].name()}, {input[0].name()}, {tmp[2].name()}"
+
+            yield f"vstrw.s32 {input[0].name()}, [{self._src}, #{0 - src_offset_from_cur}]"
+            input[0].free()
+            tmp[2].free()
+
+            ### Now we should be able to preload
+            if not last_iteration:
+                next_input = {}
+                for i in range(0,4):
+                    next_input[i] = core.regs.Reg(self._asm.vregs)
+                    yield from next_input[i].alloc(f"Q{i}")
+
+            yield from rt[2].alloc(constraint=high_half_vreg)
+            # yield f"vldrw.s32 {rt[2].name()}, [{self._root_base_twisted.name()}], #16"
+            yield f"vmul.u32 {rt[2].name()}, {r[2].name()}, {self.q_inv_u32.name()}"
+
+            if not last_iteration:
+                yield f"vld41.s32 {{{next_input[0].name()},{next_input[1].name()},"      \
+                    f"{next_input[2].name()},{next_input[3].name()}}}, [{self._src}]"
+
+            # Can use root vector as temporary because we need it only once
+            yield from tmp[3].alloc(move=r[2])
+            montgomery = self.montgomery(input[3].name(), tmp[3].name(),
+                                         rt[2].name(), tmp[3].name())
+            yield next(montgomery)
+
+            if not last_iteration:
+                yield f"vld40.s32 {{{next_input[0].name()},{next_input[1].name()},"      \
+                    f"{next_input[2].name()},{next_input[3].name()}}}, [{self._src}]"
+            yield next(montgomery)
+            if not last_iteration:
+                yield f"vld42.s32 {{{next_input[0].name()},{next_input[1].name()},"      \
+                    f"{next_input[2].name()},{next_input[3].name()}}}, [{self._src}]"
+            yield next(montgomery)
+            rt[2].free()
+
+            if not last_iteration:
+                yield f"vld43.s32 {{{next_input[0].name()},{next_input[1].name()},"      \
+                    f"{next_input[2].name()},{next_input[3].name()}}}, [{self._src}]!"
+                src_offset_from_cur += 64
+
+            yield f"vsub.s32 {input[3].name()}, {input[2].name()}, {tmp[3].name()}"
+            yield f"vstrw.s32 {input[3].name()}, [{self._src}, #{48 - src_offset_from_cur}]"
+            input[3].free()
+            yield f"vadd.s32 {input[2].name()}, {input[2].name()}, {tmp[3].name()}"
+            tmp[3].free()
+
+            if last_iteration:
+                yield f"vstrw.s32 {input[2].name()}, [{self._src}, #{32 - src_offset_from_cur}]"
+                input[2].free()
+            else:
+                late_store_input2 = core.regs.Reg(self._asm.vregs)
+                yield from late_store_input2.alloc(move=input[2])
+
+            if not last_iteration:
+                for i in range(0,4):
+                    yield from input[i].alloc(move=next_input[i])
+
+                src_offset_from_cur -= 64
+
+            idxs, _, _ = last_butterflies[k]
+            yield f"// Butterfly {idxs}"
+
+    def core_inverse(self):
+        yield from self.init_roots()
+
+        tmp = [ core.regs.Reg(self._asm.vregs) for _ in range(0,4) ]
+
+        # TODO: Would be nicer to use the butterfly iterator directly
+        butterflies = list(self._iter_butterflies(filter = lambda x: x[2] > 1))
+        for i in range(0, len(butterflies)):
+
+            cur_idxs, load_roots, size = butterflies[i]
+
+            # Get next and last butterfly for pipelining optimizations
+            # across butterflies.
+
+            if i == len(butterflies) - 1:
+                last_butterfly = True
+            else:
+                last_butterfly = False
+                next_idxs, _, _ = butterflies[i+1]
+
+            if i == 0:
+                first_butterfly = True
+            else:
+                first_butterfly = False
+                last_idxs, _,_  = butterflies[i-1]
+
+            if load_roots:
+                yield from self._load_next_roots()
+
+            yield from tmp[0].alloc()
+            yield from tmp[1].alloc()
+            yield from tmp[2].alloc()
+
+            # Logically, the following needs to be done:
+            # 1: (c[0],c[1]) <- (c[0] + c[1], c[0] - c[1])
+            # 2: (c[2],c[3]) <- (c[2] + c[3], c[2] - c[3])
+            # 4: c[1] <- c[1] * root' (Montgomery)
+            # 3: c[3] <- c[3] * root' (Montgomery)
+            # 5: (c[0],c[2]) <- (c[0] + c[2], c[0] - c[2])
+            # 6: (c[1],c[3]) <- (c[1] + c[3], c[1] - c[3])
+            # 8: c[2] <- c[2] * root (Montgomery)
+            # 7: c[3] <- c[3] * root (Montgomery)
+            #
+            # We interleave those steps and the necessary loads for better pipelining.
+
+            # Step 7: c[3] <- c[3] * root
+            yield from self.src.load(cur_idxs[3])
+            montgomery = self.montgomery(self.src.reg(cur_idxs[3]), self.cur_root[0],
+                                         self.cur_root_twisted[0], tmp[0].name())
+            yield next(montgomery)
+            yield from self.src.load(cur_idxs[2])
+            yield next(montgomery)
+            yield from self.src.load(cur_idxs[1])
+            yield next(montgomery)
+
+            if not first_butterfly:
+                # Late store from last iteration
+                yield from self.src.write_back(last_idxs[0])
+                yield from self.src.release(last_idxs[0])
+
+            # Step 8: c[2] <- c[2] * root
+            montgomery = self.montgomery(self.src.reg(cur_idxs[2]), self.cur_root[0],
+                                         self.cur_root_twisted[0], tmp[1].name())
+            # Step 4: (c[1],c[3]) <- (c[1] + c[3], c[1] - c[3])
+            add_sub = self._add_sub(self.src.reg(cur_idxs[1]), self.src.reg(cur_idxs[3]),
+                                    tmp[0].name())
+            yield next(montgomery)
+            yield next(add_sub)
+            yield next(montgomery)
+            yield next(add_sub)
+            yield next(montgomery)
+
+            yield from self.src.load(cur_idxs[0])
+            # Step 5: c[3] <- c[3] * root'
+            montgomery = self.montgomery(self.src.reg(cur_idxs[3]), self.cur_root[2],
+                                         self.cur_root_twisted[2], tmp[0].name())
+            # Step 3: (c[0],c[2]) <- (c[0] + c[2], c[0] - c[2])
+            add_sub = self._add_sub(self.src.reg(cur_idxs[0]), self.src.reg(cur_idxs[2]),
+                                    tmp[1].name())
+            yield next(montgomery)
+            yield next(add_sub)
+            yield next(montgomery)
+            yield next(add_sub)
+            yield next(montgomery)
+
+            if not last_butterfly:
+                # Preload for the next iteration
+                yield from self.src.load(next_idxs[3])
+
+            # Step 6: c[1] <- c[1] * root'
+            montgomery = self.montgomery(self.src.reg(cur_idxs[1]), self.cur_root[1],
+                                         self.cur_root_twisted[1], tmp[2].name())
+            # Step 8: (c[2],c[3]) <- (c[2] + c[3], c[2] - c[3])
+            add_sub = self._add_sub(self.src.reg(cur_idxs[2]), self.src.reg(cur_idxs[3]),
+                                    tmp[0].name())
+            yield next(montgomery)
+            yield next(add_sub)
+            yield next(montgomery)
+            yield next(add_sub)
+            yield from self.src.write_back(cur_idxs[3])
+            yield from self.src.release(cur_idxs[3])
+            yield next(montgomery)
+            yield from self.src.write_back(cur_idxs[2])
+            yield from self.src.release(cur_idxs[2])
+            # Step 7: (c[0],c[1]) <- (c[0] + c[1], c[0] - c[1])
+            add_sub = self._add_sub(self.src.reg(cur_idxs[0]), self.src.reg(cur_idxs[1]),
+                                    tmp[2].name())
+            yield next(add_sub)
+            yield from self.src.write_back(cur_idxs[1])
+            yield from self.src.release(cur_idxs[1])
+            yield next(add_sub)
+
+            if last_butterfly:
+                # Leave storing to the next iteration
+                yield from self.src.write_back(cur_idxs[0])
+                yield from self.src.release(cur_idxs[0])
+
+            tmp[0].free()
+            tmp[1].free()
+            tmp[2].free()
+
+        last_butterflies = list(self._iter_butterflies(filter = lambda x: x[2] == 1))
+        input = [ core.regs.Reg(self._asm.vregs) for _ in range(0,4) ]
+
+        yield f"add {self._root_base.name()}, {self._root_base.name()}, {self._root_offset}"
+        yield f"add {self._root_base_twisted.name()}, {self._root_base_twisted.name()}, {self._root_offset}"
+
+        if len(last_butterflies) > 0:
+            raise Exception("Inverse full NTT not yet implemented")
+
+        for k in range(0, len(last_butterflies), 4):
+            continue
+
+    def core(self):
+        if self.inverse:
+            yield from self.core_inverse()
+        else:
+            yield from self.core_forward()
+
+    def standalone(self,funcname):
+
+        #
+        # Preamble
+        #
+
+        yield from core.asm.Snippets.license()
+        yield from core.asm.Snippets.autogen_warning()
+
+        yield from self.roots_of_unity()
+        # yield from self.roots_of_unity_twisted()
+
+        yield ".text"
+        yield f"roots_addr: .word {self.roots_array_name}"
+        yield f"roots_twisted_addr: .word {self.roots_twisted_array_name}"
+
+        yield from core.asm.Snippets.function_decl(funcname)
+        yield from core.asm.Snippets.function_header(funcname)
+        yield from core.asm.Snippets.save_gprs()
+        yield from core.asm.Snippets.save_vregs()
+
+        self.src_gpr = core.regs.Reg(self._asm.gprs, str_name="src")
+        yield from self.src_gpr.alloc(self._src)
+
+        self.markers = core.markers.ReadWriteMarkers(self._asm, 1024, 32, self._src,
+                                                     initial_shift=0)
+        yield from self.markers.alloc_registers_for_markers()
+        self.src = mve.rw.ReadWriteVector(self._asm,
+                                          self.markers.get_shifted_marker_list(0),
+                                          32, name="input")
+
+        yield from self.prepare_constants()
+        yield from self.core()
+
+        yield from self.markers.free_registers_for_markers()
+
+        self.free_constants()
+        self.src_gpr.free()
+
+        #
+        # Wrapup
+        #
+
+        yield from core.asm.Snippets.restore_vregs()
+        yield from core.asm.Snippets.restore_gprs()
+        yield from core.asm.Snippets.function_footer()
+
+    def get_code(self):
+        gen = self.standalone()
+        for line in gen:
+            print(line)

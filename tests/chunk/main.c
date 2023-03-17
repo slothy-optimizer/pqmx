@@ -1,0 +1,118 @@
+/*
+ * Copyright (c) 2021 Arm Limited
+ * SPDX-License-Identifier: MIT
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *
+ */
+
+#include <hal.h>
+#include <misc.h>
+
+#include <string.h>
+#include <stdlib.h>
+#include <time.h>
+
+#include "chunk_const.h"
+#include "chunk.h"
+
+void radix11_reduce_x4_C( uint32_t *data )
+{
+    uint32_t acc, cur;
+    for( size_t j=0; j<4; j++ )
+    {
+        acc = 0;
+        for( size_t i=0; i<SIZE/4; i++ )
+        {
+            cur = data[i];
+            acc = cur + (acc >> 11);
+            data[i] = acc & 0x7FF;
+        }
+        data += SIZE/4 + 1;
+    }
+}
+
+#define MAKE_TEST(funcname)                                     \
+int test_radix11_reduce_x4_ ## funcname()                       \
+{                                                               \
+    uint32_t data     [SIZE+3];                                 \
+    uint32_t data_copy[SIZE+3];                                 \
+                                                                \
+    debug_test_start( "test radix11_reduce_x4_" #funcname );    \
+                                                                \
+    fill_random_u32( data, SIZE );                              \
+    /* Clear highest bit */                                     \
+    for( size_t i=0; i<SIZE+3; i++ ) data[i] >>= 1;             \
+    memcpy( data_copy, data, sizeof( data ) );                  \
+    measure_start();                                            \
+    radix11_reduce_x4_asm_ ## funcname( data );                 \
+    measure_end();                                              \
+    radix11_reduce_x4_C( data_copy );                           \
+                                                                \
+    if( memcmp( data, data_copy, sizeof( data ) ) != 0 )        \
+    {                                                           \
+        debug_print_buf_u32( data_copy, SIZE+3, "ref" );        \
+        debug_print_buf_u32( data, SIZE+3, "actual" );                    \
+        debug_test_fail();                                      \
+        return( 1 );                                            \
+    }                                                           \
+                                                                \
+    debug_test_ok();                                            \
+    return( 0 );                                                \
+}
+
+MAKE_TEST(m4);
+MAKE_TEST(m4_v2);
+MAKE_TEST(m4_v3);
+MAKE_TEST(lob);
+MAKE_TEST(lob_64bit);
+MAKE_TEST(mve_basic);
+MAKE_TEST(mve_vmla);
+MAKE_TEST(mve_vmla_v2);
+MAKE_TEST(mve_vmla_v3);
+MAKE_TEST(mve_vmla_v4);
+MAKE_TEST(mve_vqdmlah);
+
+MAKE_TEST(mve_vqdmlah_v3);
+MAKE_TEST(mve_vqdmlah_v4);
+MAKE_TEST(mve_vqdmlah_v5);
+
+int main(void)
+{
+    int ret = 0;
+
+   test_radix11_reduce_x4_m4();
+   test_radix11_reduce_x4_m4_v2();
+    test_radix11_reduce_x4_m4_v3();
+    test_radix11_reduce_x4_lob();
+    test_radix11_reduce_x4_lob_64bit();
+
+    test_radix11_reduce_x4_mve_basic();
+    test_radix11_reduce_x4_mve_vmla();
+    test_radix11_reduce_x4_mve_vmla_v2();
+   test_radix11_reduce_x4_mve_vmla_v3();
+   test_radix11_reduce_x4_mve_vmla_v4();
+
+    test_radix11_reduce_x4_mve_vqdmlah();
+   test_radix11_reduce_x4_mve_vqdmlah_v3();
+   test_radix11_reduce_x4_mve_vqdmlah_v4();
+    test_radix11_reduce_x4_mve_vqdmlah_v5();
+
+    return( ret );
+}

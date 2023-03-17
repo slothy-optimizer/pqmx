@@ -1,0 +1,3 @@
+[submodule "helight"]
+	path = helight
+	url = https://github.com/slothy-optimizer/slothy
