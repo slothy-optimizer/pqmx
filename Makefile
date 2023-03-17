@@ -34,6 +34,15 @@ MANUAL_SRCS_NTT_N256_ALL=$(wildcard $(MANUAL_SRCS_NTT_N256_DIR)/*.s) $(wildcard 
 MANUAL_SRCS_CRT_DIR=$(MANUAL_SRCS_DIR)/crt
 MANUAL_SRCS_CRT_ALL=$(wildcard $(MANUAL_SRCS_CRT_DIR)/*.s) $(wildcard $(MANUAL_SRCS_CRT_DIR)/*.h)
 
+MANUAL_SRCS_SQMAG_DIR=$(MANUAL_SRCS_DIR)/sqmag
+MANUAL_SRCS_SQMAG_ALL=$(wildcard $(MANUAL_SRCS_SQMAG_DIR)/*.s) $(wildcard $(MANUAL_SRCS_SQMAG_DIR)/*.h)
+
+MANUAL_SRCS_FX_FFT_DIR=$(MANUAL_SRCS_DIR)/fx_fft
+MANUAL_SRCS_FX_FFT_ALL=$(wildcard $(MANUAL_SRCS_FX_FFT_DIR)/*.s) $(wildcard $(MANUAL_SRCS_FX_FFT_DIR)/*.h)
+
+MANUAL_SRCS_FLT_FFT_DIR=$(MANUAL_SRCS_DIR)/flt_fft
+MANUAL_SRCS_FLT_FFT_ALL=$(wildcard $(MANUAL_SRCS_FLT_FFT_DIR)/*.s) $(wildcard $(MANUAL_SRCS_FLT_FFT_DIR)/*.h)
+
 MANUAL_SRCS_CT_DIR=$(MANUAL_SRCS_DIR)/ct
 MANUAL_SRCS_CT_ALL=$(wildcard $(MANUAL_SRCS_CT_DIR)/*.s) $(wildcard $(MANUAL_SRCS_CT_DIR)/*.h)
 
@@ -159,6 +168,11 @@ TEST_HELLOWORLD_SOURCES_AUTO_DIR=$(TEST_HELLOWORLD_DIR)/auto
 TEST_HELLOWORLD_SRC_C=$(wildcard $(TEST_HELLOWORLD_DIR)/*.c) $(wildcard $(TEST_HELLOWORLD_DIR)/*/*.c)
 TEST_HELLOWORLD_SRC_ALL=$(TEST_HELLOWORLD_SRC_C)
 
+TEST_PROFILING_DIR=$(TEST_BASE_DIR)/profiling
+TEST_PROFILING_SOURCES_AUTO_DIR=$(TEST_PROFILING_DIR)/auto
+TEST_PROFILING_SRC_C=$(wildcard $(TEST_PROFILING_DIR)/*.c) $(wildcard $(TEST_PROFILING_DIR)/*/*.c)
+TEST_PROFILING_SRC_ALL=$(TEST_PROFILING_SRC_C)
+
 
 TEST_SABER_DIR=$(TEST_BASE_DIR)/saber
 TEST_SABER_SOURCES_AUTO_DIR=$(TEST_SABER_DIR)/auto
@@ -201,6 +215,21 @@ TEST_CRT_SRC_C=$(wildcard $(TEST_CRT_DIR)/*.c) $(wildcard $(TEST_CRT_DIR)/*/*.c)
 TEST_CRT_SRC_MANUAL=$(patsubst $(MANUAL_SRCS_CRT_DIR)/%, $(TEST_CRT_DIR)/%, $(MANUAL_SRCS_CRT_ALL))
 TEST_CRT_SRC_ALL=$(TEST_CRT_SRC_C) $(TEST_CRT_SRC_MANUAL)
 
+TEST_SQMAG_DIR=$(TEST_BASE_DIR)/sqmag
+TEST_SQMAG_SRC_C=$(wildcard $(TEST_SQMAG_DIR)/*.c) $(wildcard $(TEST_SQMAG_DIR)/*/*.c) $(wildcard $(TEST_SQMAG_DIR)/*.s)
+TEST_SQMAG_SRC_MANUAL=$(patsubst $(MANUAL_SRCS_SQMAG_DIR)/%, $(TEST_SQMAG_DIR)/%, $(MANUAL_SRCS_SQMAG_ALL))
+TEST_SQMAG_SRC_ALL=$(TEST_SQMAG_SRC_C) $(TEST_SQMAG_SRC_MANUAL)
+
+TEST_FX_FFT_DIR=$(TEST_BASE_DIR)/fx_fft
+TEST_FX_FFT_SRC_C=$(wildcard $(TEST_FX_FFT_DIR)/*.c) $(wildcard $(TEST_FX_FFT_DIR)/*/*.c) $(wildcard $(TEST_FX_FFT_DIR)/*.s)
+TEST_FX_FFT_SRC_MANUAL=$(patsubst $(MANUAL_SRCS_FX_FFT_DIR)/%, $(TEST_FX_FFT_DIR)/%, $(MANUAL_SRCS_FX_FFT_ALL))
+TEST_FX_FFT_SRC_ALL=$(TEST_FX_FFT_SRC_C) $(TEST_FX_FFT_SRC_MANUAL)
+
+TEST_FLT_FFT_DIR=$(TEST_BASE_DIR)/flt_fft
+TEST_FLT_FFT_SRC_C=$(wildcard $(TEST_FLT_FFT_DIR)/*.c) $(wildcard $(TEST_FLT_FFT_DIR)/*/*.c) $(wildcard $(TEST_FLT_FFT_DIR)/*.s)
+TEST_FLT_FFT_SRC_MANUAL=$(patsubst $(MANUAL_SRCS_FLT_FFT_DIR)/%, $(TEST_FLT_FFT_DIR)/%, $(MANUAL_SRCS_FLT_FFT_ALL))
+TEST_FLT_FFT_SRC_ALL=$(TEST_FLT_FFT_SRC_C) $(TEST_FLT_FFT_SRC_MANUAL)
+
 TEST_CT_DIR=$(TEST_BASE_DIR)/ct
 TEST_CT_SRC_C=$(wildcard $(TEST_CT_DIR)/*.c) $(wildcard $(TEST_CT_DIR)/*/*.c) $(wildcard $(TEST_CT_DIR)/*.s)
 TEST_CT_SRC_MANUAL=$(patsubst $(MANUAL_SRCS_CT_DIR)/%, $(TEST_CT_DIR)/%, $(MANUAL_SRCS_CT_ALL))
@@ -241,6 +270,14 @@ TEST_ENV_M55_MPS2_FVP_BASE=$(TEST_ENVS_BASE_DIR)/fvp-corstone300-mps2
 TEST_ENV_M55_MPS2_FVP_SRC=$(TEST_ENV_M55_MPS2_FVP_BASE)/src
 TEST_ENV_M55_MPS2_FVP_SYMLINK=$(TEST_ENV_M55_MPS2_FVP_SRC)/test_src
 
+TEST_ENV_M85_AN555_BASE=$(TEST_ENVS_BASE_DIR)/m85-an555
+TEST_ENV_M85_AN555_SRC=$(TEST_ENV_M85_AN555_BASE)/src
+TEST_ENV_M85_AN555_SYMLINK=$(TEST_ENV_M85_AN555_SRC)/test_src
+
+TEST_ENV_M55_AN547_BASE=$(TEST_ENVS_BASE_DIR)/m55-an547
+TEST_ENV_M55_AN547_SRC=$(TEST_ENV_M55_AN547_BASE)/src
+TEST_ENV_M55_AN547_SYMLINK=$(TEST_ENV_M55_AN547_SRC)/test_src
+
 TEST_ENV_M55_CORE_BASE=$(TEST_ENVS_BASE_DIR)/core
 TEST_ENV_M55_CORE_SRC=$(TEST_ENV_M55_CORE_BASE)/src
 TEST_ENV_M55_CORE_SYMLINK=$(TEST_ENV_M55_CORE_SRC)/test_src
@@ -261,6 +298,8 @@ clean:
 	rm -f $(TEST_ENV_M55_MPS3_FVP_BASE)/test_loaded_*
 	rm -f $(TEST_ENV_M55_MPS2_FVP_BASE)/test_loaded_*
 	rm -f $(TEST_ENV_M55_CORE_BASE)/test_loaded_*
+	rm -f $(TEST_ENV_M85_AN555_BASE)/test_loaded_*
+	rm -f $(TEST_ENV_M55_AN547_BASE)/test_loaded_*
 else
 clean:
 	make clean -C $(TEST_ENV_M55_MPS3_FVP_BASE)
@@ -268,6 +307,8 @@ clean:
 	rm -f $(TEST_ENV_M55_MPS3_FVP_BASE)/test_loaded_*
 	rm -f $(TEST_ENV_M55_MPS2_FVP_BASE)/test_loaded_*
 	rm -f $(TEST_ENV_M55_CORE_BASE)/test_loaded_*
+	rm -f $(TEST_ENV_M85_AN555_BASE)/test_loaded_*
+	rm -f $(TEST_ENV_M55_AN547_BASE)/test_loaded_*
 endif
 
 .PHONY: cleanasm
@@ -383,6 +424,33 @@ $(TEST_CRT_SRC_MANUAL): $(TEST_CRT_DIR)/%.s: $(MANUAL_SRCS_CRT_DIR)/%.s
 	echo "A $< B $@"
 	cp $< $@
 $(TEST_CRT_SRC_MANUAL): $(TEST_CRT_DIR)/%.h: $(MANUAL_SRCS_CRT_DIR)/%.h
+	mkdir -p $(@D)
+	echo "A $< B $@"
+	cp $< $@
+
+$(TEST_SQMAG_SRC_MANUAL): $(TEST_SQMAG_DIR)/%.s: $(MANUAL_SRCS_SQMAG_DIR)/%.s
+	mkdir -p $(@D)
+	echo "A $< B $@"
+	cp $< $@
+$(TEST_SQMAG_SRC_MANUAL): $(TEST_SQMAG_DIR)/%.h: $(MANUAL_SRCS_SQMAG_DIR)/%.h
+	mkdir -p $(@D)
+	echo "A $< B $@"
+	cp $< $@
+
+$(TEST_FX_FFT_SRC_MANUAL): $(TEST_FX_FFT_DIR)/%.s: $(MANUAL_SRCS_FX_FFT_DIR)/%.s
+	mkdir -p $(@D)
+	echo "A $< B $@"
+	cp $< $@
+$(TEST_FX_FFT_SRC_MANUAL): $(TEST_FX_FFT_DIR)/%.h: $(MANUAL_SRCS_FX_FFT_DIR)/%.h
+	mkdir -p $(@D)
+	echo "A $< B $@"
+	cp $< $@
+
+$(TEST_FLT_FFT_SRC_MANUAL): $(TEST_FLT_FFT_DIR)/%.s: $(MANUAL_SRCS_FLT_FFT_DIR)/%.s
+	mkdir -p $(@D)
+	echo "A $< B $@"
+	cp $< $@
+$(TEST_FLT_FFT_SRC_MANUAL): $(TEST_FLT_FFT_DIR)/%.h: $(MANUAL_SRCS_FLT_FFT_DIR)/%.h
 	mkdir -p $(@D)
 	echo "A $< B $@"
 	cp $< $@
@@ -847,6 +915,50 @@ run-m55-core-ntt_kyber: $(TEST_ENV_M55_CORE_LINK_NTT_KYBER)
 debug-m55-core-ntt_kyber: $(TEST_ENV_M55_CORE_LINK_NTT_KYBER)
 	make debug -C $(TEST_ENV_M55_CORE_BASE) -j$(nproc)
 
+# NTT Kyber on M85-MPS3-FVP
+
+TEST_ENV_M85_AN555_LINK_NTT_KYBER = $(TEST_ENV_M85_AN555_BASE)/test_loaded_ntt_kyber
+$(TEST_ENV_M85_AN555_LINK_NTT_KYBER): $(TEST_NTT_KYBER_SRC_MANUAL)
+	rm -f $(TEST_ENV_M85_AN555_SYMLINK)
+	ln -s ../../../$(TEST_NTT_KYBER_DIR) $(TEST_ENV_M85_AN555_SYMLINK)
+	rm -f $(TEST_ENV_M85_AN555_BASE)/test_loaded_*
+	make -C $(TEST_ENV_M85_AN555_BASE) clean
+	touch $@
+
+.PHONY: build-m85-an555-ntt_kyber
+build-m85-an555-ntt_kyber: $(TEST_ENV_M85_AN555_LINK_NTT_KYBER)
+	make -C $(TEST_ENV_M85_AN555_BASE) -j$(nproc)
+
+.PHONY: run-m85-an555-ntt_kyber
+run-m85-an555-ntt_kyber: $(TEST_ENV_M85_AN555_LINK_NTT_KYBER)
+	make run -C $(TEST_ENV_M85_AN555_BASE) -j$(nproc)
+
+.PHONY: debug-m85-an555-ntt_kyber
+debug-m85-an555-ntt_kyber: $(TEST_ENV_M85_AN555_LINK_NTT_KYBER)
+	make debug -C $(TEST_ENV_M85_AN555_BASE) -j$(nproc)
+
+# NTT Kyber on M55-MPS3-FVP
+
+TEST_ENV_M55_AN547_LINK_NTT_KYBER = $(TEST_ENV_M55_AN547_BASE)/test_loaded_ntt_kyber
+$(TEST_ENV_M55_AN547_LINK_NTT_KYBER): $(TEST_NTT_KYBER_SRC_MANUAL)
+	rm -f $(TEST_ENV_M55_AN547_SYMLINK)
+	ln -s ../../../$(TEST_NTT_KYBER_DIR) $(TEST_ENV_M55_AN547_SYMLINK)
+	rm -f $(TEST_ENV_M55_AN547_BASE)/test_loaded_*
+	make -C $(TEST_ENV_M55_AN547_BASE) clean
+	touch $@
+
+.PHONY: build-m55-an547-ntt_kyber
+build-m55-an547-ntt_kyber: $(TEST_ENV_M55_AN547_LINK_NTT_KYBER)
+	make -C $(TEST_ENV_M55_AN547_BASE) -j$(nproc)
+
+.PHONY: run-m55-an547-ntt_kyber
+run-m55-an547-ntt_kyber: $(TEST_ENV_M55_AN547_LINK_NTT_KYBER)
+	make run -C $(TEST_ENV_M55_AN547_BASE) -j$(nproc)
+
+.PHONY: debug-m55-an547-ntt_kyber
+debug-m55-an547-ntt_kyber: $(TEST_ENV_M55_AN547_LINK_NTT_KYBER)
+	make debug -C $(TEST_ENV_M55_AN547_BASE) -j$(nproc)
+
 # NTT_DILITHIUM on M55-CORE
 
 TEST_ENV_M55_CORE_LINK_NTT_DILITHIUM = $(TEST_ENV_M55_CORE_BASE)/test_loaded_ntt_dilithium
@@ -868,6 +980,50 @@ run-m55-core-ntt_dilithium: $(TEST_ENV_M55_CORE_LINK_NTT_DILITHIUM)
 .PHONY: debug-m55-core-ntt_dilithium
 debug-m55-core-ntt_dilithium: $(TEST_ENV_M55_CORE_LINK_NTT_DILITHIUM)
 	make debug -C $(TEST_ENV_M55_CORE_BASE) -j$(nproc)
+
+# NTT_DILITHIUM on M85-MPS3-FVP
+
+TEST_ENV_M85_AN555_LINK_NTT_DILITHIUM = $(TEST_ENV_M85_AN555_BASE)/test_loaded_ntt_dilithium
+$(TEST_ENV_M85_AN555_LINK_NTT_DILITHIUM): $(TEST_NTT_DILITHIUM_SRC_MANUAL)
+	rm -f $(TEST_ENV_M85_AN555_SYMLINK)
+	ln -s ../../../$(TEST_NTT_DILITHIUM_DIR) $(TEST_ENV_M85_AN555_SYMLINK)
+	rm -f $(TEST_ENV_M85_AN555_BASE)/test_loaded_*
+	make -C $(TEST_ENV_M85_AN555_BASE) clean
+	touch $@
+
+.PHONY: build-m85-an555-ntt_dilithium
+build-m85-an555-ntt_dilithium: $(TEST_ENV_M85_AN555_LINK_NTT_DILITHIUM)
+	make -C $(TEST_ENV_M85_AN555_BASE) -j$(nproc)
+
+.PHONY: run-m85-an555-ntt_dilithium
+run-m85-an555-ntt_dilithium: $(TEST_ENV_M85_AN555_LINK_NTT_DILITHIUM)
+	make run -C $(TEST_ENV_M85_AN555_BASE) -j$(nproc)
+
+.PHONY: debug-m85-an555-ntt_dilithium
+debug-m85-an555-ntt_dilithium: $(TEST_ENV_M85_AN555_LINK_NTT_DILITHIUM)
+	make debug -C $(TEST_ENV_M85_AN555_BASE) -j$(nproc)
+
+# NTT Dilithium on M55-MPS3-FVP
+
+TEST_ENV_M55_AN547_LINK_NTT_DILITHIUM = $(TEST_ENV_M55_AN547_BASE)/test_loaded_ntt_dilithium
+$(TEST_ENV_M55_AN547_LINK_NTT_DILITHIUM): $(TEST_NTT_DILITHIUM_SRC_MANUAL)
+	rm -f $(TEST_ENV_M55_AN547_SYMLINK)
+	ln -s ../../../$(TEST_NTT_DILITHIUM_DIR) $(TEST_ENV_M55_AN547_SYMLINK)
+	rm -f $(TEST_ENV_M55_AN547_BASE)/test_loaded_*
+	make -C $(TEST_ENV_M55_AN547_BASE) clean
+	touch $@
+
+.PHONY: build-m55-an547-ntt_dilithium
+build-m55-an547-ntt_dilithium: $(TEST_ENV_M55_AN547_LINK_NTT_DILITHIUM)
+	make -C $(TEST_ENV_M55_AN547_BASE) -j$(nproc)
+
+.PHONY: run-m55-an547-ntt_dilithium
+run-m55-an547-ntt_dilithium: $(TEST_ENV_M55_AN547_LINK_NTT_DILITHIUM)
+	make run -C $(TEST_ENV_M55_AN547_BASE) -j$(nproc)
+
+.PHONY: debug-m55-an547-ntt_dilithium
+debug-m55-an547-ntt_dilithium: $(TEST_ENV_M55_AN547_LINK_NTT_DILITHIUM)
+	make debug -C $(TEST_ENV_M55_AN547_BASE) -j$(nproc)
 
 # CRT on M55-MPS3-FVP
 
@@ -1047,6 +1203,267 @@ run-m55-mps3-fvp-helloworld: $(TEST_ENV_M55_MPS3_FVP_LINK_HELLOWORLD)
 debug-m55-mps3-fvp-helloworld: $(TEST_ENV_M55_MPS3_FVP_LINK_HELLOWORLD)
 	make debug -C $(TEST_ENV_M55_MPS3_FVP_BASE) -j$(nproc)
 
+# Template on M85-AN555
+
+TEST_ENV_M85_AN555_LINK_HELLOWORLD = $(TEST_ENV_M85_AN555_BASE)/test_loaded_helloworld
+$(TEST_ENV_M85_AN555_LINK_HELLOWORLD):
+	rm -f $(TEST_ENV_M85_AN555_SYMLINK)
+	ln -s ../../../$(TEST_HELLOWORLD_DIR) $(TEST_ENV_M85_AN555_SYMLINK)
+	rm -f $(TEST_ENV_M85_AN555_BASE)/test_loaded_*
+	make -C $(TEST_ENV_M85_AN555_BASE) clean
+	touch $@
+
+.PHONY: build-m85-an555-helloworld
+build-m85-an555-helloworld: $(TEST_ENV_M85_AN555_LINK_HELLOWORLD)
+	make -C $(TEST_ENV_M85_AN555_BASE) -j$(nproc)
+
+.PHONY: run-m85-an555-helloworld
+run-m85-an555-helloworld: $(TEST_ENV_M85_AN555_LINK_HELLOWORLD)
+	make run -C $(TEST_ENV_M85_AN555_BASE) -j$(nproc)
+
+.PHONY: debug-m85-an555-helloworld
+debug-m85-an555-helloworld: $(TEST_ENV_M85_AN555_LINK_HELLOWORLD)
+	make debug -C $(TEST_ENV_M85_AN555_BASE) -j$(nproc)
+
+# Template on M55-AN547
+
+TEST_ENV_M55_AN547_LINK_HELLOWORLD = $(TEST_ENV_M55_AN547_BASE)/test_loaded_helloworld
+$(TEST_ENV_M55_AN547_LINK_HELLOWORLD):
+	rm -f $(TEST_ENV_M55_AN547_SYMLINK)
+	ln -s ../../../$(TEST_HELLOWORLD_DIR) $(TEST_ENV_M55_AN547_SYMLINK)
+	rm -f $(TEST_ENV_M55_AN547_BASE)/test_loaded_*
+	make -C $(TEST_ENV_M55_AN547_BASE) clean
+	touch $@
+
+.PHONY: build-m55-an547-helloworld
+build-m55-an547-helloworld: $(TEST_ENV_M55_AN547_LINK_HELLOWORLD)
+	make -C $(TEST_ENV_M55_AN547_BASE) -j$(nproc)
+
+.PHONY: run-m55-an547-helloworld
+run-m55-an547-helloworld: $(TEST_ENV_M55_AN547_LINK_HELLOWORLD)
+	make run -C $(TEST_ENV_M55_AN547_BASE) -j$(nproc)
+
+.PHONY: debug-m55-an547-helloworld
+debug-m55-an547-helloworld: $(TEST_ENV_M55_AN547_LINK_HELLOWORLD)
+	make debug -C $(TEST_ENV_M55_AN547_BASE) -j$(nproc)
+
+# Profiler on M85-AN555
+
+TEST_ENV_M85_AN555_LINK_PROFILING = $(TEST_ENV_M85_AN555_BASE)/test_loaded_profiling
+$(TEST_ENV_M85_AN555_LINK_PROFILING):
+	rm -f $(TEST_ENV_M85_AN555_SYMLINK)
+	ln -s ../../../$(TEST_PROFILING_DIR) $(TEST_ENV_M85_AN555_SYMLINK)
+	rm -f $(TEST_ENV_M85_AN555_BASE)/test_loaded_*
+	make -C $(TEST_ENV_M85_AN555_BASE) clean
+	touch $@
+
+.PHONY: build-m85-an555-profiling
+build-m85-an555-profiling: $(TEST_ENV_M85_AN555_LINK_PROFILING)
+	make -C $(TEST_ENV_M85_AN555_BASE) -j$(nproc)
+
+.PHONY: run-m85-an555-profiling
+run-m85-an555-profiling: $(TEST_ENV_M85_AN555_LINK_PROFILING)
+	make run -C $(TEST_ENV_M85_AN555_BASE) -j$(nproc)
+
+.PHONY: debug-m85-an555-profiling
+debug-m85-an555-profiling: $(TEST_ENV_M85_AN555_LINK_PROFILING)
+	make debug -C $(TEST_ENV_M85_AN555_BASE) -j$(nproc)
+
+# Profiler on M55-AN547
+
+TEST_ENV_M55_AN547_LINK_PROFILING = $(TEST_ENV_M55_AN547_BASE)/test_loaded_profiling
+$(TEST_ENV_M55_AN547_LINK_PROFILING):
+	rm -f $(TEST_ENV_M55_AN547_SYMLINK)
+	ln -s ../../../$(TEST_PROFILING_DIR) $(TEST_ENV_M55_AN547_SYMLINK)
+	rm -f $(TEST_ENV_M55_AN547_BASE)/test_loaded_*
+	make -C $(TEST_ENV_M55_AN547_BASE) clean
+	touch $@
+
+.PHONY: build-m55-an547-profiling
+build-m55-an547-profiling: $(TEST_ENV_M55_AN547_LINK_PROFILING)
+	make -C $(TEST_ENV_M55_AN547_BASE) -j$(nproc)
+
+.PHONY: run-m55-an547-profiling
+run-m55-an547-profiling: $(TEST_ENV_M55_AN547_LINK_PROFILING)
+	make run -C $(TEST_ENV_M55_AN547_BASE) -j$(nproc)
+
+.PHONY: debug-m55-an547-profiling
+debug-m55-an547-profiling: $(TEST_ENV_M55_AN547_LINK_PROFILING)
+	make debug -C $(TEST_ENV_M55_AN547_BASE) -j$(nproc)
+
+# SQMAG on M55-MPS3-FVP
+
+TEST_ENV_M85_AN555_LINK_SQMAG = $(TEST_ENV_M85_AN555_BASE)/test_loaded_sqmag
+$(TEST_ENV_M85_AN555_LINK_SQMAG): $(TEST_SQMAG_SRC_MANUAL)
+	rm -f $(TEST_ENV_M85_AN555_SYMLINK)
+	ln -s ../../../$(TEST_SQMAG_DIR) $(TEST_ENV_M85_AN555_SYMLINK)
+	rm -f $(TEST_ENV_M85_AN555_BASE)/test_loaded_*
+	make -C $(TEST_ENV_M85_AN555_BASE) clean
+	touch $@
+
+.PHONY: build-m85-an555-sqmag
+build-m85-an555-sqmag: $(TEST_ENV_M85_AN555_LINK_SQMAG)
+	make -C $(TEST_ENV_M85_AN555_BASE) -j$(nproc)
+
+.PHONY: run-m85-an555-sqmag
+run-m85-an555-sqmag: $(TEST_ENV_M85_AN555_LINK_SQMAG)
+	make run -C $(TEST_ENV_M85_AN555_BASE) -j$(nproc)
+
+.PHONY: debug-m85-an555-sqmag
+debug-m85-an555-sqmag: $(TEST_ENV_M85_AN555_LINK_SQMAG)
+	make debug -C $(TEST_ENV_M85_AN555_BASE) -j$(nproc)
+
+# SQMAG on M55-MPS3-FVP
+
+TEST_ENV_M55_AN547_LINK_SQMAG = $(TEST_ENV_M55_AN547_BASE)/test_loaded_sqmag
+$(TEST_ENV_M55_AN547_LINK_SQMAG): $(TEST_SQMAG_SRC_MANUAL)
+	rm -f $(TEST_ENV_M55_AN547_SYMLINK)
+	ln -s ../../../$(TEST_SQMAG_DIR) $(TEST_ENV_M55_AN547_SYMLINK)
+	rm -f $(TEST_ENV_M55_AN547_BASE)/test_loaded_*
+	make -C $(TEST_ENV_M55_AN547_BASE) clean
+	touch $@
+
+.PHONY: build-m55-an552-sqmag
+build-m55-an552-sqmag: $(TEST_ENV_M55_AN547_LINK_SQMAG)
+	make -C $(TEST_ENV_M55_AN547_BASE) -j$(nproc)
+
+.PHONY: run-m55-an552-sqmag
+run-m55-an552-sqmag: $(TEST_ENV_M55_AN547_LINK_SQMAG)
+	make run -C $(TEST_ENV_M55_AN547_BASE) -j$(nproc)
+
+.PHONY: debug-m55-an552-sqmag
+debug-m55-an552-sqmag: $(TEST_ENV_M55_AN547_LINK_SQMAG)
+	make debug -C $(TEST_ENV_M55_AN547_BASE) -j$(nproc)
+
+# FX_FFT on M55-MPS3-FVP
+
+TEST_ENV_M85_AN555_LINK_FX_FFT = $(TEST_ENV_M85_AN555_BASE)/test_loaded_fx_fft
+$(TEST_ENV_M85_AN555_LINK_FX_FFT): $(TEST_FX_FFT_SRC_MANUAL)
+	rm -f $(TEST_ENV_M85_AN555_SYMLINK)
+	ln -s ../../../$(TEST_FX_FFT_DIR) $(TEST_ENV_M85_AN555_SYMLINK)
+	rm -f $(TEST_ENV_M85_AN555_BASE)/test_loaded_*
+	make -C $(TEST_ENV_M85_AN555_BASE) clean
+	touch $@
+
+.PHONY: build-m85-an555-fx_fft
+build-m85-an555-fx_fft: $(TEST_ENV_M85_AN555_LINK_FX_FFT)
+	make -C $(TEST_ENV_M85_AN555_BASE) -j$(nproc)
+
+.PHONY: run-m85-an555-fx_fft
+run-m85-an555-fx_fft: $(TEST_ENV_M85_AN555_LINK_FX_FFT)
+	make run -C $(TEST_ENV_M85_AN555_BASE) -j$(nproc)
+
+.PHONY: debug-m85-an555-fx_fft
+debug-m85-an555-fx_fft: $(TEST_ENV_M85_AN555_LINK_FX_FFT)
+	make debug -C $(TEST_ENV_M85_AN555_BASE) -j$(nproc)
+
+# FX_FFT on M55-MPS3-FVP
+
+TEST_ENV_M55_AN547_LINK_FX_FFT = $(TEST_ENV_M55_AN547_BASE)/test_loaded_fx_fft
+$(TEST_ENV_M55_AN547_LINK_FX_FFT): $(TEST_FX_FFT_SRC_MANUAL)
+	rm -f $(TEST_ENV_M55_AN547_SYMLINK)
+	ln -s ../../../$(TEST_FX_FFT_DIR) $(TEST_ENV_M55_AN547_SYMLINK)
+	rm -f $(TEST_ENV_M55_AN547_BASE)/test_loaded_*
+	make -C $(TEST_ENV_M55_AN547_BASE) clean
+	touch $@
+
+.PHONY: build-m55-an552-fx_fft
+build-m55-an552-fx_fft: $(TEST_ENV_M55_AN547_LINK_FX_FFT)
+	make -C $(TEST_ENV_M55_AN547_BASE) -j$(nproc)
+
+.PHONY: run-m55-an552-fx_fft
+run-m55-an552-fx_fft: $(TEST_ENV_M55_AN547_LINK_FX_FFT)
+	make run -C $(TEST_ENV_M55_AN547_BASE) -j$(nproc)
+
+.PHONY: debug-m55-an552-fx_fft
+debug-m55-an552-fx_fft: $(TEST_ENV_M55_AN547_LINK_FX_FFT)
+	make debug -C $(TEST_ENV_M55_AN547_BASE) -j$(nproc)
+
+# FLT_FFT on M55-MPS3-FVP
+
+TEST_ENV_M85_AN555_LINK_FLT_FFT = $(TEST_ENV_M85_AN555_BASE)/test_loaded_flt_fft
+$(TEST_ENV_M85_AN555_LINK_FLT_FFT): $(TEST_FLT_FFT_SRC_MANUAL)
+	rm -f $(TEST_ENV_M85_AN555_SYMLINK)
+	ln -s ../../../$(TEST_FLT_FFT_DIR) $(TEST_ENV_M85_AN555_SYMLINK)
+	rm -f $(TEST_ENV_M85_AN555_BASE)/test_loaded_*
+	make -C $(TEST_ENV_M85_AN555_BASE) clean
+	touch $@
+
+.PHONY: build-m85-an555-flt_fft
+build-m85-an555-flt_fft: $(TEST_ENV_M85_AN555_LINK_FLT_FFT)
+	make -C $(TEST_ENV_M85_AN555_BASE) -j$(nproc)
+
+.PHONY: run-m85-an555-flt_fft
+run-m85-an555-flt_fft: $(TEST_ENV_M85_AN555_LINK_FLT_FFT)
+	make run -C $(TEST_ENV_M85_AN555_BASE) -j$(nproc)
+
+.PHONY: debug-m85-an555-flt_fft
+debug-m85-an555-flt_fft: $(TEST_ENV_M85_AN555_LINK_FLT_FFT)
+	make debug -C $(TEST_ENV_M85_AN555_BASE) -j$(nproc)
+
+# FLT_FFT on M55-MPS3-FVP
+
+TEST_ENV_M55_AN547_LINK_FLT_FFT = $(TEST_ENV_M55_AN547_BASE)/test_loaded_flt_fft
+$(TEST_ENV_M55_AN547_LINK_FLT_FFT): $(TEST_FLT_FFT_SRC_MANUAL)
+	rm -f $(TEST_ENV_M55_AN547_SYMLINK)
+	ln -s ../../../$(TEST_FLT_FFT_DIR) $(TEST_ENV_M55_AN547_SYMLINK)
+	rm -f $(TEST_ENV_M55_AN547_BASE)/test_loaded_*
+	make -C $(TEST_ENV_M55_AN547_BASE) clean
+	touch $@
+
+.PHONY: build-m55-an552-flt_fft
+build-m55-an552-flt_fft: $(TEST_ENV_M55_AN547_LINK_FLT_FFT)
+	make -C $(TEST_ENV_M55_AN547_BASE) -j$(nproc)
+
+.PHONY: run-m55-an552-flt_fft
+run-m55-an552-flt_fft: $(TEST_ENV_M55_AN547_LINK_FLT_FFT)
+	make run -C $(TEST_ENV_M55_AN547_BASE) -j$(nproc)
+
+.PHONY: debug-m55-an552-flt_fft
+debug-m55-an552-flt_fft: $(TEST_ENV_M55_AN547_LINK_FLT_FFT)
+	make debug -C $(TEST_ENV_M55_AN547_BASE) -j$(nproc)
+
+# NTT_N256 on M55-MPS3-AN547
+TEST_ENV_M55_AN547_LINK_NTT_N256 = $(TEST_ENV_M55_AN547_BASE)/test_loaded_ntt_n256
+$(TEST_ENV_M55_AN547_LINK_NTT_N256): $(TEST_NTT_N256_SRC_MANUAL)
+	rm -f $(TEST_ENV_M55_AN547_SYMLINK)
+	ln -s ../../../$(TEST_NTT_N256_DIR) $(TEST_ENV_M55_AN547_SYMLINK)
+	rm -f $(TEST_ENV_M55_AN547_BASE)/test_loaded_*
+	make -C $(TEST_ENV_M55_AN547_BASE) clean
+	touch $@
+
+.PHONY: build-m55-an547-ntt_n256
+build-m55-an547-ntt_n256: $(TEST_ENV_M55_AN547_LINK_NTT_N256)
+	make -C $(TEST_ENV_M55_AN547_BASE) -j$(nproc)
+
+.PHONY: run-m55-an547-ntt_n256
+run-m55-an547-ntt_n256: $(TEST_ENV_M55_AN547_LINK_NTT_N256)
+	make run -C $(TEST_ENV_M55_AN547_BASE) -j$(nproc)
+
+.PHONY: debug-m55-an547-ntt_n256
+debug-m55-an547-ntt_n256: $(TEST_ENV_M55_AN547_LINK_NTT_N256)
+	make debug -C $(TEST_ENV_M55_AN547_BASE) -j$(nproc)
+
+# NTT_N256 on M85-MPS3-AN555
+TEST_ENV_M85_AN555_LINK_NTT_N256 = $(TEST_ENV_M85_AN555_BASE)/test_loaded_ntt_n256
+$(TEST_ENV_M85_AN555_LINK_NTT_N256): $(TEST_NTT_N256_SRC_MANUAL)
+	rm -f $(TEST_ENV_M85_AN555_SYMLINK)
+	ln -s ../../../$(TEST_NTT_N256_DIR) $(TEST_ENV_M85_AN555_SYMLINK)
+	rm -f $(TEST_ENV_M85_AN555_BASE)/test_loaded_*
+	make -C $(TEST_ENV_M85_AN555_BASE) clean
+	touch $@
+
+.PHONY: build-m85-an555-ntt_n256
+build-m85-an555-ntt_n256: $(TEST_ENV_M85_AN555_LINK_NTT_N256)
+	make -C $(TEST_ENV_M85_AN555_BASE) -j$(nproc)
+
+.PHONY: run-m85-an555-ntt_n256
+run-m85-an555-ntt_n256: $(TEST_ENV_M85_AN555_LINK_NTT_N256)
+	make run -C $(TEST_ENV_M85_AN555_BASE) -j$(nproc)
+
+.PHONY: debug-m85-an555-ntt_n256
+debug-m85-an555-ntt_n256: $(TEST_ENV_M85_AN555_LINK_NTT_N256)
+	make debug -C $(TEST_ENV_M85_AN555_BASE) -j$(nproc)
 ###
 ### M55-MPS2-FVP test environment
 ###

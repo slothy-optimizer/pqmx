@@ -25,36 +25,92 @@
  */
 
 #define TEST_NTT                 /* Enable/Disable test for NTT                   */
-#define TEST_INTT                /* Enable/Disable test for iNTT                  */
+// #define TEST_INTT                /* Enable/Disable test for iNTT                  */
 
 #define BENCH_NTT                 /* Enable/Disable bench for NTT                 */
-#define BENCH_INTT                /* Enable/Disable bench for iNTT                */
+// #define BENCH_INTT                /* Enable/Disable bench for iNTT                */
+// #define ENABLE_PMU_STATS          /* Do not enable when benching for cycle count */
 
+// TEST
+
+// base
 #define TEST_L1222
-#define TEST_L1222_OPT
+#define TEST_L1222_NO_TRANS
 #define TEST_L232
-#define TEST_L232_OPT_SPEED
-#define TEST_L232_OPT_SIZE
+#define TEST_L232_TRANS
 
+// M55
+#define TEST_L1222_OPT_M55
+#define TEST_L1222_NO_TRANS_OPT_M55
+#define TEST_L1222_NO_TRANS_VLD4_OPT_M55
+#define TEST_L232_OPT_SPEED_M55
+#define TEST_L232_OPT_SIZE_M55
+
+// M85
+#define TEST_L1222_OPT_M85
+#define TEST_L1222_NO_TRANS_OPT_M85
+#define TEST_L1222_NO_TRANS_VLD4_OPT_M85
+#define TEST_L232_OPT_SPEED_M85
+#define TEST_L232_OPT_SIZE_M85
+
+// BENCH
+
+// base
 #define BENCH_L1222
-#define BENCH_L1222_OPT
+#define BENCH_L1222_NO_TRANS
 #define BENCH_L232
-#define BENCH_L232_OPT_SPEED
-#define BENCH_L232_OPT_SIZE
+
+// M55
+#define BENCH_L1222_OPT_M55
+#define BENCH_L1222_NO_TRANS_OPT_M55
+#define BENCH_L1222_NO_TRANS_VLD4_OPT_M55
+#define BENCH_L232_OPT_SPEED_M55
+#define BENCH_L232_OPT_SIZE_M55
+
+// M85
+#define BENCH_L1222_OPT_M85
+#define BENCH_L1222_NO_TRANS_OPT_M85
+#define BENCH_L1222_NO_TRANS_VLD4_OPT_M85
+#define BENCH_L232_OPT_SPEED_M85
+#define BENCH_L232_OPT_SIZE_M85
+
+#if defined(ENABLE_PMU_STATS)
+#define REPEAT     1
+#else
+#define REPEAT  1024
+#endif
 
 /*
  * Some external references to auto-generated assembly.
  */
 
+#include <hal.h>
 #include <stdint.h>
-void ntt_kyber_1_23_45_67(int16_t *src);
-void intt_kyber_1_23_45_67(int16_t *src);
-void ntt_kyber_1_23_45_67_opt(int16_t *src);
-void intt_kyber_1_23_45_67_opt(int16_t *src);
+#include <hal.h>
+#include <misc.h>
 
+#include <string.h>
+#include <stdlib.h>
+#include <time.h>
+
+// base
+void ntt_kyber_1_23_45_67(int16_t *src);
+void ntt_kyber_1_23_45_67_no_trans(int16_t *src);
 void ntt_kyber_12_345_67(int16_t *src);
-void ntt_kyber_12_345_67_opt_size(int16_t *src);
-void ntt_kyber_12_345_67_opt_speed(int16_t *src);
+void ntt_kyber_12_345_67_trans(int16_t *src);
+// M55
+void ntt_kyber_1_23_45_67_opt_m55(int16_t *src);
+void ntt_kyber_1_23_45_67_no_trans_opt_m55(int16_t *src);
+void ntt_kyber_1_23_45_67_no_trans_vld4_opt_m55(int16_t *src);
+void ntt_kyber_12_345_67_opt_size_m55(int16_t *src);
+void ntt_kyber_12_345_67_opt_speed_m55(int16_t *src);
+
+// M85
+void ntt_kyber_1_23_45_67_opt_m85(int16_t *src);
+void ntt_kyber_1_23_45_67_no_trans_opt_m85(int16_t *src);
+void ntt_kyber_1_23_45_67_no_trans_vld4_opt_m85(int16_t *src);
+void ntt_kyber_12_345_67_opt_size_m85(int16_t *src);
+void ntt_kyber_12_345_67_opt_speed_m85(int16_t *src);
 
 #define NTT_LAYERS             8
 #define NTT_SIZE               (1u << NTT_LAYERS)
@@ -66,8 +122,6 @@ void ntt_kyber_12_345_67_opt_speed(int16_t *src);
 
 #if defined(TEST_NTT) || defined(TEST_INTT)
 
-#include <hal.h>
-#include <misc.h>
 
 /*
  * Test cases
@@ -77,15 +131,13 @@ int16_t base_root       = 17;
 int16_t modulus         = 3329;
 int16_t modulus_inv_u16 = 62209;
 
-int16_t  roots        [NTT_ROOT_ORDER / 2] __attribute__((aligned(16))) = { 0 };
-uint16_t roots_twisted[NTT_ROOT_ORDER / 2] __attribute__((aligned(16))) = { 0 };
+uint16_t roots[NTT_ROOT_ORDER / 2] __attribute__((aligned(16))) = { 0 };
 
 void build_roots()
 {
     for( unsigned i=0; i < NTT_ROOT_ORDER / 2; i++ )
     {
         roots[i]         = mod_pow_s16( base_root, i, modulus );
-        roots_twisted[i] = roots[i] * modulus_inv_u16;
     }
 }
 
@@ -251,21 +303,50 @@ int test_intt_ ## var  ()                                               \
                                                                         \
     return( 0 );                                                        \
 }
-
+// base
 #if defined(TEST_NTT) && defined(TEST_L1222)
 MAKE_TEST_FWD(l1222,ntt_kyber_1_23_45_67,0)
 #endif
-#if defined(TEST_NTT) && defined(TEST_L1222_OPT)
-MAKE_TEST_FWD(l1222_opt,ntt_kyber_1_23_45_67_opt,0)
+#if defined(TEST_NTT) && defined(TEST_L1222_NO_TRANS)
+MAKE_TEST_FWD(l1222_no_trans,ntt_kyber_1_23_45_67_no_trans,1)
 #endif
 #if defined(TEST_NTT) && defined(TEST_L232)
 MAKE_TEST_FWD(l232,ntt_kyber_12_345_67,1)
 #endif
-#if defined(TEST_NTT) && defined(TEST_L232_OPT_SPEED)
-MAKE_TEST_FWD(l232_opt_speed,ntt_kyber_12_345_67_opt_speed,1)
+#if defined(TEST_NTT) && defined(TEST_L232_TRANS)
+MAKE_TEST_FWD(l232_trans,ntt_kyber_12_345_67_trans,0)
 #endif
-#if defined(TEST_NTT) && defined(TEST_L232_OPT_SIZE)
-MAKE_TEST_FWD(l232_opt_size,ntt_kyber_12_345_67_opt_size,1)
+// M55
+#if defined(TEST_NTT) && defined(TEST_L1222_OPT_M55)
+MAKE_TEST_FWD(l1222_opt_m55,ntt_kyber_1_23_45_67_opt_m55,0)
+#endif
+#if defined(TEST_NTT) && defined(TEST_L1222_NO_TRANS_OPT_M55)
+MAKE_TEST_FWD(l1222_no_trans_opt_m55,ntt_kyber_1_23_45_67_no_trans_opt_m55,1)
+#endif
+#if defined(TEST_NTT) && defined(TEST_L1222_NO_TRANS_VLD4_OPT_M55)
+MAKE_TEST_FWD(l1222_no_trans_vld4_opt_m55,ntt_kyber_1_23_45_67_no_trans_vld4_opt_m55,1)
+#endif
+#if defined(TEST_NTT) && defined(TEST_L232_OPT_SPEED_M55)
+MAKE_TEST_FWD(l232_opt_speed_m55,ntt_kyber_12_345_67_opt_speed_m55,1)
+#endif
+#if defined(TEST_NTT) && defined(TEST_L232_OPT_SIZE_M55)
+MAKE_TEST_FWD(l232_opt_size_m55,ntt_kyber_12_345_67_opt_size_m55,1)
+#endif
+// M85
+#if defined(TEST_NTT) && defined(TEST_L1222_OPT_M85)
+MAKE_TEST_FWD(l1222_opt_m85,ntt_kyber_1_23_45_67_opt_m85,0)
+#endif
+#if defined(TEST_NTT) && defined(TEST_L1222_NO_TRANS_OPT_M85)
+MAKE_TEST_FWD(l1222_no_trans_opt_m85,ntt_kyber_1_23_45_67_no_trans_opt_m85,1)
+#endif
+#if defined(TEST_NTT) && defined(TEST_L1222_NO_TRANS_VLD4_OPT_M85)
+MAKE_TEST_FWD(l1222_no_trans_vld4_opt_m85,ntt_kyber_1_23_45_67_no_trans_vld4_opt_m85,1)
+#endif
+#if defined(TEST_NTT) && defined(TEST_L232_OPT_SPEED_M85)
+MAKE_TEST_FWD(l232_opt_speed_m85,ntt_kyber_12_345_67_opt_speed_m85,1)
+#endif
+#if defined(TEST_NTT) && defined(TEST_L232_OPT_SIZE_M85)
+MAKE_TEST_FWD(l232_opt_size_m85,ntt_kyber_12_345_67_opt_size_m85,1)
 #endif
 
 #if defined(TEST_INTT) && defined(TEST_L1222)
@@ -274,32 +355,103 @@ MAKE_TEST_FWD_INV(l1222,intt_kyber_1_23_45_67,1)
 
 #endif
 
-#define MAKE_BENCH(var,func)                                            \
-int bench_ ## var ()                                                    \
-{                                                                       \
-    int32_t src[NTT_SIZE]      __attribute__((aligned(16)));            \
-    (func)( src );                                                      \
-    return( 0 );                                                        \
+#if defined(BENCH_NTT)
+
+uint64_t hal_get_time();
+
+typedef struct
+{
+    uint32_t systick_cycles;
+    uint32_t pmu_cycles;
+
+    uint32_t inst_all;
+
+    uint32_t inst_mve_all;
+    uint32_t inst_mve_lsu;
+    uint32_t inst_mve_int;
+    uint32_t inst_mve_mul;
+
+    uint32_t stall_all;
+    uint32_t stall_mve_all;
+    uint32_t stall_mve_resource;
+} pmu_stats;
+
+void hal_pmu_enable();
+void hal_pmu_disable();
+void hal_pmu_start_pmu_stats( pmu_stats *s );
+void hal_pmu_finish_pmu_stats( pmu_stats *s );
+void hal_pmu_send_stats( char *s, pmu_stats const *stats );
+
+void hal_pmu_send_stats_wrapper(pmu_stats *stats)
+{
+#if defined(ENABLE_PMU_STATS)
+    hal_pmu_send_stats("", stats);
+#endif
 }
 
+#define MAKE_BENCH(var,func)                                 \
+int bench_ ## var ()           \
+{                                                            \
+    int16_t src[NTT_SIZE]      __attribute__((aligned(16)));\
+    pmu_stats stats;\
+    (func)( src );                                           \
+    hal_pmu_start_pmu_stats(&stats);                          \
+    for( size_t cnt=0; cnt<REPEAT; cnt++ )                   \
+        (func)( src );                                      \
+    hal_pmu_finish_pmu_stats(&stats);                         \
+    debug_printf( #func ": %f cycles (avg)\n",               \
+                  (float) stats.pmu_cycles/(REPEAT) );      \
+    hal_pmu_send_stats_wrapper(&stats); \
+    return( 0 );                                             \
+}
+
+// base
 #if defined(BENCH_NTT) && defined(BENCH_L1222)
 MAKE_BENCH(ntt_l1222,ntt_kyber_1_23_45_67)
 #endif
-#if defined(BENCH_NTT) && defined(BENCH_L1222_OPT)
-MAKE_BENCH(ntt_l1222_opt,ntt_kyber_1_23_45_67_opt)
+#if defined(BENCH_NTT) && defined(BENCH_L1222_NO_TRANS)
+MAKE_BENCH(ntt_l1222_no_trans,ntt_kyber_1_23_45_67_no_trans)
 #endif
 #if defined(BENCH_NTT) && defined(BENCH_L232)
 MAKE_BENCH(ntt_l232,ntt_kyber_12_345_67)
 #endif
-#if defined(BENCH_NTT) && defined(BENCH_L232_OPT_SPEED)
-MAKE_BENCH(ntt_l232_opt_speed,ntt_kyber_12_345_67_opt_speed)
+// M55
+#if defined(BENCH_NTT) && defined(BENCH_L1222_OPT_M55)
+MAKE_BENCH(ntt_l1222_opt_m55,ntt_kyber_1_23_45_67_opt_m55)
 #endif
-#if defined(BENCH_NTT) && defined(BENCH_L232_OPT_SIZE)
-MAKE_BENCH(ntt_l232_opt_size,ntt_kyber_12_345_67_opt_size)
+#if defined(BENCH_NTT) && defined(BENCH_L1222_NO_TRANS_OPT_M55)
+MAKE_BENCH(ntt_l1222_no_trans_opt_m55,ntt_kyber_1_23_45_67_no_trans_opt_m55)
+#endif
+#if defined(BENCH_NTT) && defined(BENCH_L1222_NO_TRANS_VLD4_OPT_M55)
+MAKE_BENCH(ntt_l1222_no_trans_vld4_opt_m55,ntt_kyber_1_23_45_67_no_trans_vld4_opt_m55)
+#endif
+#if defined(BENCH_NTT) && defined(BENCH_L232_OPT_SPEED_M55)
+MAKE_BENCH(ntt_l232_opt_speed_m55,ntt_kyber_12_345_67_opt_speed_m55)
+#endif
+#if defined(BENCH_NTT) && defined(BENCH_L232_OPT_SIZE_M55)
+MAKE_BENCH(ntt_l232_opt_size_m55,ntt_kyber_12_345_67_opt_size_m55)
+#endif
+// M85
+#if defined(BENCH_NTT) && defined(BENCH_L1222_OPT_M85)
+MAKE_BENCH(ntt_l1222_opt_m85,ntt_kyber_1_23_45_67_opt_m85)
+#endif
+#if defined(BENCH_NTT) && defined(BENCH_L1222_NO_TRANS_OPT_M85)
+MAKE_BENCH(ntt_l1222_no_trans_opt_m85,ntt_kyber_1_23_45_67_no_trans_opt_m85)
+#endif
+#if defined(BENCH_NTT) && defined(BENCH_L1222_NO_TRANS_VLD4_OPT_M85)
+MAKE_BENCH(ntt_l1222_no_trans_vld4_opt_m85,ntt_kyber_1_23_45_67_no_trans_vld4_opt_m85)
+#endif
+#if defined(BENCH_NTT) && defined(BENCH_L232_OPT_SPEED_M85)
+MAKE_BENCH(ntt_l232_opt_speed_m85,ntt_kyber_12_345_67_opt_speed_m85)
+#endif
+#if defined(BENCH_NTT) && defined(BENCH_L232_OPT_SIZE_M85)
+MAKE_BENCH(ntt_l232_opt_size_m85,ntt_kyber_12_345_67_opt_size_m85)
 #endif
 
 #if defined(BENCH_INTT) && defined(BENCH_L1222)
 MAKE_BENCH(intt_l1222,intt_kyber_1_23_45_67)
+#endif
+
 #endif
 
 int main(void)
@@ -307,13 +459,15 @@ int main(void)
     int ret = 0;
 
 #if defined(TEST_NTT)
+    debug_printf( "\nKyber NTT Test!\n" );
+// base
 #if defined(TEST_L1222)
     ret |= test_ntt_l1222();
     if( ret != 0 )
         return( 1 );
 #endif
-#if defined(TEST_L1222_OPT)
-    ret |= test_ntt_l1222_opt();
+#if defined(TEST_L1222_NO_TRANS)
+    ret |= test_ntt_l1222_no_trans();
     if( ret != 0 )
         return( 1 );
 #endif
@@ -322,13 +476,60 @@ int main(void)
     if( ret != 0 )
         return( 1 );
 #endif
-#if defined(TEST_L232_OPT_SPEED)
-    ret |= test_ntt_l232_opt_speed();
+#if defined(TEST_L232_TRANS)
+    ret |= test_ntt_l232_trans();
     if( ret != 0 )
         return( 1 );
 #endif
-#if defined(TEST_L232_OPT_SIZE)
-    ret |= test_ntt_l232_opt_size();
+// M55
+#if defined(TEST_L1222_OPT_M55)
+    ret |= test_ntt_l1222_opt_m55();
+    if( ret != 0 )
+        return( 1 );
+#endif
+#if defined(TEST_L1222_NO_TRANS_OPT_M55)
+    ret |= test_ntt_l1222_no_trans_opt_m55();
+    if( ret != 0 )
+        return( 1 );
+#endif
+#if defined(TEST_L1222_NO_TRANS_VLD4_OPT_M55)
+    ret |= test_ntt_l1222_no_trans_vld4_opt_m55();
+    if( ret != 0 )
+        return( 1 );
+#endif
+#if defined(TEST_L232_OPT_SPEED_M55)
+    ret |= test_ntt_l232_opt_speed_m55();
+    if( ret != 0 )
+        return( 1 );
+#endif
+#if defined(TEST_L232_OPT_SIZE_M55)
+    ret |= test_ntt_l232_opt_size_m55();
+    if( ret != 0 )
+        return( 1 );
+#endif
+// M85
+#if defined(TEST_L1222_OPT_M85)
+    ret |= test_ntt_l1222_opt_m85();
+    if( ret != 0 )
+        return( 1 );
+#endif
+#if defined(TEST_L1222_NO_TRANS_OPT_M85)
+    ret |= test_ntt_l1222_no_trans_opt_m85();
+    if( ret != 0 )
+        return( 1 );
+#endif
+#if defined(TEST_L1222_NO_TRANS_VLD4_OPT_M85)
+    ret |= test_ntt_l1222_no_trans_vld4_opt_m85();
+    if( ret != 0 )
+        return( 1 );
+#endif
+#if defined(TEST_L232_OPT_SPEED_M85)
+    ret |= test_ntt_l232_opt_speed_m85();
+    if( ret != 0 )
+        return( 1 );
+#endif
+#if defined(TEST_L232_OPT_SIZE_M85)
+    ret |= test_ntt_l232_opt_size_m85();
     if( ret != 0 )
         return( 1 );
 #endif
@@ -343,21 +544,52 @@ int main(void)
 #endif /* TEST_INTT */
 
 #if defined(BENCH_NTT)
+    hal_pmu_enable(); 
+    debug_printf( "Kyber NTT Bench!\n" );
+// base
 #if defined(BENCH_L1222)
     bench_ntt_l1222();
 #endif
-#if defined(BENCH_L1222_OPT)
-    bench_ntt_l1222_opt();
+#if defined(BENCH_L1222_NO_TRANS)
+    bench_ntt_l1222_no_trans();
 #endif
 #if defined(BENCH_L232)
     bench_ntt_l232();
 #endif
-#if defined(BENCH_L232_OPT_SPEED)
-    bench_ntt_l232_opt_speed();
+// M55
+#if defined(BENCH_L1222_OPT_M55)
+    bench_ntt_l1222_opt_m55();
 #endif
-#if defined(BENCH_L232_OPT_SIZE)
-    bench_ntt_l232_opt_size();
+#if defined(BENCH_L1222_NO_TRANS_OPT_M55)
+    bench_ntt_l1222_no_trans_opt_m55();
 #endif
+#if defined(BENCH_L1222_NO_TRANS_VLD4_OPT_M55)
+    bench_ntt_l1222_no_trans_vld4_opt_m55();
+#endif
+#if defined(BENCH_L232_OPT_SPEED_M55)
+    bench_ntt_l232_opt_speed_m55();
+#endif
+#if defined(BENCH_L232_OPT_SIZE_M55)
+    bench_ntt_l232_opt_size_m55();
+#endif
+// M85
+#if defined(BENCH_L1222_OPT_M85)
+    bench_ntt_l1222_opt_m85();
+#endif
+#if defined(BENCH_L1222_NO_TRANS_OPT_M85)
+    bench_ntt_l1222_no_trans_opt_m85();
+#endif
+#if defined(BENCH_L1222_NO_TRANS_VLD4_OPT_M85)
+    bench_ntt_l1222_no_trans_vld4_opt_m85();
+#endif
+#if defined(BENCH_L232_OPT_SPEED_M85)
+    bench_ntt_l232_opt_speed_m85();
+#endif
+#if defined(BENCH_L232_OPT_SIZE_M85)
+    bench_ntt_l232_opt_size_m85();
+#endif
+    debug_printf( "Done!\n:" );
+    hal_pmu_disable();
 #endif /* BENCH_NTT */
 
 #if defined(BENCH_INTT)

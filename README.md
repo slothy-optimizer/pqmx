@@ -1,20 +1,21 @@
 # pqmx: Post-Quantum Cryptography on Arm v8.1-M + MVE
-
+This repository is a fork of the [pqmx](https://gitlab.com/arm-research/security/pqmx) repository, adding further
+examples from public-key cryptography (both classical and post-quantum). Along with
+[pqax](https://github.com/slothy-optimizer/pqax) and [SLOTHY](https://github.com/slothy-optimizer/slothy), it
+accompanies the paper [Fast and Clean: Auditable high-performance assembly via
+constraint-solving](https://eprint.iacr.org/2022/1303) by Abdulrahman, Becker, Kannwischer and Klein.
 ## Overview
-
 ### Scope
 
-This repository provides implementations of known Post-Quantum Cryptography (PQC) on M-profile Arm CPUs, with a focus on
-CPUs implementing the [M-Profile Vector Extension (MVE)](https://www.arm.com/why-arm/technologies/helium) to the
-Armv8.1-M architecture (also known as Arm<sup>&reg;</sup> Helium&trade; Technology), such as the [Arm<sup>&reg;</sup> Cortex&trade;-M55](https://www.arm.com/products/silicon-ip-cpu/cortex-m/cortex-m55) processor.
-
-It is intended as a complement to the well-known [`pqm4`](https://github.com/mupq/pqm4/) which collects
-implementations of post-quantum cryptography targeting Cortex-M4.
+It is intended as a complement to the well-known [`pqm4`](https://github.com/mupq/pqm4/), which collects implementations
+of post-quantum cryptography targeting Cortex-M4, with a focus on CPUs implementing the [M-Profile Vector Extension
+(MVE)](https://www.arm.com/why-arm/technologies/helium) to the Armv8.1-M architecture (also known as Arm<sup>&reg;</sup>
+Helium&trade; Technology), such as the [Arm<sup>&reg;</sup>
+Cortex&trade;-M55](https://www.arm.com/products/silicon-ip-cpu/cortex-m/cortex-m55) processor.
 
 ### SLOTHY + HeLight
 
-This repository also contains the source code for the SLOTHY/HeLight assembly superoptimizer, discussed in the paper [Towards perfect CRYSTALS for
-Helium](https://eprint.iacr.org/2022/1303). See [helight/README.md](helight/README.md) for more information.
+This repository also contains the source code for the SLOTHY/HeLight assembly superoptimizer, discussed in the paper [Fast and Clean: Auditable high-performance assembly via constraint solving](https://eprint.iacr.org/2022/1303). See [helight/README.md](helight/README.md) for more information.
 
 ### M-Profile Vector Extension (MVE)
 

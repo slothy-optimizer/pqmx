@@ -1,5 +1,6 @@
 ///
 /// Copyright (c) 2022 Arm Limited
+/// Copyright (c) 2022 Hanno Becker
 /// SPDX-License-Identifier: MIT
 ///
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -103,7 +104,6 @@ layer78_loop:
         vstrw.u32 data3, [in, #(4*4*3 - 64)]
 
         le lr, layer78_loop
-layer78_loop_end:
 
         sub in, in, #(4*256)
 
@@ -145,7 +145,6 @@ layer56_loop:
         vstrw.u32 data3, [in, #(4*4*3 - 64)]
 
         le lr, layer56_loop
-layer56_loop_end:
 
         sub in, in, #(4*256)
 
@@ -200,7 +199,6 @@ layer34_loop:
         vstrw.u32 data3, [in, #(4*16*3 - 16)]
 
         le lr, layer34_loop
-layer34_loop_end:
         add in, in, #(4*64 - 4*16)
 
         subs count, count, #1
@@ -257,7 +255,6 @@ layer12_loop:
         vstrw.u32 data3, [in_high, #(4*64 - 16)]
 
         le lr, layer12_loop
-layer12_loop_end:
 
         // Restore MVE vector registers
         vpop {d8-d15}

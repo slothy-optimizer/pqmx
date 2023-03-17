@@ -29,13 +29,20 @@
 
 
 #define TEST_NTT                 /* Enable/Disable test for NTT                    */
-//#define TEST_NTT_DOUBLE          /* Enable/Disable test for NTT                    */
-#define TEST_NTT_FWD_INV           /* NOTE: Need to set `inverse_scaling=0` for this */
-//#define TEST_CORE_ONLY           /* Enable to build for minimal image
+// #define TEST_NTT_DOUBLE         /* Enable/Disable test for NTT                    */
+// #define TEST_NTT_FWD_INV        /* NOTE: Need to set `inverse_scaling=0` for this */
+// #define TEST_CORE_ONLY          /* Enable to build for minimal image
 //                                  * for performance analysis.                      */
-//#define NTT_INCOMPLETE             /* Enable to compute 6-layer incomplete NTT. */
+// #define NTT_INCOMPLETE          /* Enable to compute 6-layer incomplete NTT. */
 
 //#define USE_MANUAL_VARIANTS
+// #define ENABLE_PMU_STATS        /* Do not enable when benching for cycle count */
+
+#if defined(ENABLE_PMU_STATS)
+#define REPEAT     1
+#else
+#define REPEAT  1024
+#endif
 
 /*
  * Some external references to auto-generated assembly.
@@ -59,7 +66,7 @@ void ntt_n256_u32_33556993_28678040_incomplete_double(int32_t *src, int32_t *dst
 #define inv_ntt_incomplete_u32_mve inv_ntt_n256_u32_33556993_28678040_incomplete
 #endif
 
-#define ntt_incomplete_double_u32_mve ntt_n256_u32_33556993_28678040_incomplete_double
+// #define ntt_incomplete_double_u32_mve ntt_n256_u32_33556993_28678040_incomplete_double
 
 #if !defined(NTT_INCOMPLETE)
 #define ntt_u32_mve ntt_full_u32_mve
@@ -192,6 +199,31 @@ void buf_bitrev_4( int32_t *src )
 #endif /* NTT_INCOMPLETE */
 
 #if !defined(TEST_CORE_ONLY)
+uint64_t hal_get_time();
+
+typedef struct
+{
+    uint32_t systick_cycles;
+    uint32_t pmu_cycles;
+
+    uint32_t inst_all;
+
+    uint32_t inst_mve_all;
+    uint32_t inst_mve_lsu;
+    uint32_t inst_mve_int;
+    uint32_t inst_mve_mul;
+
+    uint32_t stall_all;
+    uint32_t stall_mve_all;
+    uint32_t stall_mve_resource;
+} pmu_stats;
+
+void hal_pmu_enable();
+void hal_pmu_disable();
+void hal_pmu_start_pmu_stats( pmu_stats *s );
+void hal_pmu_finish_pmu_stats( pmu_stats *s );
+void hal_pmu_send_stats( char *s, pmu_stats const *stats );
+
 int run_test_ntt()
 {
     debug_test_start( "NTT u32" );
@@ -209,11 +241,8 @@ int run_test_ntt()
 #if !defined(NTT_INCOMPLETE)
     buf_bitrev_4( src_copy );
 #endif /* !NTT_INCOMPLETE */
-
     /* Step 2: MVE-based NTT */
-    measure_start();
     ntt_u32_mve( src );
-    measure_end();
 
     mod_reduce_buf_s32( src, NTT_SIZE, modulus );
     if( compare_buf_u32( (uint32_t const*) src, (uint32_t const*) src_copy,
@@ -224,8 +253,24 @@ int run_test_ntt()
         debug_test_fail();
         return( 1 );
     }
+
     debug_test_ok();
 
+    hal_pmu_enable(); 
+    
+    pmu_stats stats;
+
+    hal_pmu_start_pmu_stats(&stats);
+    for( size_t cnt=0; cnt<REPEAT; cnt++ )
+        ntt_u32_mve( src );
+    hal_pmu_finish_pmu_stats(&stats);
+
+    debug_printf( "ntt_u32_mve: %f cycles (avg)\n", (float) stats.pmu_cycles/(REPEAT) );
+    #if defined(ENABLE_PMU_STATS)
+    hal_pmu_send_stats("ntt_u32_mve", &stats);
+    #endif
+
+    hal_pmu_disable();
     return( 0 );
 }
 #else /* TEST_CORE_ONLY */

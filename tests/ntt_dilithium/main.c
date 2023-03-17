@@ -24,37 +24,84 @@
  * Author: Hanno Becker <hannobecker@posteo.de>
  */
 
-#define TEST_NTT                 /* Enable/Disable test for NTT                    */
-#define TEST_INTT                /* Enable/Disable test for iNTT                   */
+#define TEST_NTT                 /* Enable/Disable test for NTT */
+// #define TEST_INTT                /* Enable/Disable test for iNTT */
+#define BENCH_NTT                /* Enable/Disable bench for NTT */
+/* #define BENCH_INTT               /* Enable/Disable bench for iNTT */
+// #define ENABLE_PMU_STATS         /* Do not enable when benching for cycle count */
+// TEST
 
-/* #define BENCH_NTT                /\* Enable/Disable bench for NTT                    *\/ */
-/* #define BENCH_INTT               /\* Enable/Disable bench for iNTT                   *\/ */
-
+// base
 #define TEST_L2222
-#define TEST_L2222_OPT
 #define TEST_L332
-#define TEST_L332_OPT_SPEED
-#define TEST_L332_OPT_SIZE
+#define TEST_L332_TRANS
 
-/* #define BENCH_L2222 */
-/* #define BENCH_L2222_OPT */
-/* #define BENCH_L332 */
-/* #define BENCH_L332_OPT_SPEED */
-/* #define BENCH_L332_OPT_SIZE */
+// M55
+#define TEST_L2222_OPT_M55
+#define TEST_L2222_NO_TRANS_VLD4_OPT_M55
+#define TEST_L332_OPT_SPEED_M55
+#define TEST_L332_OPT_SIZE_M55
+
+// M85
+#define TEST_L2222_OPT_M85
+#define TEST_L2222_NO_TRANS_VLD4_OPT_M85
+#define TEST_L332_OPT_SPEED_M85
+#define TEST_L332_OPT_SIZE_M85
+
+// BENCH
+
+// base
+#define BENCH_L2222
+#define BENCH_L332
+#define BENCH_L332_TRANS
+
+// M55
+#define BENCH_L2222_OPT_M55
+#define BENCH_L2222_NO_TRANS_VLD4_OPT_M55
+#define BENCH_L332_OPT_SPEED_M55
+#define BENCH_L332_OPT_SIZE_M55
+
+// M85
+#define BENCH_L2222_OPT_M85
+#define BENCH_L2222_NO_TRANS_VLD4_OPT_M85
+#define BENCH_L332_OPT_SPEED_M85
+#define BENCH_L332_OPT_SIZE_M85
+
+#if defined(ENABLE_PMU_STATS)
+#define REPEAT     1
+#else
+#define REPEAT  1024
+#endif
 
 /*
  * Some external references to auto-generated assembly.
  */
 
+#include <hal.h>
 #include <stdint.h>
-void ntt_dilithium_12_34_56_78(int32_t *src);
-void intt_dilithium_12_34_56_78(int32_t *src);
-void ntt_dilithium_123_456_78(int32_t *src);
-void intt_dilithium_123_456_78(int32_t *src);
+#include <hal.h>
+#include <misc.h>
 
-void ntt_dilithium_12_34_56_78_opt(int32_t *src);
-void ntt_dilithium_123_456_78_opt_speed(int32_t *src);
-void ntt_dilithium_123_456_78_opt_size(int32_t *src);
+#include <string.h>
+#include <stdlib.h>
+#include <time.h>
+
+// base
+void ntt_dilithium_12_34_56_78(int32_t *src);
+void ntt_dilithium_123_456_78(int32_t *src);
+void ntt_dilithium_123_456_78_trans(int32_t *src);
+
+// M55
+void ntt_dilithium_12_34_56_78_opt_m55(int32_t *src);
+void ntt_dilithium_12_34_56_78_no_trans_vld4_opt_m55(int32_t *src);
+void ntt_dilithium_123_456_78_opt_speed_m55(int32_t *src);
+void ntt_dilithium_123_456_78_opt_size_m55(int32_t *src);
+
+// M85
+void ntt_dilithium_12_34_56_78_opt_m85(int32_t *src);
+void ntt_dilithium_12_34_56_78_no_trans_vld4_opt_m85(int32_t *src);
+void ntt_dilithium_123_456_78_opt_speed_m85(int32_t *src);
+void ntt_dilithium_123_456_78_opt_size_m85(int32_t *src);
 
 #define NTT_LAYERS             8
 #define NTT_SIZE               (1u << NTT_LAYERS)
@@ -66,10 +113,6 @@ void ntt_dilithium_123_456_78_opt_size(int32_t *src);
 
 #if defined(TEST_NTT) || defined(TEST_INTT)
 
-#include <hal.h>
-#include <misc.h>
-#include <string.h>
-
 /*
  * Test cases
  */
@@ -79,14 +122,12 @@ int32_t modulus         = 8380417;
 int32_t modulus_inv_u32 = 58728449;
 
 int32_t  roots        [NTT_ROOT_ORDER / 2] __attribute__((aligned(16))) = { 0 };
-uint32_t roots_twisted[NTT_ROOT_ORDER / 2] __attribute__((aligned(16))) = { 0 };
 
 void build_roots()
 {
     for( unsigned i=0; i < NTT_ROOT_ORDER / 2; i++ )
     {
         roots[i]         = mod_pow_s32( base_root, i, modulus );
-        roots_twisted[i] = roots[i] * modulus_inv_u32;
     }
 }
 
@@ -252,60 +293,125 @@ int test_intt_ ## var  ()                                           \
                                                                         \
     return( 0 );                                                        \
 }
-
+// base
 #if defined(TEST_NTT) && defined(TEST_L2222)
 MAKE_TEST_FWD(l2222,ntt_dilithium_12_34_56_78,1)
 #endif
-
-#if defined(TEST_NTT) && defined(TEST_L2222_OPT)
-MAKE_TEST_FWD(l2222_opt,ntt_dilithium_12_34_56_78_opt,1)
-#endif
-
 #if defined(TEST_NTT) && defined(TEST_L332)
 MAKE_TEST_FWD(l332,ntt_dilithium_123_456_78,1)
 #endif
-
-#if defined(TEST_NTT) && defined(TEST_L332_OPT_SIZE)
-MAKE_TEST_FWD(l332_opt_size,ntt_dilithium_123_456_78_opt_size,1)
+#if defined(TEST_NTT) && defined(TEST_L332_TRANS)
+MAKE_TEST_FWD(l332_trans,ntt_dilithium_123_456_78_trans,0)
 #endif
-#if defined(TEST_NTT) && defined(TEST_L332_OPT_SPEED)
-MAKE_TEST_FWD(l332_opt_speed,ntt_dilithium_123_456_78_opt_speed,1)
+// M55
+#if defined(TEST_NTT) && defined(TEST_L2222_OPT_M55)
+MAKE_TEST_FWD(l2222_opt_m55,ntt_dilithium_12_34_56_78_opt_m55,1)
 #endif
-
+#if defined(TEST_NTT) && defined(TEST_L2222_NO_TRANS_VLD4_OPT_M55)
+MAKE_TEST_FWD(l2222_no_trans_vld4_opt_m55,ntt_dilithium_12_34_56_78_no_trans_vld4_opt_m55,1)
+#endif
+#if defined(TEST_NTT) && defined(TEST_L332_OPT_SIZE_M55)
+MAKE_TEST_FWD(l332_opt_size_m55,ntt_dilithium_123_456_78_opt_size_m55,1)
+#endif
+#if defined(TEST_NTT) && defined(TEST_L332_OPT_SPEED_M55)
+MAKE_TEST_FWD(l332_opt_speed_m55,ntt_dilithium_123_456_78_opt_speed_m55,1)
+#endif
+// M85
+#if defined(TEST_NTT) && defined(TEST_L2222_OPT_M85)
+MAKE_TEST_FWD(l2222_opt_m85,ntt_dilithium_12_34_56_78_opt_m85,1)
+#endif
+#if defined(TEST_NTT) && defined(TEST_L2222_NO_TRANS_VLD4_OPT_M85)
+MAKE_TEST_FWD(l2222_no_trans_vld4_opt_m85,ntt_dilithium_12_34_56_78_no_trans_vld4_opt_m85,1)
+#endif
+#if defined(TEST_NTT) && defined(TEST_L332_OPT_SIZE_M85)
+MAKE_TEST_FWD(l332_opt_size_m85,ntt_dilithium_123_456_78_opt_size_m85,1)
+#endif
+#if defined(TEST_NTT) && defined(TEST_L332_OPT_SPEED_M85)
+MAKE_TEST_FWD(l332_opt_speed_m85,ntt_dilithium_123_456_78_opt_speed_m85,1)
+#endif
 #if defined(TEST_INTT) && defined(TEST_L2222)
 MAKE_TEST_FWD_INV(l2222,intt_dilithium_12_34_56_78,1)
 #endif
 
 #endif
 
-#define MAKE_BENCH(var,func)                                            \
-int bench_ ## var ()                                                    \
-{                                                                       \
-    int32_t src[NTT_SIZE]      __attribute__((aligned(16)));            \
-    (func)( src );                                                      \
-    return( 0 );                                                        \
+#if defined(BENCH_NTT)
+
+uint64_t hal_get_time();
+
+typedef struct
+{
+    uint32_t systick_cycles;
+    uint32_t pmu_cycles;
+
+    uint32_t inst_all;
+
+    uint32_t inst_mve_all;
+    uint32_t inst_mve_lsu;
+    uint32_t inst_mve_int;
+    uint32_t inst_mve_mul;
+
+    uint32_t stall_all;
+    uint32_t stall_mve_all;
+    uint32_t stall_mve_resource;
+} pmu_stats;
+
+void hal_pmu_enable();
+void hal_pmu_disable();
+void hal_pmu_start_pmu_stats( pmu_stats *s );
+void hal_pmu_finish_pmu_stats( pmu_stats *s );
+void hal_pmu_send_stats( char *s, pmu_stats const *stats );
+
+void hal_pmu_send_stats_wrapper(pmu_stats *stats)
+{
+#if defined(ENABLE_PMU_STATS)
+    hal_pmu_send_stats("", stats);
+#endif
 }
 
+#define MAKE_BENCH(var,func)                                 \
+int bench_ ## var ()           \
+{                                                            \
+    int32_t src[NTT_SIZE]      __attribute__((aligned(16)));\
+    pmu_stats stats;\
+    (func)( src );                                           \
+    hal_pmu_start_pmu_stats(&stats);                          \
+    for( size_t cnt=0; cnt<REPEAT; cnt++ )                   \
+        (func)( src );                                      \
+    hal_pmu_finish_pmu_stats(&stats);                         \
+    debug_printf( #func ": %f cycles (avg)\n",               \
+                  (float) stats.pmu_cycles/(REPEAT) );      \
+    hal_pmu_send_stats_wrapper(&stats); \
+    return( 0 );                                             \
+}
+// base
 MAKE_BENCH(ntt_l2222,ntt_dilithium_12_34_56_78)
-MAKE_BENCH(ntt_l2222_opt,ntt_dilithium_12_34_56_78_opt)
 MAKE_BENCH(ntt_l332,ntt_dilithium_123_456_78)
-MAKE_BENCH(ntt_l332_opt_speed,ntt_dilithium_123_456_78_opt_speed)
-MAKE_BENCH(ntt_l332_opt_size,ntt_dilithium_123_456_78_opt_size)
+MAKE_BENCH(ntt_l332_trans,ntt_dilithium_123_456_78_trans)
+// M55
+MAKE_BENCH(ntt_l2222_opt_m55,ntt_dilithium_12_34_56_78_opt_m55)
+MAKE_BENCH(ntt_l2222_no_trans_vld4_opt_m55,ntt_dilithium_12_34_56_78_no_trans_vld4_opt_m55)
+MAKE_BENCH(ntt_l332_opt_speed_m55,ntt_dilithium_123_456_78_opt_speed_m55)
+MAKE_BENCH(ntt_l332_opt_size_m55,ntt_dilithium_123_456_78_opt_size_m55)
+// M85
+MAKE_BENCH(ntt_l2222_opt_m85,ntt_dilithium_12_34_56_78_opt_m85)
+MAKE_BENCH(ntt_l2222_no_trans_vld4_opt_m85,ntt_dilithium_12_34_56_78_no_trans_vld4_opt_m85)
+MAKE_BENCH(ntt_l332_opt_speed_m85,ntt_dilithium_123_456_78_opt_speed_m85)
+MAKE_BENCH(ntt_l332_opt_size_m85,ntt_dilithium_123_456_78_opt_size_m85)
 
-MAKE_BENCH(intt_l2222,intt_dilithium_12_34_56_78)
+// MAKE_BENCH(intt_l2222,intt_dilithium_12_34_56_78)
+
+#endif
 
 int main(void)
 {
     int ret = 0;
 
 #if defined(TEST_NTT)
+    debug_printf( "\nDilithium NTT Test!\n" );
+    // base
 #if defined(TEST_L2222)
     ret |= test_ntt_l2222();
-    if( ret != 0 )
-        return( 1 );
-#endif
-#if defined(TEST_L2222_OPT)
-    ret |= test_ntt_l2222_opt();
     if( ret != 0 )
         return( 1 );
 #endif
@@ -314,13 +420,50 @@ int main(void)
     if( ret != 0 )
         return( 1 );
 #endif
-#if defined(TEST_L332_OPT_SIZE)
-    ret |= test_ntt_l332_opt_size();
+#if defined(TEST_L332_TRANS)
+    ret |= test_ntt_l332_trans();
     if( ret != 0 )
         return( 1 );
 #endif
-#if defined(TEST_L332_OPT_SPEED)
-    ret |= test_ntt_l332_opt_speed();
+    // M55
+#if defined(TEST_L2222_OPT_M55)
+    ret |= test_ntt_l2222_opt_m55();
+    if( ret != 0 )
+        return( 1 );
+#endif
+#if defined(TEST_L2222_NO_TRANS_VLD4_OPT_M55)
+    ret |= test_ntt_l2222_no_trans_vld4_opt_m55();
+    if( ret != 0 )
+        return( 1 );
+#endif
+#if defined(TEST_L332_OPT_SIZE_M55)
+    ret |= test_ntt_l332_opt_size_m55();
+    if( ret != 0 )
+        return( 1 );
+#endif
+#if defined(TEST_L332_OPT_SPEED_M55)
+    ret |= test_ntt_l332_opt_speed_m55();
+    if( ret != 0 )
+        return( 1 );
+#endif
+    // M85
+#if defined(TEST_L2222_OPT_M85)
+    ret |= test_ntt_l2222_opt_m85();
+    if( ret != 0 )
+        return( 1 );
+#endif
+#if defined(TEST_L2222_NO_TRANS_VLD4_OPT_M85)
+    ret |= test_ntt_l2222_no_trans_vld4_opt_m85();
+    if( ret != 0 )
+        return( 1 );
+#endif
+#if defined(TEST_L332_OPT_SPEED_M85)
+    ret |= test_ntt_l332_opt_speed_m85();
+    if( ret != 0 )
+        return( 1 );
+#endif
+#if defined(TEST_L332_OPT_SIZE_M85)
+    ret |= test_ntt_l332_opt_size_m85();
     if( ret != 0 )
         return( 1 );
 #endif
@@ -335,21 +478,46 @@ int main(void)
 #endif /* TEST_INTT */
 
 #if defined(BENCH_NTT)
+    hal_pmu_enable(); 
+    debug_printf( "Dilithium NTT Bench!\n" );
+    // base
 #if defined(BENCH_L2222)
     bench_ntt_l2222();
-#endif
-#if defined(BENCH_L2222_OPT)
-    bench_ntt_l2222_opt();
 #endif
 #if defined(BENCH_L332)
     bench_ntt_l332();
 #endif
-#if defined(BENCH_L332_OPT_SPEED)
-    bench_ntt_l332_opt_speed();
+#if defined(BENCH_L332_TRANS)
+    bench_ntt_l332_trans();
 #endif
-#if defined(BENCH_L332_OPT_SIZE)
-    bench_ntt_l332_opt_size();
+    // M55
+#if defined(BENCH_L2222_OPT_M55)
+    bench_ntt_l2222_opt_m55();
 #endif
+#if defined(BENCH_L2222_NO_TRANS_VLD4_OPT_M55)
+    bench_ntt_l2222_no_trans_vld4_opt_m55();
+#endif
+#if defined(BENCH_L332_OPT_SPEED_M55)
+    bench_ntt_l332_opt_speed_m55();
+#endif
+#if defined(BENCH_L332_OPT_SIZE_M55)
+    bench_ntt_l332_opt_size_m55();
+#endif
+    // M85
+#if defined(BENCH_L2222_OPT_M85)
+    bench_ntt_l2222_opt_m85();
+#endif
+#if defined(BENCH_L2222_NO_TRANS_VLD4_OPT_M85)
+    bench_ntt_l2222_no_trans_vld4_opt_m85();
+#endif
+#if defined(BENCH_L332_OPT_SPEED_M85)
+    bench_ntt_l332_opt_speed_m85();
+#endif
+#if defined(BENCH_L332_OPT_SIZE_M85)
+    bench_ntt_l332_opt_size_m85();
+#endif
+    debug_printf( "Done!\n:" );
+    hal_pmu_disable();
 #endif /* BENCH_NTT */
 
 #if defined(BENCH_INTT)
