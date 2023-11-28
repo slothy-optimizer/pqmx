@@ -24,48 +24,7 @@
  * Author: Hanno Becker <hannobecker@posteo.de>
  */
 
-#define TEST_NTT                 /* Enable/Disable test for NTT */
-// #define TEST_INTT                /* Enable/Disable test for iNTT */
-#define BENCH_NTT                /* Enable/Disable bench for NTT */
-/* #define BENCH_INTT               /* Enable/Disable bench for iNTT */
-// #define ENABLE_PMU_STATS         /* Do not enable when benching for cycle count */
-// TEST
-
-// base
-#define TEST_L2222
-#define TEST_L332
-#define TEST_L332_TRANS
-
-// M55
-#define TEST_L2222_OPT_M55
-#define TEST_L2222_NO_TRANS_VLD4_OPT_M55
-#define TEST_L332_OPT_SPEED_M55
-#define TEST_L332_OPT_SIZE_M55
-
-// M85
-#define TEST_L2222_OPT_M85
-#define TEST_L2222_NO_TRANS_VLD4_OPT_M85
-#define TEST_L332_OPT_SPEED_M85
-#define TEST_L332_OPT_SIZE_M85
-
-// BENCH
-
-// base
-#define BENCH_L2222
-#define BENCH_L332
-#define BENCH_L332_TRANS
-
-// M55
-#define BENCH_L2222_OPT_M55
-#define BENCH_L2222_NO_TRANS_VLD4_OPT_M55
-#define BENCH_L332_OPT_SPEED_M55
-#define BENCH_L332_OPT_SIZE_M55
-
-// M85
-#define BENCH_L2222_OPT_M85
-#define BENCH_L2222_NO_TRANS_VLD4_OPT_M85
-#define BENCH_L332_OPT_SPEED_M85
-#define BENCH_L332_OPT_SIZE_M85
+#define ENABLE_PMU_STATS         /* Do not enable when benching for cycle count */
 
 #if defined(ENABLE_PMU_STATS)
 #define REPEAT     1
@@ -88,19 +47,17 @@
 
 // base
 void ntt_dilithium_12_34_56_78(int32_t *src);
+void ntt_dilithium_12_34_56_78_no_trans_vld4(int32_t *src);
 void ntt_dilithium_123_456_78(int32_t *src);
-void ntt_dilithium_123_456_78_trans(int32_t *src);
 
 // M55
 void ntt_dilithium_12_34_56_78_opt_m55(int32_t *src);
 void ntt_dilithium_12_34_56_78_no_trans_vld4_opt_m55(int32_t *src);
-void ntt_dilithium_123_456_78_opt_speed_m55(int32_t *src);
 void ntt_dilithium_123_456_78_opt_size_m55(int32_t *src);
 
 // M85
 void ntt_dilithium_12_34_56_78_opt_m85(int32_t *src);
 void ntt_dilithium_12_34_56_78_no_trans_vld4_opt_m85(int32_t *src);
-void ntt_dilithium_123_456_78_opt_speed_m85(int32_t *src);
 void ntt_dilithium_123_456_78_opt_size_m85(int32_t *src);
 
 #define NTT_LAYERS             8
@@ -110,8 +67,6 @@ void ntt_dilithium_123_456_78_opt_size_m85(int32_t *src);
 #define NTT_INCOMPLETE_SIZE    (1u << NTT_INCOMPLETE_LAYERS)
 #define NTT_LAYER_GAP          ( NTT_LAYERS - NTT_INCOMPLETE_LAYERS )
 #define NTT_LAYER_STRIDE       (1u << NTT_LAYER_GAP )
-
-#if defined(TEST_NTT) || defined(TEST_INTT)
 
 /*
  * Test cases
@@ -235,107 +190,18 @@ int test_ntt_ ## var ()                                             \
     return( 0 );                                                        \
 }
 
-#define MAKE_TEST_FWD_INV(var,func,rev4)                                \
-int test_intt_ ## var  ()                                           \
-{                                                                       \
-    debug_test_start( "NTT forward-inverse u32" );                      \
-    int32_t src[NTT_SIZE]      __attribute__((aligned(16)));            \
-    int32_t src_copy[NTT_SIZE] __attribute__((aligned(16)));            \
-                                                                        \
-    int32_t pow_2k_inv;                                                 \
-                                                                        \
-    /* Setup input */                                                   \
-    fill_random_u32( (uint32_t*) src, NTT_SIZE );                       \
-    mod_reduce_buf_s32_signed( src, NTT_SIZE, modulus );                \
-                                                                        \
-    /* Remember original buffer */                                      \
-    memcpy( src_copy, src, sizeof( src ) );                             \
-                                                                        \
-    /* Step 1: Forward NTT */                                           \
-    ntt_s32_C( src );                                                   \
-    /* Step 2: Inverse NTT */                                           \
-                                                                        \
-    if( rev4 )                                                          \
-        buf_bitrev_4( src );                                            \
-                                                                        \
-    mod_reduce_buf_s32( src, NTT_SIZE, modulus );                       \
-                                                                        \
-    measure_start();                                                    \
-    (func)( src );                                                      \
-    measure_end();                                                      \
-                                                                        \
-    /* Remove twist after inverse NTT                                   \
-     * TODO: This needs to go into the inverse-NTT itself. */           \
-    pow_2k_inv = mod_pow_s32( (modulus+1)/2, NTT_INCOMPLETE_LAYERS, modulus ); \
-    for( unsigned idx=0; idx < NTT_SIZE; idx++ )                        \
-        src[idx] = mod_mul_s32( src[idx], pow_2k_inv, modulus );        \
-                                                                        \
-    mod_reduce_buf_s32_signed( src, NTT_SIZE, modulus );                \
-                                                                        \
-    if( compare_buf_u32( (uint32_t const*)                              \
-                         src, (uint32_t const*) src_copy,               \
-                         NTT_SIZE ) != 0 )                              \
-    {                                                                   \
-        for( unsigned idx=0; idx < NTT_SIZE; idx++ )                    \
-        {                                                               \
-            if( src[idx] != src_copy[idx] )                             \
-                debug_printf( "Fail at %u\n", idx );                    \
-            else                                                        \
-                debug_printf( "OK at %u\n", idx );                      \
-        }                                                               \
-                                                                        \
-        debug_print_buf_s32( src_copy, NTT_SIZE, "Original" );          \
-        debug_print_buf_s32( src, NTT_SIZE, "Fwd-Inv" );                \
-        debug_test_fail();                                              \
-        return( 1 );                                                    \
-    }                                                                   \
-    debug_test_ok();                                                    \
-                                                                        \
-    return( 0 );                                                        \
-}
 // base
-#if defined(TEST_NTT) && defined(TEST_L2222)
 MAKE_TEST_FWD(l2222,ntt_dilithium_12_34_56_78,1)
-#endif
-#if defined(TEST_NTT) && defined(TEST_L332)
+MAKE_TEST_FWD(l2222_no_trans_vld4,ntt_dilithium_12_34_56_78_no_trans_vld4,1)
 MAKE_TEST_FWD(l332,ntt_dilithium_123_456_78,1)
-#endif
-#if defined(TEST_NTT) && defined(TEST_L332_TRANS)
-MAKE_TEST_FWD(l332_trans,ntt_dilithium_123_456_78_trans,0)
-#endif
 // M55
-#if defined(TEST_NTT) && defined(TEST_L2222_OPT_M55)
 MAKE_TEST_FWD(l2222_opt_m55,ntt_dilithium_12_34_56_78_opt_m55,1)
-#endif
-#if defined(TEST_NTT) && defined(TEST_L2222_NO_TRANS_VLD4_OPT_M55)
 MAKE_TEST_FWD(l2222_no_trans_vld4_opt_m55,ntt_dilithium_12_34_56_78_no_trans_vld4_opt_m55,1)
-#endif
-#if defined(TEST_NTT) && defined(TEST_L332_OPT_SIZE_M55)
 MAKE_TEST_FWD(l332_opt_size_m55,ntt_dilithium_123_456_78_opt_size_m55,1)
-#endif
-#if defined(TEST_NTT) && defined(TEST_L332_OPT_SPEED_M55)
-MAKE_TEST_FWD(l332_opt_speed_m55,ntt_dilithium_123_456_78_opt_speed_m55,1)
-#endif
 // M85
-#if defined(TEST_NTT) && defined(TEST_L2222_OPT_M85)
 MAKE_TEST_FWD(l2222_opt_m85,ntt_dilithium_12_34_56_78_opt_m85,1)
-#endif
-#if defined(TEST_NTT) && defined(TEST_L2222_NO_TRANS_VLD4_OPT_M85)
 MAKE_TEST_FWD(l2222_no_trans_vld4_opt_m85,ntt_dilithium_12_34_56_78_no_trans_vld4_opt_m85,1)
-#endif
-#if defined(TEST_NTT) && defined(TEST_L332_OPT_SIZE_M85)
 MAKE_TEST_FWD(l332_opt_size_m85,ntt_dilithium_123_456_78_opt_size_m85,1)
-#endif
-#if defined(TEST_NTT) && defined(TEST_L332_OPT_SPEED_M85)
-MAKE_TEST_FWD(l332_opt_speed_m85,ntt_dilithium_123_456_78_opt_speed_m85,1)
-#endif
-#if defined(TEST_INTT) && defined(TEST_L2222)
-MAKE_TEST_FWD_INV(l2222,intt_dilithium_12_34_56_78,1)
-#endif
-
-#endif
-
-#if defined(BENCH_NTT)
 
 uint64_t hal_get_time();
 
@@ -386,145 +252,71 @@ int bench_ ## var ()           \
 }
 // base
 MAKE_BENCH(ntt_l2222,ntt_dilithium_12_34_56_78)
+MAKE_BENCH(ntt_l2222_no_trans_vld4,ntt_dilithium_12_34_56_78_no_trans_vld4)
 MAKE_BENCH(ntt_l332,ntt_dilithium_123_456_78)
-MAKE_BENCH(ntt_l332_trans,ntt_dilithium_123_456_78_trans)
 // M55
 MAKE_BENCH(ntt_l2222_opt_m55,ntt_dilithium_12_34_56_78_opt_m55)
 MAKE_BENCH(ntt_l2222_no_trans_vld4_opt_m55,ntt_dilithium_12_34_56_78_no_trans_vld4_opt_m55)
-MAKE_BENCH(ntt_l332_opt_speed_m55,ntt_dilithium_123_456_78_opt_speed_m55)
 MAKE_BENCH(ntt_l332_opt_size_m55,ntt_dilithium_123_456_78_opt_size_m55)
 // M85
 MAKE_BENCH(ntt_l2222_opt_m85,ntt_dilithium_12_34_56_78_opt_m85)
 MAKE_BENCH(ntt_l2222_no_trans_vld4_opt_m85,ntt_dilithium_12_34_56_78_no_trans_vld4_opt_m85)
-MAKE_BENCH(ntt_l332_opt_speed_m85,ntt_dilithium_123_456_78_opt_speed_m85)
 MAKE_BENCH(ntt_l332_opt_size_m85,ntt_dilithium_123_456_78_opt_size_m85)
-
-// MAKE_BENCH(intt_l2222,intt_dilithium_12_34_56_78)
-
-#endif
 
 int main(void)
 {
     int ret = 0;
 
-#if defined(TEST_NTT)
     debug_printf( "\nDilithium NTT Test!\n" );
+
     // base
-#if defined(TEST_L2222)
     ret |= test_ntt_l2222();
     if( ret != 0 )
         return( 1 );
-#endif
-#if defined(TEST_L332)
+    ret |= test_ntt_l2222_no_trans_vld4();
+    if( ret != 0 )
+        return( 1 );
     ret |= test_ntt_l332();
     if( ret != 0 )
         return( 1 );
-#endif
-#if defined(TEST_L332_TRANS)
-    ret |= test_ntt_l332_trans();
-    if( ret != 0 )
-        return( 1 );
-#endif
     // M55
-#if defined(TEST_L2222_OPT_M55)
     ret |= test_ntt_l2222_opt_m55();
     if( ret != 0 )
         return( 1 );
-#endif
-#if defined(TEST_L2222_NO_TRANS_VLD4_OPT_M55)
     ret |= test_ntt_l2222_no_trans_vld4_opt_m55();
     if( ret != 0 )
         return( 1 );
-#endif
-#if defined(TEST_L332_OPT_SIZE_M55)
     ret |= test_ntt_l332_opt_size_m55();
     if( ret != 0 )
         return( 1 );
-#endif
-#if defined(TEST_L332_OPT_SPEED_M55)
-    ret |= test_ntt_l332_opt_speed_m55();
-    if( ret != 0 )
-        return( 1 );
-#endif
     // M85
-#if defined(TEST_L2222_OPT_M85)
     ret |= test_ntt_l2222_opt_m85();
     if( ret != 0 )
         return( 1 );
-#endif
-#if defined(TEST_L2222_NO_TRANS_VLD4_OPT_M85)
     ret |= test_ntt_l2222_no_trans_vld4_opt_m85();
     if( ret != 0 )
         return( 1 );
-#endif
-#if defined(TEST_L332_OPT_SPEED_M85)
-    ret |= test_ntt_l332_opt_speed_m85();
-    if( ret != 0 )
-        return( 1 );
-#endif
-#if defined(TEST_L332_OPT_SIZE_M85)
     ret |= test_ntt_l332_opt_size_m85();
     if( ret != 0 )
         return( 1 );
-#endif
-#endif /* TEST_NTT */
 
-#if defined(TEST_INTT)
-#if defined(TEST_L2222)
-    ret |= test_intt_l2222();
-    if( ret != 0 )
-        return( 1 );
-#endif
-#endif /* TEST_INTT */
-
-#if defined(BENCH_NTT)
-    hal_pmu_enable(); 
+    hal_pmu_enable();
     debug_printf( "Dilithium NTT Bench!\n" );
     // base
-#if defined(BENCH_L2222)
     bench_ntt_l2222();
-#endif
-#if defined(BENCH_L332)
+    bench_ntt_l2222_no_trans_vld4();
     bench_ntt_l332();
-#endif
-#if defined(BENCH_L332_TRANS)
-    bench_ntt_l332_trans();
-#endif
     // M55
-#if defined(BENCH_L2222_OPT_M55)
     bench_ntt_l2222_opt_m55();
-#endif
-#if defined(BENCH_L2222_NO_TRANS_VLD4_OPT_M55)
     bench_ntt_l2222_no_trans_vld4_opt_m55();
-#endif
-#if defined(BENCH_L332_OPT_SPEED_M55)
-    bench_ntt_l332_opt_speed_m55();
-#endif
-#if defined(BENCH_L332_OPT_SIZE_M55)
     bench_ntt_l332_opt_size_m55();
-#endif
     // M85
-#if defined(BENCH_L2222_OPT_M85)
     bench_ntt_l2222_opt_m85();
-#endif
-#if defined(BENCH_L2222_NO_TRANS_VLD4_OPT_M85)
     bench_ntt_l2222_no_trans_vld4_opt_m85();
-#endif
-#if defined(BENCH_L332_OPT_SPEED_M85)
-    bench_ntt_l332_opt_speed_m85();
-#endif
-#if defined(BENCH_L332_OPT_SIZE_M85)
     bench_ntt_l332_opt_size_m85();
-#endif
+
     debug_printf( "Done!\n:" );
     hal_pmu_disable();
-#endif /* BENCH_NTT */
-
-#if defined(BENCH_INTT)
-#if defined(BENCH_L2222)
-    bench_intt_l2222();
-#endif
-#endif /* BENCH_INTT */
 
     return( ret );
 }

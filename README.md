@@ -88,6 +88,8 @@ link. This way, there's no need to each test for each test environment, but inst
 can be run by linking the test into the environment's template and building/running it. If you have added a new test
 environment, you can test that it works against the HelloWorld test in [`tests/helloworld`](tests/helloworld/).
 
+To run the tests in qemu, the target `run-m55-an547-{test_name}` can be used. It will build the executable from the sources and run it using `qemu-system-arm -M mps3-an547  -nographic -semihosting -kernel`.
+
 ## License
 
 The software is provided under an MIT license. Contributions to this project are accepted under the same license.

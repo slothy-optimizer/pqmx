@@ -1,1 +1,0 @@
-../../../helight/examples/naive/ntt_dilithium_123_456_78_trans.s

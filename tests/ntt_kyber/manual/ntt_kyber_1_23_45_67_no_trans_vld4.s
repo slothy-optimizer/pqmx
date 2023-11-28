@@ -55,9 +55,9 @@ roots:
 .align 4
 roots_addr: .word roots
 .syntax unified
-.type ntt_kyber_1_23_45_67_no_trans, %function
-.global ntt_kyber_1_23_45_67_no_trans
-ntt_kyber_1_23_45_67_no_trans:
+.type ntt_kyber_1_23_45_67_no_trans_vld4, %function
+.global ntt_kyber_1_23_45_67_no_trans_vld4
+ntt_kyber_1_23_45_67_no_trans_vld4:
 
         push {r4-r11,lr}
         // Save MVE vector registers
@@ -159,10 +159,10 @@ layer45_loop:
         ct_butterfly data0, data1, root1, root1_twisted
         ct_butterfly data2, data3, root2, root2_twisted
 
-        vst40.u32 {data0, data1, data2, data3}, [in]
-        vst41.u32 {data0, data1, data2, data3}, [in]
-        vst42.u32 {data0, data1, data2, data3}, [in]
-        vst43.u32 {data0, data1, data2, data3}, [in]!
+        vstrw.u32 data0, [in], #64
+        vstrw.u32 data1, [in, #(-64+16)]
+        vstrw.u32 data2, [in, #(-64+32)]
+        vstrw.u32 data3, [in, #(-64+48)]
 
         le lr, layer45_loop
 
@@ -186,10 +186,10 @@ layer45_loop:
 
         mov lr, #8
 layer67_loop:
-        vldrw.u32 data0, [in], #64
-        vldrw.u32 data1, [in, #(16 - 64)]
-        vldrw.u32 data2, [in, #(32 - 64)]
-        vldrw.u32 data3, [in, #(48 - 64)]
+        vld40.u32 {data0, data1, data2, data3}, [in]
+        vld41.u32 {data0, data1, data2, data3}, [in]
+        vld42.u32 {data0, data1, data2, data3}, [in]
+        vld43.u32 {data0, data1, data2, data3}, [in]!
 
         vldrh.u16 root0,         [root_ptr], #+96
         vldrh.u16 root0_twisted, [root_ptr, #(+16-96)]

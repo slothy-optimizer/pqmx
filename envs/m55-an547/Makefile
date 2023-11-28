@@ -72,7 +72,8 @@ test.elf: $(OBJS_DIR) $(OBJ_FILES) $(LDSCRIPT)
 	arm-none-eabi-objcopy -S $< -O binary $@
 
 build: $(TARGET)
-
+run: $(TARGET)	
+	qemu-system-arm -M mps3-an547  -nographic -semihosting -kernel $(TARGET)
 clean:
 	rm -rf $(OBJ_FILES)
 	rm -rf $(TARGET)

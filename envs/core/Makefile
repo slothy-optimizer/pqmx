@@ -29,9 +29,9 @@ CC=$(_GCC10_DIR)arm-none-eabi-gcc
 LD=$(_GCC10_DIR)arm-none-eabi-gcc
 
 ARCH_FLAGS += \
-	-mcpu=cortex-m55 \
+	-march=armv8.1-m.main+mve.fp \
 	-mthumb \
-	-mfloat-abi=hard -mfpu=fpv4-sp-d16 \
+	-mfloat-abi=softfp \
 
 CFLAGS += -DARMCM55 \
 	$(ARCH_FLAGS)       \

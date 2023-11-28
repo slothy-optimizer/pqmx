@@ -49,11 +49,11 @@ fixedpoint_radix4_fft_loop_start:
   vldrw.32      q5, [inD]
   vhadd.s32     q1, q4, q5
   vhsub.s32     q3, q4, q5       //-
-  vldrw.32      q7, [pw1], #16
+  vldrw.32      q7, [pw2], #16
   vhadd.s32     q4, q0, q1
   vstrw.32      q4, [inA], #16
   vhsub.s32     q4, q0, q1
-  vldrw.32      q5, [pw0], #16    //?
+  vldrw.32      q5, [pw1], #16    //?
   vqdmlsdh.s32  q0, q4, q5
   vhcadd.s32    q6, q2, q3, #270
   vqdmladhx.s32 q0, q4, q5
@@ -63,7 +63,7 @@ fixedpoint_radix4_fft_loop_start:
   vqdmladhx.s32 q0, q6, q7
   vstrw.32      q0, [inC], #16
   vhcadd.s32    q4, q2, q3, #90
-  vldrw.32      q5, [pw2], #16
+  vldrw.32      q5, [pw3], #16
   vqdmlsdh.s32  q0, q4, q5
   vldrw.32      q6, [inC]
   vqdmladhx.s32 q0, q4, q5
