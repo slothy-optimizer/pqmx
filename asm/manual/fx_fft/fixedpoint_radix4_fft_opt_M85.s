@@ -1,1 +1,1 @@
-../../../helight/examples/opt/fx_r4_fft/fixedpoint_radix4_fft_opt_M85.s
+../../../slothy/paper/opt/helium/fx_r4_fft/fixedpoint_radix4_fft_opt_M85.s

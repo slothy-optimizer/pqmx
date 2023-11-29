@@ -73,9 +73,9 @@ int bench_fft()
     floatingpoint_radix4_fft_base( src, tw, SIZE);
     memcpy( res, src, sizeof( res ) );
 
-    /* CHECK(floatingpoint_radix4_fft_base); */
-    /* CHECK(floatingpoint_radix4_fft_opt_M55); */
-    /* CHECK(floatingpoint_radix4_fft_opt_M85); */
+    CHECK(floatingpoint_radix4_fft_base);
+    CHECK(floatingpoint_radix4_fft_opt_M55);
+    CHECK(floatingpoint_radix4_fft_opt_M85);
 
     MEASURE(floatingpoint_radix4_fft_base);
     MEASURE(floatingpoint_radix4_fft_opt_M55);

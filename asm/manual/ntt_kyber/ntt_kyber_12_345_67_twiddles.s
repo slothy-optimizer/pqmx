@@ -1,1 +1,1 @@
-../../../helight/examples/naive/ntt_kyber_12_345_67_twiddles.s
+../../../slothy/examples/naive/ntt_kyber_12_345_67_twiddles.s

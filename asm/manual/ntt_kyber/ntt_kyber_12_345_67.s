@@ -1,1 +1,1 @@
-../../../helight/examples/naive/ntt_kyber_12_345_67.s
+../../../slothy/paper/clean/helium/ntt/ntt_kyber_12_345_67.s

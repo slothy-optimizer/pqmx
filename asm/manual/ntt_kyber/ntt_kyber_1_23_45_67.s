@@ -1,1 +1,0 @@
-../../../helight/examples/naive/ntt_kyber_1_23_45_67.s

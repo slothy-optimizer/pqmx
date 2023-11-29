@@ -44,3 +44,9 @@ void debug_printf(const char * format, ... )
 
 void debug_test_ok()   { printf( "Ok\n"    ); }
 void debug_test_fail() { printf( "FAIL!\n" ); }
+
+void hal_pmu_enable() {}
+void hal_pmu_disable() {}
+void hal_pmu_start_pmu_stats( void *s ) {}
+void hal_pmu_finish_pmu_stats( void *s ) {}
+void hal_pmu_send_stats( void *s, void const *stats ) {}

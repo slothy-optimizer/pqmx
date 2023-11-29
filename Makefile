@@ -1323,19 +1323,42 @@ $(TEST_ENV_M55_AN547_LINK_SQMAG): $(TEST_SQMAG_SRC_MANUAL)
 	make -C $(TEST_ENV_M55_AN547_BASE) clean
 	touch $@
 
-.PHONY: build-m55-an552-sqmag
-build-m55-an552-sqmag: $(TEST_ENV_M55_AN547_LINK_SQMAG)
+.PHONY: build-m55-an547-sqmag
+build-m55-an547-sqmag: $(TEST_ENV_M55_AN547_LINK_SQMAG)
 	make -C $(TEST_ENV_M55_AN547_BASE) -j$(nproc)
 
-.PHONY: run-m55-an552-sqmag
-run-m55-an552-sqmag: $(TEST_ENV_M55_AN547_LINK_SQMAG)
+.PHONY: run-m55-an547-sqmag
+run-m55-an547-sqmag: $(TEST_ENV_M55_AN547_LINK_SQMAG)
 	make run -C $(TEST_ENV_M55_AN547_BASE) -j$(nproc)
 
-.PHONY: debug-m55-an552-sqmag
-debug-m55-an552-sqmag: $(TEST_ENV_M55_AN547_LINK_SQMAG)
+.PHONY: debug-m55-an547-sqmag
+debug-m55-an547-sqmag: $(TEST_ENV_M55_AN547_LINK_SQMAG)
 	make debug -C $(TEST_ENV_M55_AN547_BASE) -j$(nproc)
 
+
 # FX_FFT on M55-MPS3-FVP
+
+TEST_ENV_M55_AN547_LINK_FX_FFT = $(TEST_ENV_M55_AN547_BASE)/test_loaded_fx_fft
+$(TEST_ENV_M55_AN547_LINK_FX_FFT): $(TEST_FX_FFT_SRC_MANUAL)
+	rm -f $(TEST_ENV_M55_AN547_SYMLINK)
+	ln -s ../../../$(TEST_FX_FFT_DIR) $(TEST_ENV_M55_AN547_SYMLINK)
+	rm -f $(TEST_ENV_M55_AN547_BASE)/test_loaded_*
+	make -C $(TEST_ENV_M55_AN547_BASE) clean
+	touch $@
+
+.PHONY: build-m55-an547-fx_fft
+build-m55-an547-fx_fft: $(TEST_ENV_M55_AN547_LINK_FX_FFT)
+	make -C $(TEST_ENV_M55_AN547_BASE) -j$(nproc)
+
+.PHONY: run-m55-an547-fx_fft
+run-m55-an547-fx_fft: $(TEST_ENV_M55_AN547_LINK_FX_FFT)
+	make run -C $(TEST_ENV_M55_AN547_BASE) -j$(nproc)
+
+.PHONY: debug-m55-an547-fx_fft
+debug-m55-an547-fx_fft: $(TEST_ENV_M55_AN547_LINK_FX_FFT)
+	make debug -C $(TEST_ENV_M55_AN547_BASE) -j$(nproc)
+
+# FX_FFT on M85-MPS3-FVP
 
 TEST_ENV_M85_AN555_LINK_FX_FFT = $(TEST_ENV_M85_AN555_BASE)/test_loaded_fx_fft
 $(TEST_ENV_M85_AN555_LINK_FX_FFT): $(TEST_FX_FFT_SRC_MANUAL)
@@ -1357,29 +1380,29 @@ run-m85-an555-fx_fft: $(TEST_ENV_M85_AN555_LINK_FX_FFT)
 debug-m85-an555-fx_fft: $(TEST_ENV_M85_AN555_LINK_FX_FFT)
 	make debug -C $(TEST_ENV_M85_AN555_BASE) -j$(nproc)
 
-# FX_FFT on M55-MPS3-FVP
+# FLT_FFT on M55-MPS3-FVP
 
-TEST_ENV_M55_AN547_LINK_FX_FFT = $(TEST_ENV_M55_AN547_BASE)/test_loaded_fx_fft
-$(TEST_ENV_M55_AN547_LINK_FX_FFT): $(TEST_FX_FFT_SRC_MANUAL)
+TEST_ENV_M55_AN547_LINK_FLT_FFT = $(TEST_ENV_M55_AN547_BASE)/test_loaded_flt_fft
+$(TEST_ENV_M55_AN547_LINK_FLT_FFT): $(TEST_FLT_FFT_SRC_MANUAL)
 	rm -f $(TEST_ENV_M55_AN547_SYMLINK)
-	ln -s ../../../$(TEST_FX_FFT_DIR) $(TEST_ENV_M55_AN547_SYMLINK)
+	ln -s ../../../$(TEST_FLT_FFT_DIR) $(TEST_ENV_M55_AN547_SYMLINK)
 	rm -f $(TEST_ENV_M55_AN547_BASE)/test_loaded_*
 	make -C $(TEST_ENV_M55_AN547_BASE) clean
 	touch $@
 
-.PHONY: build-m55-an552-fx_fft
-build-m55-an552-fx_fft: $(TEST_ENV_M55_AN547_LINK_FX_FFT)
+.PHONY: build-m55-an547-flt_fft
+build-m55-an547-flt_fft: $(TEST_ENV_M55_AN547_LINK_FLT_FFT)
 	make -C $(TEST_ENV_M55_AN547_BASE) -j$(nproc)
 
-.PHONY: run-m55-an552-fx_fft
-run-m55-an552-fx_fft: $(TEST_ENV_M55_AN547_LINK_FX_FFT)
+.PHONY: run-m55-an547-flt_fft
+run-m55-an547-flt_fft: $(TEST_ENV_M55_AN547_LINK_FLT_FFT)
 	make run -C $(TEST_ENV_M55_AN547_BASE) -j$(nproc)
 
-.PHONY: debug-m55-an552-fx_fft
-debug-m55-an552-fx_fft: $(TEST_ENV_M55_AN547_LINK_FX_FFT)
+.PHONY: debug-m55-an547-flt_fft
+debug-m55-an547-flt_fft: $(TEST_ENV_M55_AN547_LINK_FLT_FFT)
 	make debug -C $(TEST_ENV_M55_AN547_BASE) -j$(nproc)
 
-# FLT_FFT on M55-MPS3-FVP
+# FLT_FFT on M85-MPS3-FVP
 
 TEST_ENV_M85_AN555_LINK_FLT_FFT = $(TEST_ENV_M85_AN555_BASE)/test_loaded_flt_fft
 $(TEST_ENV_M85_AN555_LINK_FLT_FFT): $(TEST_FLT_FFT_SRC_MANUAL)
@@ -1401,27 +1424,50 @@ run-m85-an555-flt_fft: $(TEST_ENV_M85_AN555_LINK_FLT_FFT)
 debug-m85-an555-flt_fft: $(TEST_ENV_M85_AN555_LINK_FLT_FFT)
 	make debug -C $(TEST_ENV_M85_AN555_BASE) -j$(nproc)
 
-# FLT_FFT on M55-MPS3-FVP
+# FLT_FFT on M55-CORE
 
-TEST_ENV_M55_AN547_LINK_FLT_FFT = $(TEST_ENV_M55_AN547_BASE)/test_loaded_flt_fft
-$(TEST_ENV_M55_AN547_LINK_FLT_FFT): $(TEST_FLT_FFT_SRC_MANUAL)
-	rm -f $(TEST_ENV_M55_AN547_SYMLINK)
-	ln -s ../../../$(TEST_FLT_FFT_DIR) $(TEST_ENV_M55_AN547_SYMLINK)
-	rm -f $(TEST_ENV_M55_AN547_BASE)/test_loaded_*
-	make -C $(TEST_ENV_M55_AN547_BASE) clean
+TEST_ENV_M55_CORE_LINK_FLT_FFT = $(TEST_ENV_M55_CORE_BASE)/test_loaded_flt_fft
+$(TEST_ENV_M55_CORE_LINK_FLT_FFT): $(TEST_FLT_FFT_SRC_MANUAL)
+	rm -f $(TEST_ENV_M55_CORE_SYMLINK)
+	ln -s ../../../$(TEST_FLT_FFT_DIR) $(TEST_ENV_M55_CORE_SYMLINK)
+	rm -f $(TEST_ENV_M55_CORE_BASE)/test_loaded_*
+	make -C $(TEST_ENV_M55_CORE_BASE) clean
 	touch $@
 
-.PHONY: build-m55-an552-flt_fft
-build-m55-an552-flt_fft: $(TEST_ENV_M55_AN547_LINK_FLT_FFT)
-	make -C $(TEST_ENV_M55_AN547_BASE) -j$(nproc)
+.PHONY: build-m55-core-flt_fft
+build-m55-core-flt_fft: $(TEST_ENV_M55_CORE_LINK_FLT_FFT)
+	make -C $(TEST_ENV_M55_CORE_BASE) -j$(nproc)
 
-.PHONY: run-m55-an552-flt_fft
-run-m55-an552-flt_fft: $(TEST_ENV_M55_AN547_LINK_FLT_FFT)
-	make run -C $(TEST_ENV_M55_AN547_BASE) -j$(nproc)
+.PHONY: run-m55-core-flt_fft
+run-m55-core-flt_fft: $(TEST_ENV_M55_CORE_LINK_FLT_FFT)
+	make run -C $(TEST_ENV_M55_CORE_BASE) -j$(nproc)
 
-.PHONY: debug-m55-an552-flt_fft
-debug-m55-an552-flt_fft: $(TEST_ENV_M55_AN547_LINK_FLT_FFT)
-	make debug -C $(TEST_ENV_M55_AN547_BASE) -j$(nproc)
+.PHONY: debug-m55-core-flt_fft
+debug-m55-core-flt_fft: $(TEST_ENV_M55_CORE_LINK_FLT_FFT)
+	make debug -C $(TEST_ENV_M55_CORE_BASE) -j$(nproc)
+
+# FX_FFT on M55-CORE
+
+TEST_ENV_M55_CORE_LINK_FX_FFT = $(TEST_ENV_M55_CORE_BASE)/test_loaded_fx_fft
+$(TEST_ENV_M55_CORE_LINK_FX_FFT): $(TEST_FX_FFT_SRC_MANUAL)
+	rm -f $(TEST_ENV_M55_CORE_SYMLINK)
+	ln -s ../../../$(TEST_FX_FFT_DIR) $(TEST_ENV_M55_CORE_SYMLINK)
+	rm -f $(TEST_ENV_M55_CORE_BASE)/test_loaded_*
+	make -C $(TEST_ENV_M55_CORE_BASE) clean
+	touch $@
+
+.PHONY: build-m55-core-fx_fft
+build-m55-core-fx_fft: $(TEST_ENV_M55_CORE_LINK_FX_FFT)
+	make -C $(TEST_ENV_M55_CORE_BASE) -j$(nproc)
+
+.PHONY: run-m55-core-fx_fft
+run-m55-core-fx_fft: $(TEST_ENV_M55_CORE_LINK_FX_FFT)
+	make run -C $(TEST_ENV_M55_CORE_BASE) -j$(nproc)
+
+.PHONY: debug-m55-core-fx_fft
+debug-m55-core-fx_fft: $(TEST_ENV_M55_CORE_LINK_FX_FFT)
+	make debug -C $(TEST_ENV_M55_CORE_BASE) -j$(nproc)
+
 
 # NTT_N256 on M55-MPS3-AN547
 TEST_ENV_M55_AN547_LINK_NTT_N256 = $(TEST_ENV_M55_AN547_BASE)/test_loaded_ntt_n256

@@ -74,16 +74,16 @@ int bench_fft()
     fixedpoint_radix4_fft_base( src, tw, SIZE);
     memcpy( res, src, sizeof( res ) );
 
-    /* CHECK(fixedpoint_radix4_fft_opt_M55); */
-    /* CHECK(fixedpoint_radix4_fft_opt_M85); */
-    /* CHECK(fixedpoint_radix4_fft_handwritten); */
-    /* CHECK(fixedpoint_radix4_fft_intrinsics); */
+    CHECK(fixedpoint_radix4_fft_opt_M55);
+    CHECK(fixedpoint_radix4_fft_opt_M85);
+    CHECK(fixedpoint_radix4_fft_handwritten);
+    CHECK(fixedpoint_radix4_fft_intrinsics);
 
     MEASURE(fixedpoint_radix4_fft_base);
+    MEASURE(fixedpoint_radix4_fft_intrinsics);
+    MEASURE(fixedpoint_radix4_fft_handwritten);
     MEASURE(fixedpoint_radix4_fft_opt_M55);
     MEASURE(fixedpoint_radix4_fft_opt_M85);
-    MEASURE(fixedpoint_radix4_fft_handwritten);
-    MEASURE(fixedpoint_radix4_fft_intrinsics);
 
     debug_test_ok();
     return( 0 );
