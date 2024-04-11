@@ -9,7 +9,7 @@ SRC_DIR=./src
 
 .phony: all clean run
 
-CC=arm-none-eabi-gcc-12.2.1
+CC=arm-none-eabi-gcc
 LD := $(CC)
 
 

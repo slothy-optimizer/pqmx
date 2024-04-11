@@ -1,0 +1,18 @@
+name: Tests
+on:
+  pull_request:
+    branches: [ "main" ]
+env:
+  USE_GCC: 1
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: true
+    - name: install dependencies
+      run: sudo apt install gcc-arm-none-eabi qemu-user
+    - name: Run Hello World
+      run: |
+        make run-m55-mps3-fvp-helloworld

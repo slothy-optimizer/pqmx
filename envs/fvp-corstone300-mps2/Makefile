@@ -93,8 +93,8 @@ else # AC6 / GCC
 # GCC toolchain
 
 # Toolchain
-CC=$(_GCC10_DIR)arm-none-eabi-gcc-10.2.1
-LD=$(_GCC10_DIR)arm-none-eabi-gcc-10.2.1
+CC=$(_GCC10_DIR)arm-none-eabi-gcc
+LD=$(_GCC10_DIR)arm-none-eabi-gcc
 
 CFLAGS = -mfloat-abi=softfp -march=armv8.1-m.main+mve -mcpu=cortex-m55  \
 	-I$(CMSIS_DEVICE)/Include                    \
