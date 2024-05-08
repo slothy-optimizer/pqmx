@@ -12,7 +12,7 @@ jobs:
       with:
         submodules: true
     - name: install dependencies
-      run: sudo apt install gcc-arm-none-eabi qemu-user
+      run: sudo apt install gcc-arm-none-eabi qemu-system
     - name: Run NTT Kyber
       run: |
         make run-m55-core-ntt_kyber 

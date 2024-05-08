@@ -45,6 +45,8 @@
 #include <stdlib.h>
 #include <time.h>
 
+#include "poly.h"
+
 // base
 void ntt_kyber_1_23_45_67_no_trans(int16_t *src);
 void ntt_kyber_1_23_45_67_no_trans_vld4(int16_t *src);
