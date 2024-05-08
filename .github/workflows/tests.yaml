@@ -13,6 +13,15 @@ jobs:
         submodules: true
     - name: install dependencies
       run: sudo apt install gcc-arm-none-eabi qemu-system
-    - name: Run NTT Kyber
+    - name: Run Kyber NTT M55
       run: |
-        make run-m55-core-ntt_kyber 
+        make run-m55-core-ntt_kyber
+    - name: Test Dilithium NTT M55
+      run: | 
+        make run-m55-core-ntt_dilithium
+    - name: fx FFT M55
+      run: | 
+        make run-m55-core-fx_fft
+    - name: Test flt FFT M55
+      run: | 
+        make run-m55-core-flt_fft
