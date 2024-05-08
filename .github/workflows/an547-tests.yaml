@@ -28,3 +28,6 @@ jobs:
     - name: Test fx FFT M55
       run: |
         make run-m55-an547-fx_fft
+    - name: Test sqmag M55
+      run: |
+        make run-m55-an547-sqmag
