@@ -13,6 +13,6 @@ jobs:
         submodules: true
     - name: install dependencies
       run: sudo apt install gcc-arm-none-eabi qemu-user
-    - name: Run Hello World
+    - name: Run NTT Kyber
       run: |
-        make run-m55-mps3-fvp-helloworld
+        make run-m55-core-ntt_kyber 
