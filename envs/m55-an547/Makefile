@@ -12,7 +12,6 @@ SRC_DIR=./src
 CC=arm-none-eabi-gcc
 LD := $(CC)
 
-
 SYSROOT := $(shell $(CC) --print-sysroot)
 CFLAGS += \
 	-O3 \
@@ -49,6 +48,8 @@ LDFLAGS += \
 
 all: $(TARGET)
 
+include src/platform/mps3-an547.mk
+
 C_SRC_FILES_PRE=$(wildcard $(SRC_DIR)/*.c) $(wildcard $(SRC_DIR)/*/*.c) $(wildcard $(SRC_DIR)/*/*/*.c)
 C_SRC_FILES=$(patsubst $(SRC_DIR)/%.c, %.c, $(C_SRC_FILES_PRE))
 
@@ -60,12 +61,14 @@ C_OBJ_FILES=$(patsubst %.c, $(BUILD_DIR)/%.o, $(C_SRC_FILES))
 OBJ_FILES=$(ASM_OBJ_FILES) $(C_OBJ_FILES) $(CMSIS_OBJ_FILES)
 
 $(C_OBJ_FILES): $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
+	mkdir -p $(@D)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 $(ASM_OBJ_FILES): $(BUILD_DIR)/%.o: $(SRC_DIR)/%.s
+	mkdir -p $(@D)
 	$(CC) -x assembler-with-cpp $(CFLAGS) -c -o $@ $<
 
-test.elf: $(OBJS_DIR) $(OBJ_FILES) $(LDSCRIPT)
+test.elf: $(OBJS_DIR) $(OBJ_FILES) $(LDSCRIPT) $(LIBDEPS)
 	$(LD) $(LDFLAGS) -o $@ $(OBJ_FILES)
 
 %.bin: %.elf

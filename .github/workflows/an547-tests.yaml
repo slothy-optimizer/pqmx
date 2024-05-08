@@ -1,0 +1,18 @@
+name: AN547 Tests M55
+on:
+  pull_request:
+    branches: [ "main" ]
+env:
+  USE_GCC: 1
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: true
+    - name: install dependencies
+      run: sudo apt install gcc-arm-none-eabi qemu-system
+    - name: Run Kyber NTT M55
+      run: |
+        make run-m55-an547-helloworld

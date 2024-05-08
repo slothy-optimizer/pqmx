@@ -1,4 +1,4 @@
-name: Tests
+name: Core Tests M55
 on:
   pull_request:
     branches: [ "main" ]
