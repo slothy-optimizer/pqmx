@@ -1,5 +1,5 @@
 TARGET=test.elf
-
+TARGET_BIN=test.bin
 PREFIX	?= arm-none-eabi
 CC		= $(PREFIX)-gcc
 LD		= $(PREFIX)-gcc
@@ -42,7 +42,7 @@ LDFLAGS += \
 	-T$(LDSCRIPT) \
 	$(ARCH_FLAGS)
 
-all: $(TARGET)
+all: $(TARGET) $(TARGET_BIN)
 
 # ---
 
@@ -85,6 +85,9 @@ $(info $$OBJ_FILES is [${OBJ_FILES}])
 
 $(TARGET): $(OBJS_DIR) $(OBJ_FILES) $(SCATTER_SRC_TMP)
 	$(LD) -o $(TARGET) $(OBJ_FILES) $(LDFLAGS) -l$(LIBNAME)
+
+$(TARGET_BIN): $(TARGET)
+	$(OBJCOPY) -Obinary $(TARGET) $(TARGET_BIN)
 
 build: $(TARGET)
 run: $(TARGET)
