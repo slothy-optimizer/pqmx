@@ -90,8 +90,6 @@ $(TARGET_BIN): $(TARGET)
 	$(OBJCOPY) -Obinary $(TARGET) $(TARGET_BIN)
 
 build: $(TARGET)
-run: $(TARGET)
-	qemu-system-arm -M mps2-an500 -nographic -semihosting -kernel $(TARGET)
 
 clean:
 	rm -rf $(OBJ_FILES)

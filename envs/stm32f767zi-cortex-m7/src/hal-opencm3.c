@@ -13,6 +13,13 @@
 #include <libopencm3/stm32/rng.h>
 #include <libopencm3/stm32/f7/rcc.h>
 
+/* For pqmx helper */
+#include "randombytes.h"
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
+#include <stdarg.h>
+
 #define SERIAL_GPIO GPIOD
 #define SERIAL_USART USART3
 #define SERIAL_PINS (GPIO8 | GPIO9)
@@ -127,3 +134,49 @@ size_t hal_get_stack_size(void)
 	__asm__ volatile ("mov %0, sp" : "=r" (cur_stack));
   return cur_stack - heap_end;
 }
+
+/* HAL PQMX */
+
+
+static uint64_t _measure_start = 0;
+
+
+uint8_t get_random_byte()
+{
+    uint32_t data;
+    randombytes(&data,sizeof(data));
+    return (uint8_t) data;
+}
+
+/* Stubs to enable/disable measurements. */
+void measure_end()
+{
+    uint64_t dur = hal_get_time() - _measure_start;
+    debug_printf( "cycles: %llu\n", dur );
+}
+
+void measure_start()
+{
+    _measure_start = hal_get_time();
+}
+
+/* Debugging stubs */
+
+void debug_test_start( const char *testname )
+{
+    printf( "%s ... ", testname );
+    fflush( stdout );
+}
+
+void debug_printf(const char * format, ... )
+{
+    char big_string[2048] = {0};
+    va_list argp;
+    va_start( argp, format );
+    vsprintf( big_string, format, argp );
+    hal_send_str(big_string);
+    va_end( argp );
+}
+
+void debug_test_ok()   { printf( "Ok\n"    ); }
+void debug_test_fail() { printf( "FAIL!\n" ); }
