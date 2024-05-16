@@ -194,9 +194,9 @@
  *****************************************************************************/
 .macro eorror   dst, src1, src2, rot1, rot2
 .if \rot1 >= \rot2
-    eor  \dst, \src1, \src2, ror #\rot1-\rot2
+    eor  \dst, \src1, \src2, ror \rot1-\rot2
 .else
-    eor  \dst, \src1, \src2, ror #32+\rot1-\rot2
+    eor  \dst, \src1, \src2, ror 32+\rot1-\rot2
 .endif
 .endm
 
@@ -211,9 +211,9 @@
  *****************************************************************************/
 .macro bicror   dst, src1, src2, rot1, rot2
 .if \rot1 >= \rot2
-    bic  \dst, \src1, \src2, ror #\rot1-\rot2
+    bic  \dst, \src1, \src2, ror \rot1-\rot2
 .else
-    bic  \dst, \src1, \src2, ror #32+\rot1-\rot2
+    bic  \dst, \src1, \src2, ror 32+\rot1-\rot2
 .endif
 .endm
 
@@ -228,9 +228,9 @@
  *  - rot1-rot5     rotation values
  *****************************************************************************/
 .macro xor5   dst, src1, src2, src3, src4, src5, rot1, rot2, rot3, rot4, rot5
-    ldr   \dst, [r0, #\src1]
-    ldr     r1, [r0, #\src2]
-    ldr     r5, [r0, #\src3]
+    ldr.w   \dst, [r0, #\src1]
+    ldr.w     r1, [r0, #\src2]
+    ldr.w     r5, [r0, #\src3]
     ldr      r11, [r0, #\src4]
     ldr      r12, [r0, #\src5]
     eorror  \dst, \dst,  r1, \rot1, \rot2
@@ -251,12 +251,12 @@
  *  - strofs        stack pointer memory offset for the str instruction
  *****************************************************************************/
 .macro xor5str   dst, src1, src2, src3, src4, src5, rot1, rot2, rot3, rot4, rot5, strreg, stradr, strofs
-    ldr    \dst, [r0, #\src1]
-    ldr      r1, [r0, #\src2]
-    ldr      r5, [r0, #\src3]
+    ldr.w    \dst, [r0, #\src1]
+    ldr.w      r1, [r0, #\src2]
+    ldr.w      r5, [r0, #\src3]
     ldr       r11, [r0, #\src4]
     ldr       r12, [r0, #\src5]
-    str \strreg, [\stradr, #\strofs]
+    str.w \strreg, [\stradr, #\strofs]
     eorror   \dst, \dst,  r1, \rot1, \rot2
     eorror   \dst, \dst,  r5, \rot1, \rot3
     eorror   \dst, \dst, r11, \rot1, \rot4
@@ -271,7 +271,7 @@
  *  - rot           differential rotation btw src1 & src2 (i.e. rot=rot1-rot2)
  *****************************************************************************/
 .macro xorrol   dst, src1, src2, rot
-    eor  \dst, \src1, \src2, ror #\rot-1
+    eor  \dst, \src1, \src2, ror \rot-1
 .endm
 
 
@@ -284,7 +284,7 @@
 .macro xandnotlazystr   resofs, src1, src2, src3, rot1, rot2, rot3
     bicror  r1, \src3, \src2, \rot3, \rot2
     eorror  r1, r1, \src1, \rot3, \rot1
-    str   r1, [r0, #\resofs]
+    str.w   r1, [r0, #\resofs]
 .endm
 
 
@@ -314,7 +314,7 @@
 .if \rot3 > 0
     ror     r1, r1, #32-\rot3
 .endif
-    str   r1, [r0, #\resofs]
+    str.w   r1, [r0, #\resofs]
 .endm
 
 
@@ -352,11 +352,11 @@
     cmp     r7, #0xFF
 .endif
 .if \rot3 > 0
-    eor    r3, r3, r5, ror #32-\rot3
+    eor    r3, r3, r5, ror 32-\rot3
 .else
-    eor  r3, r3, r5
+    eor.w  r3, r3, r5
 .endif
-    eor  \out, r4, r3
+    eor.w  \out, r4, r3
 .endm
 
 
@@ -369,29 +369,29 @@
  *****************************************************************************/
 .macro addparity par1, dly1, par2, dly2, par3, dly3, par4, dly4, par5, dly5
 .if \dly1 > 0
-    eor    r3, \par1, r3, ror #32-\dly1
+    eor    r3, \par1, r3, ror 32-\dly1
 .else
-    eor  r3, \par1, r3
+    eor.w  r3, \par1, r3
 .endif
 .if \dly2 > 0
-    eor    r4, \par2, r4, ror #32-\dly2
+    eor    r4, \par2, r4, ror 32-\dly2
 .else
-    eor  r4, \par2, r4
+    eor.w  r4, \par2, r4
 .endif
 .if \dly3 > 0
-    eor    r5, \par3, r5, ror #32-\dly3
+    eor    r5, \par3, r5, ror 32-\dly3
 .else
-    eor  r5, \par3, r5
+    eor.w  r5, \par3, r5
 .endif
 .if \dly4 > 0
-    eor    r6, \par4, r6, ror #32-\dly4
+    eor    r6, \par4, r6, ror 32-\dly4
 .else
-    eor  r6, \par4, r6
+    eor.w  r6, \par4, r6
 .endif
 .if \dly5 > 0
-    eor    r7, \par5, r7, ror #32-\dly5
+    eor    r7, \par5, r7, ror 32-\dly5
 .else
-    eor  r7, \par5, r7
+    eor.w  r7, \par5, r7
 .endif
 .endm
 
@@ -416,12 +416,12 @@
                                     src4, par4, rot4, dly4, \
                                     src5, par5, rot5, dly5, \
                                     ofs,  last, lazy, strofs, reg
-    ldr       r3, [r0, #\src1]
+    ldr.w       r3, [r0, #\src1]
     ldr       r4, [r0, #\src2]
     ldr       r5, [r0, #\src3]
     ldr       r6, [r0, #\src4]
     ldr       r7, [r0, #\src5]
-    str       r1, [r0, #\strofs]
+    str.w       r1, [r0, #\strofs]
     addparity   \par1, \dly1, \par2, \dly2, \par3, \dly3, \par4, \dly4, \par5, \dly5
 .if \lazy == 1
     xandnotlazystr  \src2, r4, r5, r6, \rot2, \rot3, \rot4
@@ -459,12 +459,12 @@
                                 src4, dst4, par4, rot4, dly4, \
                                 src5, dst5, par5, rot5, dly5, \
                                 lazy, strofs
-    ldr       r3, [r0, #\src1]
-    ldr       r4, [r0, #\src2]
-    ldr       r5, [r0, #\src3]
-    ldr       r6, [r0, #\src4]
-    ldr       r7, [r0, #\src5]
-    str       r1, [r0, #\strofs]
+    ldr.w       r3, [r0, #\src1]
+    ldr.w       r4, [r0, #\src2]
+    ldr.w       r5, [r0, #\src3]
+    ldr.w       r6, [r0, #\src4]
+    ldr.w       r7, [r0, #\src5]
+    str.w       r1, [r0, #\strofs]
     addparity   \par1, \dly1, \par2, \dly2, \par3, \dly3, \par4, \dly4, \par5, \dly5
 .if \lazy == 1
     xandnotlazystr  \dst1, r3, r4, r5, \rot1, \rot2, \rot3
@@ -488,14 +488,13 @@
  * classical representation (i.e. without transition and no delayed Rho step).
  *****************************************************************************/
 .macro    KeccakRound0
-slothy_start:
     xor5      r3, Abu0, Agu0, Aku0, Amu0, Asu0, 0, 0, 0, 0, 0
     xor5      r7, Abe1, Age1, Ake1, Ame1, Ase1, 0, 0, 0, 0, 0
     xorrol    r6, r3, r7, 32
     xor5str   r4, Abi1, Agi1, Aki1, Ami1, Asi1, 0, 0, 0, 0, 0, r6, sp, mDa0
-    eor     r6, r3, r4
+    eor.w     r6, r3, r4
     xor5str   r3, Abo0, Ago0, Ako0, Amo0, Aso0, 0, 0, 0, 0, 0, r6, sp, mDo1
-    eor     r2, r7, r3
+    eor.w     r2, r7, r3
     xor5      r7, Aba0, Aga0, Aka0, Ama0, Asa0, 0, 0, 0, 0, 0
     xorrol   r10, r7, r4, 32
     xor5      r4, Abo1, Ago1, Ako1, Amo1, Aso1, 0, 0, 0, 0, 0
@@ -503,13 +502,12 @@ slothy_start:
     xor5      r7, Abe0, Age0, Ake0, Ame0, Ase0, 0, 0, 0, 0, 0
     xorrol    r6, r7, r4, 32
     xor5str   r4, Abu1, Agu1, Aku1, Amu1, Asu1, 0, 0, 0, 0, 0, r6, sp, mDi0
-    eor     r8, r4, r7
+    eor.w     r8, r4, r7
     xor5str   r7, Abi0, Agi0, Aki0, Ami0, Asi0, 0, 0, 0, 0, 0, r8, sp, mDa1
     xorrol    r9, r7, r4, 32
     xor5str   r4, Aba1, Aga1, Aka1, Ama1, Asa1, 0, 0, 0, 0, 0, r9, sp, mDo0
     eor      r11, r4, r7
     xorrol   r12, r3, r4, 32
-slothy_end:
     KeccakThetaRhoPiChi Abo0, Aka1,  r9, 14, 0, \
                         Agu0, Ame1, r12, 10, 0, \
                         Aka1, Asi1,  r8,  2, 0, \
@@ -542,7 +540,7 @@ slothy_end:
                             Amo1,  r9, 11, 0, \
                             Asu0, r12,  7, 0, \
                             0, 0, 1, Aku0, r1
-    ldr       r2, [sp, #mDi0]
+    ldr.w       r2, [sp, #mDi0]
     KeccakThetaRhoPiChi Abo1, Aka0,  r9, 14, 0, \
                         Agu1, Ame0, r14, 10, 0, \
                         Aka0, Asi0,  r8,  1, 0, \
@@ -588,9 +586,9 @@ slothy_end:
     ror         r3, 32-22
     xorrol      r6, r3, r7, 32-10
     xor5str     r4, Aki0, Asi0, Agi1, Ami0, Abi1,  7, 30,  9, 28,  1, r6, sp, mDa0
-    eor         r6, r3, r4, ror #32-7
+    eor         r6, r3, r4, ror 32-7
     xor5str     r3, Amo1, Abo0, Ako1, Aso0, Ago1,  0, 14,  1, 14, 31, r6, sp, mDo1
-    eor         r2, r3, r7, ror #32-10
+    eor         r2, r3, r7, ror 32-10
     xor5        r7, Aba0, Aka1, Asa0, Aga0, Ama1,  0,  2, 13,  5, 20
     xorrol     r10, r7, r4, 32-7
     xor5        r4, Amo0, Abo1, Ako0, Aso1, Ago0,  0, 14,  0, 13, 31
@@ -599,7 +597,7 @@ slothy_end:
     ror         r7, 32-11
     xorrol      r6, r7, r4, 32
     xor5str     r4, Asu1, Agu1, Amu1, Abu0, Aku0, 22, 10,  3, 18, 27, r6, sp, mDi0
-    eor         r8, r7, r4, ror #32-22
+    eor         r8, r7, r4, ror 32-22
     xor5str     r7, Aki1, Asi1, Agi0, Ami1, Abi0,  7, 31,  9, 28,  1, r8, sp, mDa1
     ror         r7, 32-7
     xorrol      r9, r7, r4, 32-22
@@ -638,7 +636,7 @@ slothy_end:
                             Aso1,  r9, 11, 13, \
                             Aku1, r12,  7, 28, \
                             8, 0, 1, Amu0, r1
-    ldr         r2, [sp, #mDi0]
+    ldr.w         r2, [sp, #mDi0]
     KeccakThetaRhoPiChi Amo0, Asa0,  r9, 14,  0, \
                         Agu1, Ake0, r14, 10, 10, \
                         Asa0, Abi0,  r8,  1, 13, \
@@ -682,9 +680,9 @@ slothy_end:
     ror         r3, 32-22
     xorrol      r6, r3, r7, 32-10
     xor5str     r4, Agi0, Abi0, Asi0, Ami1, Aki0,  7, 30,  9, 28,  1, r6, sp, mDa0
-    eor         r6, r3, r4, ror #32-7
+    eor         r6, r3, r4, ror 32-7
     xor5str     r3, Aso1, Amo1, Ako0, Ago1, Abo1,  0, 14,  1, 14, 31, r6, sp, mDo1
-    eor         r2, r3, r7, ror #32-10
+    eor         r2, r3, r7, ror 32-10
     xor5        r7, Aba0, Asa1, Ama1, Aka1, Aga1,  0,  2, 13,  5, 20
     xorrol     r10, r7, r4, 32-7
     xor5        r4, Aso0, Amo0, Ako1, Ago0, Abo0,  0, 14,  0, 13, 31
@@ -693,7 +691,7 @@ slothy_end:
     ror         r7, 32-11
     xorrol      r6, r7, r4, 32
     xor5str     r4, Aku0, Agu1, Abu0, Asu0, Amu0, 22, 10,  3, 18, 27, r6, sp, mDi0
-    eor         r8, r7, r4, ror #32-22
+    eor         r8, r7, r4, ror 32-22
     xor5str     r7, Agi1, Abi1, Asi1, Ami0, Aki1,  7, 31,  9, 28,  1, r8, sp, mDa1
     ror         r7, 32-7
     xorrol      r9, r7, r4, 32-22
@@ -732,7 +730,7 @@ slothy_end:
                             Ago0, r9, 11, 13, \
                             Amu1, r12, 7, 28, \
                             16, 0, 1, Abu1, r1
-    ldr   r2, [sp, #mDi0]
+    ldr.w   r2, [sp, #mDi0]
     KeccakThetaRhoPiChi Aso0, Ama1,  r9, 14,  0, \
                         Agu1, Abe1, r14, 10, 10, \
                         Ama1, Aki1,  r8,  1, 13, \
@@ -780,9 +778,9 @@ slothy_end:
     ror         r3, 32-22
     xorrol      r6, r3, r7, 32-10
     xor5str     r4, Asi1, Aki1, Abi0, Ami0, Agi0,  7, 30,  9, 28,  1, r6, sp, mDa0
-    eor         r6, r3, r4, ror #32-7
+    eor         r6, r3, r4, ror 32-7
     xor5str     r3, Ago0, Aso1, Ako1, Abo1, Amo0,  0, 14,  1, 14, 31, r6, sp, mDo1
-    eor         r2, r3, r7, ror #32-10
+    eor         r2, r3, r7, ror 32-10
     xor5        r7, Aba0, Ama0, Aga1, Asa1, Aka0,  0,  2, 13,  5, 20
     xorrol     r10, r7, r4, 32-7
     xor5        r4, Ago1, Aso0, Ako0, Abo0, Amo1,  0, 14,  0, 13, 31
@@ -791,7 +789,7 @@ slothy_end:
     ror         r7, #32-11
     xorrol      r6, r7, r4, 32
     xor5str     r4, Amu0, Agu1, Asu0, Aku1, Abu1, 22, 10,  3, 18, 27, r6, sp, mDi0
-    eor         r8, r7, r4, ror #32-22
+    eor         r8, r7, r4, ror 32-22
     xor5str     r7, Asi0, Aki0, Abi1, Ami1, Agi1,  7, 31,  9, 28,  1, r8, sp, mDa1
     ror         r7, 32-7
     xorrol      r9, r7, r4, 32-22
@@ -830,7 +828,7 @@ slothy_end:
                             Abo0,  r9, 11, 13, \
                             Abu0, r12,  7, 28, \
                             24, 0, 0, Asu1, r1
-    ldr   r2, [sp, #mDi0]
+    ldr.w   r2, [sp, #mDi0]
     KeccakThetaRhoPiChi     Ago1, Aga1,  r9, 14,  0, \
                             Agu1, Age1, r14, 10, 10, \
                             Aga1, Agi1,  r8,  1, 13, \
@@ -863,7 +861,7 @@ slothy_end:
                             Abo1,  r9, 10, 14, \
                             Abu1, r14,  7, 27, \
                             28, 1, 0, Asu0, r1
-    str r1, [r0, #Aba1]
+    str.w r1, [r0, #Aba1]
 .endm
 
 
@@ -872,7 +870,6 @@ slothy_end:
 @ void KeccakF1600_Initialize( void )
 @
 .align 8
-.global   KeccakF1600_Initialize
 KeccakF1600_Initialize:
 	bx		lr
 
@@ -883,7 +880,6 @@ KeccakF1600_Initialize:
 @ void KeccakF1600_StateXORBytes(void *state, const unsigned char *data, unsigned int offset, unsigned int length)
 @
 .align 8
-.global   KeccakF1600_StateXORBytes
 KeccakF1600_StateXORBytes:
 	cbz		r3, KeccakF1600_StateXORBytes_Exit1
 	push	{r4 - r8, lr}							@ then
@@ -986,7 +982,6 @@ __KeccakF1600_StateXORBytesInLane_Loop:
 @ void KeccakF1600_StateExtractBytes(void *state, const unsigned char *data, unsigned int offset, unsigned int length)
 @
 .align 8
-.global   KeccakF1600_StateExtractBytes
 KeccakF1600_StateExtractBytes:
 	cbz		r3, KeccakF1600_StateExtractBytes_Exit1	@ .if length != 0
 	push	{r4 - r8, lr}							@ then
@@ -1119,8 +1114,8 @@ KeccakF1600_StatePermute_RoundConstantsWithTerminator:
 @ void KeccakF1600_StatePermute( void *state )
 @
 .align 8
-.global   KeccakF1600_StatePermute
-KeccakF1600_StatePermute:
+.global   KeccakF1600_StatePermute_pqm4
+KeccakF1600_StatePermute_pqm4:
 	adr		r1, KeccakF1600_StatePermute_RoundConstantsWithTerminator
 	push	{ r4 - r12, lr }
 	sub		sp, #mSize
@@ -1133,3 +1128,4 @@ KeccakF1600_StatePermute_RoundLoop:
 	bne		KeccakF1600_StatePermute_RoundLoop
 	add		sp, #mSize
 	pop		{ r4 - r12, pc }
+
