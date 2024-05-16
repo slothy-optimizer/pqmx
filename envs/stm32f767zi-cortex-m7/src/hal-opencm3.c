@@ -12,6 +12,8 @@
 #include <libopencm3/stm32/flash.h>
 #include <libopencm3/stm32/rng.h>
 #include <libopencm3/stm32/f7/rcc.h>
+#include <libopencm3/cm3/scs.h>
+#include <libopencm3/cm3/scb.h>
 
 /* For pqmx helper */
 #include "randombytes.h"
@@ -25,6 +27,48 @@
 #define SERIAL_PINS (GPIO8 | GPIO9)
 #define STM32
 
+#define DWT_LAR_PTR                         ((volatile unsigned int *) 0xe0001fb0)
+#define DWT_LAR_KEY                         0xC5ACCE55
+#define SCB_DCISW_SET_Pos                   5U                                            /*!< SCB DCISW: Set Position */
+#define SCB_DCISW_SET_Msk                  (0x1FFUL << SCB_DCISW_SET_Pos)                 /*!< SCB DCISW: Set Mask */
+#define SCB_CCR_DC_Pos                      16U                                           /*!< SCB CCR: Cache enable bit Position */
+#define SCB_CCR_DC_Msk                     (1UL << SCB_CCR_DC_Pos)                        /*!< SCB CCR: Cache enable bit Mask */
+#define SCB_CCSIDR_NUMSETS_Pos             13U                                            /*!< SCB CCSIDR: NumSets Position */
+#define SCB_CCSIDR_NUMSETS_Msk             (0x7FFFUL << SCB_CCSIDR_NUMSETS_Pos)           /*!< SCB CCSIDR: NumSets Mask */
+#define SCB_DCISW_WAY_Pos                  30U                                            /*!< SCB DCISW: Way Position */
+#define SCB_DCISW_WAY_Msk                  (3UL << SCB_DCISW_WAY_Pos)                     /*!< SCB DCISW: Way Mask */
+#define SCB_CCSIDR_ASSOCIATIVITY_Pos        3U                                            /*!< SCB CCSIDR: Associativity Position */
+#define SCB_CCSIDR_ASSOCIATIVITY_Msk       (0x3FFUL << SCB_CCSIDR_ASSOCIATIVITY_Pos)      /*!< SCB CCSIDR: Associativity Mask */
+#define SCB_CCR_DC_Pos                      16U                                           /*!< SCB CCR: Cache enable bit Position */
+#define SCB_CCR_DC_Msk                     (1UL << SCB_CCR_DC_Pos)                        /*!< SCB CCR: Cache enable bit Mask */
+#define SCB_CCR_IC_Pos                      17U                                           /*!< SCB CCR: Instruction cache enable bit Position */
+#define SCB_CCR_IC_Msk                     (1UL << SCB_CCR_IC_Pos)                        /*!< SCB CCR: Instruction cache enable bit Mask */
+
+#define CCSIDR_WAYS(x) (((x) & SCB_CCSIDR_ASSOCIATIVITY_Msk) >> SCB_CCSIDR_ASSOCIATIVITY_Pos)
+#define CCSIDR_SETS(x) (((x) & SCB_CCSIDR_NUMSETS_Msk ) >> SCB_CCSIDR_NUMSETS_Pos )
+
+static void SCB_EnableICache(void){
+    SCB_ICIALLU = 0L;
+    SCB_CCR |= (uint32_t) SCB_CCR_IC_Msk ;
+}
+
+static void SCB_EnableDCache(void){
+    uint32_t ccsidr;
+    uint32_t sets;
+    uint32_t ways;
+    
+    ccsidr = SCB_CCSIDR;
+    /* invalidate D-Cache */
+    sets = (uint32_t)(CCSIDR_SETS(ccsidr));
+    do {
+      ways = (uint32_t)(CCSIDR_WAYS(ccsidr));
+      do {
+        SCB_DCISW = (((sets << SCB_DCISW_SET_Pos) & SCB_DCISW_SET_Msk) |
+                      ((ways << SCB_DCISW_WAY_Pos) & SCB_DCISW_WAY_Msk)  );
+      } while (ways-- != 0U);
+    } while(sets-- != 0U);
+    SCB_CCR |= (uint32_t)SCB_CCR_DC_Msk;  /* enable D-Cache */
+}
 
 
 static void clock_setup(enum clock_mode clock)
@@ -80,6 +124,9 @@ void hal_setup(const enum clock_mode clock)
   clock_setup(clock);
   usart_setup();
   systick_setup();
+
+  SCB_EnableICache();
+  SCB_EnableDCache();
 
   // wait for the first systick overflow
   // improves reliability of the benchmarking scripts since it makes it much
@@ -180,3 +227,75 @@ void debug_printf(const char * format, ... )
 
 void debug_test_ok()   { printf( "Ok\n"    ); }
 void debug_test_fail() { printf( "FAIL!\n" ); }
+
+
+/* Implement some system calls to shut up the linker warnings */
+
+#include <errno.h>
+#undef errno
+extern int errno;
+
+int __wrap__open(char *file, int flags, int mode) {
+    (void) file;
+    (void) flags;
+    (void) mode;
+    errno = ENOSYS;
+    return -1;
+}
+
+int __wrap__close(int fd) {
+    errno = ENOSYS;
+    (void) fd;
+    return -1;
+}
+
+#include <sys/stat.h>
+
+int __wrap__fstat(int fd, struct stat *buf) {
+    (void) fd;
+    (void) buf;
+    errno = ENOSYS;
+    return -1;
+}
+
+int __wrap__getpid(void) {
+    errno = ENOSYS;
+    return -1;
+}
+
+int __wrap__isatty(int file) {
+    (void) file;
+    errno = ENOSYS;
+    return 0;
+}
+
+int __wrap__kill(int pid, int sig) {
+    (void) pid;
+    (void) sig;
+    errno = ENOSYS;
+    return -1;
+}
+
+int __wrap__lseek(int fd, int ptr, int dir) {
+    (void) fd;
+    (void) ptr;
+    (void) dir;
+    errno = ENOSYS;
+    return -1;
+}
+
+int __wrap__read(int fd, char *ptr, int len) {
+    (void) fd;
+    (void) ptr;
+    (void) len;
+    errno = ENOSYS;
+    return -1;
+}
+
+int __wrap__write(int fd, const char *ptr, int len) {
+    (void) fd;
+    (void) ptr;
+    (void) len;
+    errno = ENOSYS;
+    return -1;
+}

@@ -37,6 +37,15 @@ LDFLAGS += -L$(OPENCM3_DIR)/lib
 LDFLAGS += \
 	--specs=nosys.specs \
 	-Wl,--wrap=_sbrk \
+	-Wl,--wrap=_open \
+	-Wl,--wrap=_close \
+	-Wl,--wrap=_isatty \
+	-Wl,--wrap=_kill \
+	-Wl,--wrap=_lseek \
+	-Wl,--wrap=_read \
+	-Wl,--wrap=_write \
+	-Wl,--wrap=_fstat \
+	-Wl,--wrap=_getpid \
 	-nostartfiles \
 	-ffreestanding \
 	-T$(LDSCRIPT) \
