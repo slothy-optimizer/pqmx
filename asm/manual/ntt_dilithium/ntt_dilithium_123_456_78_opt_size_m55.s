@@ -1,1 +1,0 @@
-../../../slothy/paper/opt/helium/ntt/ntt_dilithium_123_456_78_opt_size_m55.s
