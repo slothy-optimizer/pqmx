@@ -1115,6 +1115,26 @@ run-m7-stm32f767zi-profiling: $(TEST_ENV_M7_STM32F767ZI_LINK_PROFILING)
 debug-m7-stm32f767zi-profiling: $(TEST_ENV_M7_STM32F767ZI_LINK_PROFILING)
 	make debug -C $(TEST_ENV_M7_STM32F767ZI_BASE) -j$(nproc)
 
+TEST_ENV_M7_STM32F767ZI_LINK_NTT_DILITHIUM = $(TEST_ENV_M7_STM32F767ZI_BASE)/test_loaded_ntt_dilithium
+$(TEST_ENV_M7_STM32F767ZI_LINK_NTT_DILITHIUM): $(TEST_NTT_DILITHIUM_SRC_MANUAL)
+	rm -f $(TEST_ENV_M7_STM32F767ZI_SYMLINK)
+	ln -s ../../../$(TEST_NTT_DILITHIUM_DIR) $(TEST_ENV_M7_STM32F767ZI_SYMLINK)
+	rm -f $(TEST_ENV_M7_STM32F767ZI_BASE)/test_loaded_*
+	make -C $(TEST_ENV_M7_STM32F767ZI_BASE) clean
+	touch $@
+
+.PHONY: build-m7-stm32f767zi-ntt_dilithium
+build-m7-stm32f767zi-ntt_dilithium: $(TEST_ENV_M7_STM32F767ZI_LINK_NTT_DILITHIUM)
+	make -C $(TEST_ENV_M7_STM32F767ZI_BASE) -j$(nproc)
+
+.PHONY: run-m7-stm32f767zi-ntt_dilithium
+run-m7-stm32f767zi-ntt_dilithium: $(TEST_ENV_M7_STM32F767ZI_LINK_NTT_DILITHIUM)
+	make run -C $(TEST_ENV_M7_STM32F767ZI_BASE) -j$(nproc)
+
+.PHONY: debug-m7-stm32f767zi-ntt_dilithium
+debug-m7-stm32f767zi-ntt_dilithium: $(TEST_ENV_M7_STM32F767ZI_LINK_NTT_DILITHIUM)
+	make debug -C $(TEST_ENV_M7_STM32F767ZI_BASE) -j$(nproc)
+
 # CRT on M55-MPS3-FVP
 
 TEST_ENV_M55_MPS3_FVP_LINK_CRT = $(TEST_ENV_M55_MPS3_FVP_BASE)/test_loaded_crt
