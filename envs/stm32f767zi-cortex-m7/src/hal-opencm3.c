@@ -184,27 +184,11 @@ size_t hal_get_stack_size(void)
 
 /* HAL PQMX */
 
-
-static uint64_t _measure_start = 0;
-
-
-uint8_t get_random_byte()
+uint8_t get_random_byte(void)
 {
     uint32_t data;
     randombytes(&data,sizeof(data));
     return (uint8_t) data;
-}
-
-/* Stubs to enable/disable measurements. */
-void measure_end()
-{
-    uint64_t dur = hal_get_time() - _measure_start;
-    debug_printf( "cycles: %llu\n", dur );
-}
-
-void measure_start()
-{
-    _measure_start = hal_get_time();
 }
 
 /* Debugging stubs */
@@ -225,8 +209,8 @@ void debug_printf(const char * format, ... )
     va_end( argp );
 }
 
-void debug_test_ok()   { printf( "Ok\n"    ); }
-void debug_test_fail() { printf( "FAIL!\n" ); }
+void debug_test_ok(void)   { printf( "Ok\n"    ); }
+void debug_test_fail(void) { printf( "FAIL!\n" ); }
 
 
 /* Implement some system calls to shut up the linker warnings */
@@ -235,6 +219,7 @@ void debug_test_fail() { printf( "FAIL!\n" ); }
 #undef errno
 extern int errno;
 
+int __wrap__open(char *file, int flags, int mode);
 int __wrap__open(char *file, int flags, int mode) {
     (void) file;
     (void) flags;
@@ -243,6 +228,7 @@ int __wrap__open(char *file, int flags, int mode) {
     return -1;
 }
 
+int __wrap__close(int fd);
 int __wrap__close(int fd) {
     errno = ENOSYS;
     (void) fd;
@@ -251,6 +237,7 @@ int __wrap__close(int fd) {
 
 #include <sys/stat.h>
 
+int __wrap__fstat(int fd, struct stat *buf);
 int __wrap__fstat(int fd, struct stat *buf) {
     (void) fd;
     (void) buf;
@@ -258,17 +245,20 @@ int __wrap__fstat(int fd, struct stat *buf) {
     return -1;
 }
 
+int __wrap__getpid(void);
 int __wrap__getpid(void) {
     errno = ENOSYS;
     return -1;
 }
 
+int __wrap__isatty(int file);
 int __wrap__isatty(int file) {
     (void) file;
     errno = ENOSYS;
     return 0;
 }
 
+int __wrap__kill(int pid, int sig);
 int __wrap__kill(int pid, int sig) {
     (void) pid;
     (void) sig;
@@ -276,6 +266,7 @@ int __wrap__kill(int pid, int sig) {
     return -1;
 }
 
+int __wrap__lseek(int fd, int ptr, int dir);
 int __wrap__lseek(int fd, int ptr, int dir) {
     (void) fd;
     (void) ptr;
@@ -284,6 +275,7 @@ int __wrap__lseek(int fd, int ptr, int dir) {
     return -1;
 }
 
+int __wrap__read(int fd, char *ptr, int len);
 int __wrap__read(int fd, char *ptr, int len) {
     (void) fd;
     (void) ptr;
@@ -292,6 +284,7 @@ int __wrap__read(int fd, char *ptr, int len) {
     return -1;
 }
 
+int __wrap__write(int fd, const char *ptr, int len);
 int __wrap__write(int fd, const char *ptr, int len) {
     (void) fd;
     (void) ptr;

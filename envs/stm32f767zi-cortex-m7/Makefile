@@ -76,21 +76,13 @@ ASM_SRC_FILES=$(patsubst $(SRC_DIR)/%.s, %.s, $(ASM_SRC_FILES_PRE))
 ASM_OBJ_FILES=$(patsubst %.s, $(BUILD_DIR)/%.o, $(ASM_SRC_FILES))
 C_OBJ_FILES=$(patsubst %.c, $(BUILD_DIR)/%.o, $(C_SRC_FILES))
 OBJ_FILES=$(ASM_OBJ_FILES) $(C_OBJ_FILES)
+DEP_FILES=$(patsubst %.o, %.d, $(OBJ_FILES))
 
 $(C_OBJ_FILES): $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-$(info $$C_OBJ_FILES is [${C_OBJ_FILES}])
-$(info $$SRC_DIR is [${SRC_DIR}])
-
 $(ASM_OBJ_FILES): $(BUILD_DIR)/%.o: $(SRC_DIR)/%.s
 	$(CC) -x assembler-with-cpp $(CFLAGS) -c -o $@ $<
-
-$(info $$ASM_OBJ_FILES is [${ASM_OBJ_FILES}])
-
-$(info $$TARGET is [${TARGET}])
-$(info $$OBJS_DIR is [${OBJS_DIR}])
-$(info $$OBJ_FILES is [${OBJ_FILES}])
 
 $(TARGET): $(OBJS_DIR) $(OBJ_FILES) $(SCATTER_SRC_TMP)
 	$(LD) -o $(TARGET) $(OBJ_FILES) $(LDFLAGS) -l$(LIBNAME)
@@ -102,4 +94,5 @@ build: $(TARGET)
 
 clean:
 	rm -rf $(OBJ_FILES)
-	rm -rf $(TARGET)
+	rm -rf $(TARGET) $(TARGET_BIN) test_loaded_ntt_dilithium
+	rm -rf $(DEP_FILES)

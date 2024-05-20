@@ -17,7 +17,7 @@ size_t hal_get_stack_size(void);
 #include <stdint.h>
 
 /* Request random data. */
-extern uint8_t get_random_byte();
+extern uint8_t get_random_byte(void);
 
 /* Stubs to enable/disable measurements.
  *
@@ -32,8 +32,8 @@ extern uint8_t get_random_byte();
  * in hal_env.h.
  **/
 #if !defined(HALPQMX_MEASURE_MACRO)
-extern void measure_start();
-extern void measure_end();
+extern void measure_start(void);
+extern void measure_end(void);
 #endif /* HALPQMX_MEASURE_MACRO */
 
 /* Debugging stubs
@@ -53,8 +53,8 @@ extern void measure_end();
 #if !defined(HALPQMX_DEBUG_MACRO)
 extern void debug_test_start( const char *testname );
 extern void debug_printf(const char * restrict format, ... );
-extern void debug_test_ok();
-extern void debug_test_fail();
+extern void debug_test_ok(void);
+extern void debug_test_fail(void);
 #endif /* HALPQMX_DEBUG_MACRO */
 
 #endif
