@@ -160,7 +160,7 @@ int test_ntt_ ## var ()                                                     \
                                                                             \
     /* Step 2: MVE-based NTT */                                             \
     hal_get_time();                                                         \
-    for (size_t i = 0; i< 10; i++) {                                        \
+    for (size_t i = 0; i< 1; i++) {                                        \
         (func)( src );                                                      \
     }                                                                       \
     hal_get_time();                                                         \

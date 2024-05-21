@@ -209,8 +209,8 @@ void debug_printf(const char * format, ... )
     va_end( argp );
 }
 
-void debug_test_ok(void)   { printf( "Ok\n"    ); }
-void debug_test_fail(void) { printf( "FAIL!\n" ); }
+void debug_test_ok(void)   { hal_send_str( "Ok"    ); }
+void debug_test_fail(void) { hal_send_str( "FAIL!" ); }
 
 
 /* Implement some system calls to shut up the linker warnings */
