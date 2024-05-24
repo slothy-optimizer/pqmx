@@ -1,5 +1,6 @@
-def gen_ubench_name(name,idx):
+def gen_ubench_name(name, idx):
     return f"{name}_{idx}"
+
 
 def gen_ubenchmark(name, code, with_padding=True):
     yield f".macro {name}_core"
@@ -10,13 +11,15 @@ def gen_ubenchmark(name, code, with_padding=True):
     if with_padding:
         yield "padding"
     yield f".endm"
-    yield f"make_ubench {name}, nop, {name}_core, nop"
+    yield f"make_ubench {name}, isb, {name}_core, isb"
+
 
 def gen_ubenchmarks(name, code, steps=1):
     lines = len(code)
-    for li in range(0,lines,steps):
-        yield from gen_ubenchmark(gen_ubench_name(name,li), code[:li])
+    for li in range(0, lines, steps):
+        yield from gen_ubenchmark(gen_ubench_name(name, li), code[:li])
         yield ""
+
 
 def gen_c_profiler(name, code, steps=1):
     lines = len(code)
@@ -33,23 +36,28 @@ def gen_c_profiler(name, code, steps=1):
     yield f"const unsigned int num_ubenchs_{name} = {lines};"
     yield ""
 
+
 def gen_asm_header():
-    yield "#include \"ubenchmarks.i\""
-    yield "#include \"profiler_macros.i\""
+    yield '#include "ubenchmarks.i"'
+    yield '#include "profiler_macros.i"'
     yield ""
 
+
 def gen_c_header():
-    yield "#include \"profiling.h\""
-    yield "#include \"prefix_ubenchs.h\""
+    yield '#include "profiling.h"'
+    yield '#include "prefix_ubenchs.h"'
     yield ""
+
 
 def gen_asm(name, code, steps=1):
     yield from gen_asm_header()
     yield from gen_ubenchmarks(name, code, steps=steps)
 
+
 def gen_c(name, code, steps=1):
     yield from gen_c_header()
     yield from gen_c_profiler(name, code, steps=1)
+
 
 def gen_header(name, code, steps=1):
     lines = len(code)
@@ -61,23 +69,23 @@ def gen_header(name, code, steps=1):
     yield ""
     yield f"extern ubench_t ubenchs_{name}[];"
     yield f"extern char* ubench_{name}_instructions[];"
-    yield f"extern const unsigned int num_ubenchs_{name};";
-
+    yield f"extern const unsigned int num_ubenchs_{name};"
 
     yield "#endif"
+
 
 infile = open("asm.txt", "r")
 lines = infile.read().splitlines()
 infile.close()
 
 asm_outfile = open("prefix_ubenchs.s", "w")
-asm_outfile.write('\n'.join(gen_asm("prefix", lines)))
+asm_outfile.write("\n".join(gen_asm("prefix", lines)))
 asm_outfile.close()
 
 c_outfile = open("profiler.c", "w")
-c_outfile.writelines('\n'.join(gen_c("prefix", lines)))
+c_outfile.writelines("\n".join(gen_c("prefix", lines)))
 c_outfile.close()
 
 h_outfile = open("prefix_ubenchs.h", "w")
-h_outfile.writelines('\n'.join(gen_header("prefix", lines)))
+h_outfile.writelines("\n".join(gen_header("prefix", lines)))
 h_outfile.close()

@@ -2,11 +2,11 @@
 .cpu cortex-m7
 
 .macro push_stack
-        push.w {r0-r4}
+        push.w {r3-r12,lr}
 .endm
 
 .macro pop_stack
-        pop.w {r0-r4}
+        pop.w {r3-r12,pc}
 .endm
 
 loop_cnt .req r12
@@ -24,7 +24,7 @@ _ubench_\name\():
         \preamble\()
         .align 2
 1:
-.rept 100
+.rept 50
         \code\()
 .endr
         \end_of_iteration\()
