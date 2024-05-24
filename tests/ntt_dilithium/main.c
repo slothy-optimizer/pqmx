@@ -27,7 +27,7 @@
 #define ENABLE_PMU_STATS         /* Do not enable when benching for cycle count */
 
 #if defined(ENABLE_PMU_STATS)
-#define REPEAT     1
+#define REPEAT     100
 #else
 #define REPEAT  1024
 #endif
@@ -46,6 +46,7 @@
 #include "misc.h"
 
 void pqcrystals_dilithium_ntt(int32_t *src);
+void pqcrystals_dilithium_ntt_opt_m7(int32_t *src);
 
 #define NTT_LAYERS             8
 #define NTT_SIZE               (1u << NTT_LAYERS)
@@ -182,20 +183,22 @@ int test_ntt_ ## var ()                                                     \
 MAKE_TEST_FWD(pqm4,pqcrystals_dilithium_ntt,0)
 
 #define MAKE_BENCH(var,func)                                 \
-int bench_ ## var ()           \
+int bench_ ## var ()                                         \
 {                                                            \
-    int32_t src[NTT_SIZE]      __attribute__((aligned(16)));\
-    pmu_stats stats;\
+    unsigned long long t1, t2;                               \
+    int32_t src[NTT_SIZE]      __attribute__((aligned(16))); \
     (func)( src );                                           \
-    hal_pmu_start_pmu_stats(&stats);                          \
+    t1 = hal_get_time();                                     \
     for( size_t cnt=0; cnt<REPEAT; cnt++ )                   \
-        (func)( src );                                      \
-    hal_pmu_finish_pmu_stats(&stats);                         \
-    debug_printf( #func ": %f cycles (avg)\n",               \
-                  (float) stats.pmu_cycles/(REPEAT) );      \
-    hal_pmu_send_stats_wrapper(&stats); \
+        (func)( src );                                       \
+    t2 = hal_get_time();                                     \
+    debug_printf(#func " repeat %d, %d", REPEAT, (t2 - t1)/REPEAT); \
     return( 0 );                                             \
 }
+
+/*MAKE_BENCH(ref,ntt_s32_C)*/
+MAKE_BENCH(pqm4,pqcrystals_dilithium_ntt)
+MAKE_BENCH(pqm4_opt,pqcrystals_dilithium_ntt_opt_m7)
 
 int main(void)
 {
@@ -204,7 +207,28 @@ int main(void)
     hal_setup(CLOCK_BENCHMARK);
     debug_printf( "\nDilithium NTT Test!\n" );
 
-    ret |= test_ntt_pqm4();
+    /*ret |= test_ntt_pqm4();*/
+    /*if( ret != 0 )*/
+    /*    return( 1 );*/
+
+    /*unsigned long long t1, t2;*/
+    /*int32_t src[NTT_SIZE]      __attribute__((aligned(16)));*/
+    /*pqcrystals_dilithium_ntt( src );*/
+    /**/
+    /*t1 = hal_get_time();*/
+    /*for (size_t cnt=0; cnt < REPEAT; cnt++) {*/
+    /*    pqcrystals_dilithium_ntt( src );*/
+    /*}*/
+    /*t2 = hal_get_time();*/
+    /*debug_printf("pqcrystals_dilithium_ntt repeat %d, %d", REPEAT, (t2 - t1)/REPEAT);*/
+
+    /*ret |= bench_ref();*/
+    /*if( ret != 0 )*/
+    /*    return( 1 );*/
+    ret |= bench_pqm4();
+    if( ret != 0 )
+        return( 1 );
+    ret |= bench_pqm4_opt();
     if( ret != 0 )
         return( 1 );
 

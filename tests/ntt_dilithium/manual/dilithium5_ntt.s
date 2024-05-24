@@ -262,11 +262,13 @@ layer123_start:
     str.w pol6, [ptr_p, #6*distance/4]
     str.w pol7, [ptr_p, #7*distance/4]
     str.w pol0, [ptr_p], #strincr
-layer123_end:
     vmov temp_l, s9
+layer123_end:
     cmp.w ptr_p, temp_l
     bne 1b
   
+  pop {R4-R11, PC}
+
   sub ptr_p, #32*4
 
   // stage 4 - 6  
