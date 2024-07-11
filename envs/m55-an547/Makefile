@@ -1,17 +1,15 @@
-# Makefile for images for AN555
+# Makefile for images for AN547
+
+CC = arm-none-eabi-gcc
+LD := $(CC)
 
 TARGET=test.elf
 
-INC_DIR=./inc
-INC_DIR_TEST=$(INC_DIR)/test_inc -I$(SRC_DIR)/test_src/manual -I$(SRC_DIR)/test_src/auto -I$(SRC_DIR)/platform/
-BUILD_DIR=./build
 SRC_DIR=./src
+BUILD_DIR=./build
 
-.phony: all clean run
-
-CC=arm-none-eabi-gcc-12.2.1
-LD := $(CC)
-
+COMMON_INC=../common/inc/
+ENV_INC=./inc/
 
 SYSROOT := $(shell $(CC) --print-sysroot)
 CFLAGS += \
@@ -22,7 +20,10 @@ CFLAGS += \
 	-fdata-sections \
 	--sysroot=$(SYSROOT) \
 	-DARMCM55 \
-        -I$(INC_DIR) -I$(INC_DIR_TEST)
+	-I$(COMMON_INC) \
+	-I$(ENV_INC) \
+	-I$(SRC_DIR) \
+	-I$(SRC_DIR)/platform
 
 ARCH_FLAGS += \
 	-march=armv8.1-m.main+mve.fp \
@@ -41,40 +42,41 @@ LDFLAGS += \
 
 LDFLAGS += \
 	--specs=nosys.specs \
-	-Wl,--wrap=_write \
+	-Wl,--wrap=_open \
 	-Wl,--wrap=_read \
+	-Wl,--wrap=_write \
 	-ffreestanding \
 	-T$(LDSCRIPT) \
 	$(ARCH_FLAGS)
 
 all: $(TARGET)
 
-C_SRC_FILES_PRE=$(wildcard $(SRC_DIR)/*.c) $(wildcard $(SRC_DIR)/*/*.c) $(wildcard $(SRC_DIR)/*/*/*.c)
-C_SRC_FILES=$(patsubst $(SRC_DIR)/%.c, %.c, $(C_SRC_FILES_PRE))
+HAL_SOURCES = $(wildcard $(SRC_DIR)/*.c) $(wildcard $(SRC_DIR)/*/*.c) $(wildcard ../common/src/*.c)
+OBJECTS_HAL = $(patsubst %.c, $(BUILD_DIR)/%.c.o, $(abspath $(HAL_SOURCES)))
+OBJECTS_SOURCES=$(patsubst %.c, $(BUILD_DIR)/%.c.o, $(abspath $(SOURCES)))
+OBJECTS_C = $(OBJECTS_SOURCES) $(OBJECTS_HAL)
+OBJECTS_ASM = $(patsubst %.s, $(BUILD_DIR)/%.s.o, $(abspath $(ASMS)))
 
-ASM_SRC_FILES_PRE=$(wildcard $(SRC_DIR)/*/*.s) $(wildcard $(SRC_DIR)/*.s) $(wildcard $(SRC_DIR)/*/*/*.s)
-ASM_SRC_FILES=$(patsubst $(SRC_DIR)/%.s, %.s, $(ASM_SRC_FILES_PRE))
+OBJECTS = $(OBJECTS_C) $(OBJECTS_ASM)
 
-ASM_OBJ_FILES=$(patsubst %.s, $(BUILD_DIR)/%.o, $(ASM_SRC_FILES))
-C_OBJ_FILES=$(patsubst %.c, $(BUILD_DIR)/%.o, $(C_SRC_FILES))
-OBJ_FILES=$(ASM_OBJ_FILES) $(C_OBJ_FILES) $(CMSIS_OBJ_FILES)
-
-$(C_OBJ_FILES): $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
+$(OBJECTS_C): $(BUILD_DIR)/%.o: %
+	mkdir -p $(@D)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-$(ASM_OBJ_FILES): $(BUILD_DIR)/%.o: $(SRC_DIR)/%.s
+$(OBJECTS_ASM): $(BUILD_DIR)/%.o: %
+	mkdir -p $(@D)
 	$(CC) -x assembler-with-cpp $(CFLAGS) -c -o $@ $<
+ 
+.PHONY: test.elf
+test.elf: $(OBJECTS) $(LDSCRIPT)
+	$(LD) $(LDFLAGS) -o $@ $(OBJECTS)
 
-test.elf: $(OBJS_DIR) $(OBJ_FILES) $(LDSCRIPT)
-	$(LD) $(LDFLAGS) -o $@ $(OBJ_FILES)
-
-%.bin: %.elf
-	arm-none-eabi-objcopy -S $< -O binary $@
-
+.PHONY: build
 build: $(TARGET)
-run: $(TARGET)	
+
+run: $(TARGET)
 	qemu-system-arm -M mps3-an547  -nographic -semihosting -kernel $(TARGET)
-clean:
-	rm -rf $(OBJ_FILES)
-	rm -rf $(TARGET)
-	rm -rf $(LIBDEPS)
+
+clean: 
+	rm -f $(TARGET)
+	rm -rf $(BUILD_DIR)
