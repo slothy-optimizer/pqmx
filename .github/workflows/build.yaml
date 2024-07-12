@@ -1,0 +1,16 @@
+name: Build everything
+on:
+  pull_request:
+    branches: [ "main" ]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: true
+    - name: install dependencies
+      run: sudo apt install gcc-arm-none-eabi
+    - name: Make all
+      run: |
+        make
