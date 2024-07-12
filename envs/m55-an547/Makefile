@@ -3,8 +3,6 @@
 CC = arm-none-eabi-gcc
 LD := $(CC)
 
-TARGET=test.elf
-
 SRC_DIR=./src
 BUILD_DIR=./build
 
@@ -67,8 +65,7 @@ $(OBJECTS_ASM): $(BUILD_DIR)/%.o: %
 	mkdir -p $(@D)
 	$(CC) -x assembler-with-cpp $(CFLAGS) -c -o $@ $<
  
-.PHONY: test.elf
-test.elf: $(OBJECTS) $(LDSCRIPT)
+$(TARGET): $(OBJECTS) $(LDSCRIPT)
 	$(LD) $(LDFLAGS) -o $@ $(OBJECTS)
 
 .PHONY: build
@@ -78,5 +75,5 @@ run: $(TARGET)
 	qemu-system-arm -M mps3-an547  -nographic -semihosting -kernel $(TARGET)
 
 clean: 
-	rm -f $(TARGET)
+	rm -f *.elf
 	rm -rf $(BUILD_DIR)
