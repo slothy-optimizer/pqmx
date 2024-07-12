@@ -28,6 +28,9 @@ ${builds}: build-%:
 ${runs}: run-%:
 	make -C envs/$(platform) run SOURCES='$(call totestsources,$(test))' ASMS='$(call totestasm,$(test))'
 
+.PHONY: run
+run: ${runs}
+
 .PHONY: ${cleans}
 ${cleans}: clean-%:
 	make -C envs/$(platform) clean
