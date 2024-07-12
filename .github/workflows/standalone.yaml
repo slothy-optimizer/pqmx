@@ -1,4 +1,4 @@
-name: Run tests on qemu platforms
+name: Package standalone artifacts and build
 on:
   pull_request:
     branches: [ "main" ]
@@ -11,6 +11,9 @@ jobs:
         submodules: true
     - name: install dependencies
       run: sudo apt install gcc-arm-none-eabi qemu-system
-    - name: Make all and run
+    - name: Package standalone artificats
       run: |
-        make -j$(nproc) run
+        make -j$(nproc) standalone
+    - name: Make sure all standalone artifacts build
+      run: |
+        for standalone in standalone/*; do make -C $standalone; done
