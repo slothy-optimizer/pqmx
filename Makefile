@@ -2,14 +2,14 @@
 include tests/ntt_dilithium/ntt_dilithium.mk
 include tests/ntt_kyber/ntt_kyber.mk
 
-totestname = $(shell echo $(1) | tr '[a-z]' '[A-Z]')
-totestsources = $(addprefix $(2),$(addprefix tests/$(1)/,$($(call totestname,$(1))_SOURCES)))
-totestasm = $(addprefix $(2),$(addprefix tests/$(1)/,$($(call totestname,$(1))_ASMS)))
-totestother = $(addprefix $(2),$(addprefix tests/$(1)/,$($(call totestname,$(1))_OTHER)))
-toplatform = $(addsuffix --$(1),$($(call totestname,$(1))_PLATFORMS))
-toelfname = $(addsuffix -test.elf,$(1))
+testname = $(shell echo $(1) | tr '[a-z]' '[A-Z]')
+testsources = $(addprefix $(2),$(addprefix tests/$(1)/,$($(call testname,$(1))_SOURCES)))
+testasms = $(addprefix $(2),$(addprefix tests/$(1)/,$($(call testname,$(1))_ASMS)))
+testother = $(addprefix $(2),$(addprefix tests/$(1)/,$($(call testname,$(1))_OTHER)))
+testplatforms = $(addsuffix --$(1),$($(call testname,$(1))_PLATFORMS))
+elfname = $(addsuffix -test.elf,$(1))
 
-platformtests := $(foreach test,$(TESTS), $(call toplatform,$(test)))
+platformtests := $(foreach test,$(TESTS), $(call testplatforms,$(test)))
 
 builds          := $(addprefix build-, $(platformtests))
 runs            := $(addprefix run-, $(platformtests))
@@ -24,11 +24,11 @@ test = $(lastword $(subst --, ,$*))
 
 .PHONY: ${builds}
 ${builds}: build-%:
-	make -j$(shell nproc) -C envs/$(platform) build SOURCES='$(call totestsources,$(test),../../)' ASMS='$(call totestasm,$(test),../../)' TARGET=$(call toelfname,$(test))
+	make -j$(shell nproc) -C envs/$(platform) build SOURCES='$(call testsources,$(test),../../)' ASMS='$(call testasms,$(test),../../)' TARGET=$(call elfname,$(test))
 
 .PHONY: ${runs}
 ${runs}: run-%:
-	make -C envs/$(platform) run SOURCES='$(call totestsources,$(test),../../)' ASMS='$(call totestasm,$(test),../../)' TARGET=$(call toelfname,$(test))
+	make -C envs/$(platform) run SOURCES='$(call testsources,$(test),../../)' ASMS='$(call testasms,$(test),../../)' TARGET=$(call elfname,$(test))
 
 .PHONY: run
 run: ${runs}
@@ -38,7 +38,7 @@ ${standalones}: standalone-%:
 	make -C envs/$(platform) clean
 	mkdir -p standalone/$@/test_src/
 	cp -rL envs/$(platform)/* standalone/$@/
-	cp -rL $(call totestsources,$(test),./) $(call totestasm,$(test),./) $(call totestother,$(test),./)  standalone/$@/test_src/
+	cp -rL $(call testsources,$(test),./) $(call testasms,$(test),./) $(call testother,$(test),./)  standalone/$@/test_src/
 
 .PHONY: standalone
 standalone: ${standalones}
