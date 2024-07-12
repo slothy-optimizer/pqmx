@@ -22,7 +22,7 @@ test = $(lastword $(subst --, ,$*))
 
 .PHONY: ${builds}
 ${builds}: build-%:
-	make  -j$(nproc) -C envs/$(platform) build SOURCES='$(call totestsources,$(test))' ASMS='$(call totestasm,$(test))'
+	make -j$(shell nproc) -C envs/$(platform) build SOURCES='$(call totestsources,$(test))' ASMS='$(call totestasm,$(test))'
 
 .PHONY: ${runs}
 ${runs}: run-%:
