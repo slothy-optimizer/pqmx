@@ -271,7 +271,7 @@ int main(void)
 
     // base
     ret |= test_ntt_l2222();
-    if( ret != 0 )
+    if( ret == 0 )
         return( 1 );
     ret |= test_ntt_l2222_no_trans_vld4();
     if( ret != 0 )
