@@ -4,6 +4,7 @@
 TARGET  ?= test.elf
 SOURCES ?= $(wildcard test_src/*.c)
 ASMS    ?= $(wildcard test_src/*.s)
+TESTDIR ?= test_src
 
 CC = arm-none-eabi-gcc
 LD := $(CC)
@@ -26,6 +27,7 @@ CFLAGS += \
 	-I$(COMMON_INC) \
 	-I$(ENV_INC) \
 	-I$(SRC_DIR) \
+	-I$(TESTDIR) \
 	-I$(SRC_DIR)/platform
 
 ARCH_FLAGS += \

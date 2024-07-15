@@ -9,6 +9,8 @@ NTT_KYBER_PLATFORMS += m85-an555
 
 # C sources required for this test
 NTT_KYBER_SOURCES += main.c
+NTT_KYBER_SOURCES += poly.c
+NTT_KYBER_SOURCES += misc.c
 
 # Assembly sources required for this test
 NTT_KYBER_ASM_DIR=../../asm/manual/ntt_kyber
@@ -25,3 +27,5 @@ NTT_KYBER_ASMS += $(NTT_KYBER_ASM_DIR)/ntt_kyber_12_345_67.s
 # Additional required files (needed for packaging a standalone artifact)
 NTT_KYBER_OTHER += $(NTT_KYBER_ASM_DIR)/ntt_kyber_1_23_45_67_twiddles.s
 NTT_KYBER_OTHER += $(NTT_KYBER_ASM_DIR)/ntt_kyber_12_345_67_twiddles.s
+NTT_KYBER_OTHER += poly.h
+NTT_KYBER_OTHER += misc.h
