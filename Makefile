@@ -13,6 +13,7 @@ platformtests := $(foreach test,$(TESTS), $(call testplatforms,$(test)))
 
 builds          := $(addprefix build-, $(platformtests))
 runs            := $(addprefix run-, $(platformtests))
+checks          := $(addprefix check-, $(platformtests))
 cleans          := $(addprefix clean-, $(platformtests))
 standalones     := $(addprefix standalone-, $(platformtests))
 
@@ -32,6 +33,13 @@ ${runs}: run-%:
 
 .PHONY: run
 run: ${runs}
+
+.PHONY: ${checks}
+${checks}: check-%:
+	make -C envs/$(platform) check SOURCES='$(call testsources,$(test),../../)' ASMS='$(call testasms,$(test),../../)' TARGET=$(call elfname,$(test))
+
+.PHONY: check
+check: ${checks}
 
 .PHONY: ${standalones}
 ${standalones}: standalone-%:

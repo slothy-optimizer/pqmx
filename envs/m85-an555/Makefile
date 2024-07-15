@@ -79,6 +79,10 @@ build: $(TARGET)
 run:
 	@echo "WARNING: AN555 is not supported by qemu. Skipping"
 
+check:
+	@echo "WARNING: AN555 is not supported by qemu. Skipping"
+
+
 clean: 
 	rm -f *.elf
 	rm -rf $(BUILD_DIR)

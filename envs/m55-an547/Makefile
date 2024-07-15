@@ -79,6 +79,9 @@ build: $(TARGET)
 run: $(TARGET)
 	qemu-system-arm -M mps3-an547  -nographic -semihosting -kernel $(TARGET)
 
+check: $(TARGET)
+	qemu-system-arm -M mps3-an547  -nographic -semihosting -kernel $(TARGET) | tail -n 1 | grep "ALL GOOD!" || exit 1
+
 clean: 
 	rm -f *.elf
 	rm -rf $(BUILD_DIR)

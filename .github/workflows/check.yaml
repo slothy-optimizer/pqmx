@@ -13,4 +13,4 @@ jobs:
       run: sudo apt install gcc-arm-none-eabi qemu-system
     - name: Make all and run
       run: |
-        make -j$(nproc) run
+        make -j$(nproc) check

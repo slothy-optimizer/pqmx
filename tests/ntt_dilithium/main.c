@@ -315,8 +315,8 @@ int main(void)
     bench_ntt_l2222_no_trans_vld4_opt_m85();
     bench_ntt_l332_opt_size_m85();
 
-    debug_printf( "Done!\n:" );
+    debug_printf( "Done!\n" );
     hal_pmu_disable();
-
+    debug_printf( "ALL GOOD!\n" );
     return( ret );
 }
