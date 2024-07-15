@@ -1,13 +1,13 @@
 # Tests
-include tests/ntt_dilithium/ntt_dilithium.mk
-include tests/ntt_kyber/ntt_kyber.mk
+include tests/ntt-dilithium/ntt-dilithium.mk
+include tests/ntt-kyber/ntt-kyber.mk
 
-testname = $(shell echo $(1) | tr '[a-z]' '[A-Z]')
+testname = $(shell echo $(1) | tr '[a-z]' '[A-Z]' | tr '-' '_')
 testdir = $(addprefix $(2),tests/$(1)/)
 testsources = $(addprefix $(2),$(addprefix tests/$(1)/,$($(call testname,$(1))_SOURCES)))
 testasms = $(addprefix $(2),$(addprefix tests/$(1)/,$($(call testname,$(1))_ASMS)))
 testother = $(addprefix $(2),$(addprefix tests/$(1)/,$($(call testname,$(1))_OTHER)))
-testplatforms = $(addsuffix --$(1),$($(call testname,$(1))_PLATFORMS))
+testplatforms = $(addsuffix _$(1),$($(call testname,$(1))_PLATFORMS))
 elfname = $(addsuffix -test.elf,$(1))
 
 platformtests := $(foreach test,$(TESTS), $(call testplatforms,$(test)))
@@ -21,8 +21,8 @@ standalones     := $(addprefix standalone-, $(platformtests))
 .PHONY: all
 all: ${builds}
 
-platform = $(firstword $(subst --, ,$*))
-test = $(lastword $(subst --, ,$*))
+platform = $(firstword $(subst _, ,$*))
+test = $(lastword $(subst _, ,$*))
 
 .PHONY: ${builds}
 ${builds}: build-%:

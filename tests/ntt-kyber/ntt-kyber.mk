@@ -1,5 +1,5 @@
 # Test name - needs to match the directory name
-TESTS += ntt_kyber
+TESTS += ntt-kyber
 
 # All further variables must be prefixed with the capitalized test name
 
