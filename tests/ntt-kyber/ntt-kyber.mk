@@ -9,8 +9,6 @@ NTT_KYBER_PLATFORMS += m85-an555
 
 # C sources required for this test
 NTT_KYBER_SOURCES += main.c
-NTT_KYBER_SOURCES += poly.c
-NTT_KYBER_SOURCES += misc.c
 
 # Assembly sources required for this test
 NTT_KYBER_ASM_DIR=../../asm/manual/ntt_kyber

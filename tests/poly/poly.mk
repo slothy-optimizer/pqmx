@@ -9,8 +9,6 @@ POLY_PLATFORMS += m85-an555
 
 # C sources required for this test
 POLY_SOURCES += main.c
-POLY_SOURCES += misc.c
-POLY_SOURCES += poly.c
 
 # Assembly sources required for this test
 POLY_ASM_DIR = ./auto

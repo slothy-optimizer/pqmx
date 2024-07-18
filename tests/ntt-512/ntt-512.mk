@@ -9,8 +9,6 @@ NTT_512_PLATFORMS += m85-an555
 
 # C sources required for this test
 NTT_512_SOURCES += main.c
-NTT_512_SOURCES += misc.c
-NTT_512_SOURCES += poly.c
 
 # Assembly sources required for this test
 NTT_512_ASM_DIR = ../../asm/auto/ntt_512

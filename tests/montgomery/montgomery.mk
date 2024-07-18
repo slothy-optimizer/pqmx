@@ -9,8 +9,6 @@ MONTGOMERY_PLATFORMS += m85-an555
 
 # C sources required for this test
 MONTGOMERY_SOURCES += main.c
-MONTGOMERY_SOURCES += misc.c
-MONTGOMERY_SOURCES += poly.c
 
 # Assembly sources required for this test
 MONTGOMERY_ASMS += montgomery.s

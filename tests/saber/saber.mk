@@ -9,7 +9,6 @@ SABER_PLATFORMS += m85-an555
 
 # C sources required for this test
 SABER_SOURCES += main.c
-SABER_SOURCES += misc.c
 SABER_SOURCES += kem.c
 SABER_SOURCES += fips202.c
 SABER_SOURCES += verify.c

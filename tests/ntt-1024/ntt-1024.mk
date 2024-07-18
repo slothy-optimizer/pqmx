@@ -9,8 +9,6 @@ NTT_1024_PLATFORMS += m85-an555
 
 # C sources required for this test
 NTT_1024_SOURCES += main.c
-NTT_1024_SOURCES += misc.c
-NTT_1024_SOURCES += poly.c
 
 # Assembly sources required for this test
 NTT_1024_ASM_DIR = ../../asm/auto/ntt_1024

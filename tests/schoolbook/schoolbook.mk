@@ -9,8 +9,6 @@ SCHOOLBOOK_PLATFORMS += m85-an555
 
 # C sources required for this test
 SCHOOLBOOK_SOURCES += main.c
-SCHOOLBOOK_SOURCES += misc.c
-SCHOOLBOOK_SOURCES += poly.c
 
 # Assembly sources required for this test
 SCHOOLBOOK_ASMS += poly_u16_32_acc.s

@@ -9,7 +9,6 @@ TRANSPOSE_PLATFORMS += m85-an555
 
 # C sources required for this test
 TRANSPOSE_SOURCES += main.c
-TRANSPOSE_SOURCES += misc.c
 
 # Assembly sources required for this test
 TRANSPOSE_ASMS += ../../asm/auto/gather/transpose_u16x8_4x4.s

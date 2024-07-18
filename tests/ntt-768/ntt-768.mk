@@ -11,8 +11,6 @@ NTT_768_PLATFORMS += m55-an547
 
 # C sources required for this test
 NTT_768_SOURCES += main.c
-NTT_768_SOURCES += misc.c
-NTT_768_SOURCES += poly.c
 
 # Assembly sources required for this test
 NTT_768_ASM_DIR = ../../asm/auto/ntt_768

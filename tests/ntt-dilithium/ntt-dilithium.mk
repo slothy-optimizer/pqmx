@@ -9,8 +9,6 @@ NTT_DILITHIUM_PLATFORMS += m85-an555
 
 # C sources required for this test
 NTT_DILITHIUM_SOURCES += main.c
-NTT_DILITHIUM_SOURCES += poly.c
-NTT_DILITHIUM_SOURCES += misc.c
 
 # Assembly sources required for this test
 NTT_DILITHIUM_ASM_DIR = ../../asm/manual/ntt_dilithium

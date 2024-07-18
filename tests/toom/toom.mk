@@ -9,9 +9,6 @@ TOOM_PLATFORMS += m85-an555
 
 # C sources required for this test
 TOOM_SOURCES += main.c
-TOOM_SOURCES += misc.c
-TOOM_SOURCES += poly.c
-
 
 # Assembly sources required for this test
 # TODO: not all these are required; delete the other ones?

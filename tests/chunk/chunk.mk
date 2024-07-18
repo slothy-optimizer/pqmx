@@ -9,7 +9,6 @@ CHUNK_PLATFORMS += m85-an555
 
 # C sources required for this test
 CHUNK_SOURCES += main.c
-CHUNK_SOURCES += misc.c
 
 # Assembly sources required for this test
 CHUNK_ASMS += chunk.s

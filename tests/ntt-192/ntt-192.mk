@@ -9,8 +9,6 @@ NTT_192_PLATFORMS += m85-an555
 
 # C sources required for this test
 NTT_192_SOURCES += main.c
-NTT_192_SOURCES += misc.c
-NTT_192_SOURCES += poly.c
 
 # Assembly sources required for this test
 NTT_192_ASM_DIR = ../../asm/auto/ntt_192

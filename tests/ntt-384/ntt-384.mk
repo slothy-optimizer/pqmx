@@ -9,8 +9,6 @@ NTT_384_PLATFORMS += m85-an555
 
 # C sources required for this test
 NTT_384_SOURCES += main.c
-NTT_384_SOURCES += misc.c
-NTT_384_SOURCES += poly.c
 
 # Assembly sources required for this test
 NTT_384_ASM_DIR = ../../asm/auto/ntt_384

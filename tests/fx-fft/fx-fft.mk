@@ -9,8 +9,6 @@ FX_FFT_PLATFORMS += m85-an555
 
 # C sources required for this test
 FX_FFT_SOURCES += main.c
-FX_FFT_SOURCES += misc.c
-
 
 # Assembly sources required for this test
 FX_FFT_ASMS += base_concrete.s

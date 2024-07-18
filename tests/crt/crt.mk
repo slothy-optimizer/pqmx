@@ -9,7 +9,6 @@ CRT_PLATFORMS += m85-an555
 
 # C sources required for this test
 CRT_SOURCES += main.c
-CRT_SOURCES += misc.c
 
 # Assembly sources required for this test
 CRT_ASMS += crt.s

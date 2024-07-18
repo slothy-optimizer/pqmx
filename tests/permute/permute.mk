@@ -9,7 +9,6 @@ PERMUTE_PLATFORMS += m85-an555
 
 # C sources required for this test
 PERMUTE_SOURCES += main.c
-PERMUTE_SOURCES += misc.c
 
 # Assembly sources required for this test
 PERMUTE_ASM_DIR = ../../asm/auto/permute

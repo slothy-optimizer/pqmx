@@ -9,8 +9,6 @@ NTT_N256_PLATFORMS += m85-an555
 
 # C sources required for this test
 NTT_N256_SOURCES += main.c
-NTT_N256_SOURCES += misc.c
-NTT_N256_SOURCES += poly.c
 
 # Assembly sources required for this test
 NTT_N256_ASM_DIR = ../../asm/auto/ntt_n256

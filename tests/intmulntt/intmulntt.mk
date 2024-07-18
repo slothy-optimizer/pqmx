@@ -9,8 +9,6 @@ INTMULNTT_PLATFORMS += m85-an555
 
 # C sources required for this test
 INTMULNTT_SOURCES += main.c
-INTMULNTT_SOURCES += misc.c
-INTMULNTT_SOURCES += poly.c
 
 # Assembly sources required for this test
 INTMULNTT_ASMS += crt.s

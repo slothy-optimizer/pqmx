@@ -9,7 +9,6 @@ SQMAG_PLATFORMS += m85-an555
 
 # C sources required for this test
 SQMAG_SOURCES += main.c
-SQMAG_SOURCES += misc.c
 
 # Assembly sources required for this test
 SQMAG_ASMS += cmplx_mag_sqr_fx_opt_M55_unroll1.s 

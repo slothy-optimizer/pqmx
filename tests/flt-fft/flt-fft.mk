@@ -9,7 +9,6 @@ FLT_FFT_PLATFORMS += m85-an555
 
 # C sources required for this test
 FLT_FFT_SOURCES += main.c
-FLT_FFT_SOURCES += misc.c
 
 # Assembly sources required for this test
 FLT_FFT_ASMS += base_ref.s
