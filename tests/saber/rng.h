@@ -12,6 +12,7 @@
 
 void randombytes_init(const int i);
 
+#define randombytes SABER_randombytes
 int randombytes(unsigned char *x, unsigned long long xlen);
 
 #endif /* rng_h */

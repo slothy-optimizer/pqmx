@@ -23,7 +23,6 @@
  */
 
 #include <hal.h>
-#include <misc.h>
 
 #include <string.h>
 #include <stdlib.h>
@@ -83,6 +82,10 @@ int main(void)
 #if defined(TEST_CT_TABLE_LOOKUP)
     ret |= test_ct_table_lookup();
 #endif /* TEST_CT_LOOKUP */
+
+    if (ret == 0){
+        debug_printf( "ALL GOOD!\n" );
+    }
 
     return( 0 );
 }

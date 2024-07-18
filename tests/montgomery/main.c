@@ -24,6 +24,7 @@
 
 #include <hal.h>
 #include <misc.h>
+#include <poly.h>
 
 #include <string.h>
 #include <stdlib.h>
@@ -2180,6 +2181,10 @@ int main()
 #if defined(TEST_MONTGOMERY_PT_U16_ROUND)
     ret |= test_montgomery_pt_u16_round();
 #endif /* TEST_MONTGOMERY_PT_U16_ROUND */
+
+    if(ret == 0){
+        debug_printf( "ALL GOOD!\n" );
+    }
 
     return( ret );
 }

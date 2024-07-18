@@ -950,5 +950,9 @@ int main(void)
     ret |= test_mat_vec_mul_ntt_incomplete();
 #endif /* TEST_MAT_VEC_MUL_NTT_INCOMPLETE */
 
+    if(ret == 0){
+        debug_printf( "ALL GOOD!\n" );
+    }
+
     return( ret );
 }

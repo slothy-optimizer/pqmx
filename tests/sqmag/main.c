@@ -106,7 +106,8 @@ int main(void)
     hal_pmu_enable();
     debug_printf( "Squared magnitude test!\n" );
     bench_sqmag();
-    debug_printf( "Done!\n:" );
+    debug_printf( "Done!\n" );
     hal_pmu_disable();
+    debug_printf( "ALL GOOD!\n" );
     return( 0 );
 }
