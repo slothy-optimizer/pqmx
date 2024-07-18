@@ -12,7 +12,7 @@ NTT_1024_SOURCES += main.c
 
 # Assembly sources required for this test
 NTT_1024_ASM_DIR = ../../asm/auto/ntt_1024
-NTT_1024_ASMS += montgomery.s
+NTT_1024_ASMS += ../../asm/manual/montgomery/montgomery.s
 NTT_1024_ASMS += $(NTT_1024_ASM_DIR)/ntt_1024_u32_33564673_286215_complete.s 
 NTT_1024_ASMS += $(NTT_1024_ASM_DIR)/ntt_1024_u32_33564673_286215_incomplete_bitrev_skipfirst.s 
 NTT_1024_ASMS += $(NTT_1024_ASM_DIR)/ntt_1024_u32_33564673_286215_incomplete_bitrev.s 

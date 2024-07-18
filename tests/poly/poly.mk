@@ -12,7 +12,7 @@ POLY_SOURCES += main.c
 
 # Assembly sources required for this test
 POLY_ASM_DIR = ./auto
-POLY_ASMS += montgomery.s
+POLY_ASMS += ../../asm/manual/montgomery/montgomery.s
 POLY_ASMS += ../../asm/manual/karatsuba/karatsuba.s
 POLY_ASMS += ../../asm/manual/schoolbook/poly_u16_32.s
 POLY_ASMS += ../../asm/manual/schoolbook/poly_u16_32_acc.s

@@ -11,5 +11,4 @@ MONTGOMERY_PLATFORMS += m85-an555
 MONTGOMERY_SOURCES += main.c
 
 # Assembly sources required for this test
-MONTGOMERY_ASMS += montgomery.s
-
+MONTGOMERY_ASMS += ../../asm/manual/montgomery/montgomery.s

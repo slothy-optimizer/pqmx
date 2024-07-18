@@ -12,7 +12,7 @@ NTT_192_SOURCES += main.c
 
 # Assembly sources required for this test
 NTT_192_ASM_DIR = ../../asm/auto/ntt_192
-NTT_192_ASMS += montgomery.s
+NTT_192_ASMS += ../../asm/manual/montgomery/montgomery.s
 NTT_192_ASMS += $(NTT_192_ASM_DIR)/ntt_192_u32_33556993_27792935_incomplete_good_bitrev.s
 NTT_192_ASMS += $(NTT_192_ASM_DIR)/ntt_192_u32_33556993_27792935_incomplete_good.s
 NTT_192_ASMS += $(NTT_192_ASM_DIR)/ntt_192_u32_45387457_16877098_incomplete_good_bitrev.s

@@ -12,7 +12,7 @@ INTMULNTT_SOURCES += main.c
 
 # Assembly sources required for this test
 INTMULNTT_ASMS += ../../asm/manual/crt/crt.s
-INTMULNTT_ASMS += montgomery.s
+INTMULNTT_ASMS += ../../asm/manual/montgomery/montgomery.s
 INTMULNTT_ASM_DIR = ../../asm/auto/ntt_384
 INTMULNTT_ASMS += $(INTMULNTT_ASM_DIR)/ntt_384_u32_88299073_4883425_incomplete_good_bitrev.s
 INTMULNTT_ASMS += $(INTMULNTT_ASM_DIR)/ntt_384_u32_88299073_4883425_incomplete_good_oop_half_input.s

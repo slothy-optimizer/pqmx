@@ -12,7 +12,7 @@ NTT_384_SOURCES += main.c
 
 # Assembly sources required for this test
 NTT_384_ASM_DIR = ../../asm/auto/ntt_384
-NTT_384_ASMS += montgomery.s
+NTT_384_ASMS += ../../asm/manual/montgomery/montgomery.s
 NTT_384_ASMS += $(NTT_384_ASM_DIR)/ntt_384_u32_33556993_15047299_incomplete_good_bitrev.s 
 NTT_384_ASMS += $(NTT_384_ASM_DIR)/ntt_384_u32_33556993_15047299_incomplete_good.s 
 NTT_384_ASMS += $(NTT_384_ASM_DIR)/ntt_384_u32_45387457_923104_incomplete_good_bitrev.s 

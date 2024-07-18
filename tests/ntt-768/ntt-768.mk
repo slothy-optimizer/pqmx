@@ -14,7 +14,7 @@ NTT_768_SOURCES += main.c
 
 # Assembly sources required for this test
 NTT_768_ASM_DIR = ../../asm/auto/ntt_768
-NTT_768_ASMS += montgomery.s
+NTT_768_ASMS += ../../asm/manual/montgomery/montgomery.s
 NTT_768_ASMS += $(NTT_768_ASM_DIR)/ntt_768_u32_33556993_299353_incomplete_bitrev.s 
 NTT_768_ASMS += $(NTT_768_ASM_DIR)/ntt_768_u32_33556993_299353_incomplete_double.s 
 NTT_768_ASMS += $(NTT_768_ASM_DIR)/ntt_768_u32_33556993_299353_incomplete_good_bitrev.s 
