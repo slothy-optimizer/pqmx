@@ -4,7 +4,7 @@ CC = arm-none-eabi-gcc
 LD := $(CC)
 
 SRC_DIR=./src
-BUILD_DIR=./build
+BUILD_DIR=./build/$(TARGET)
 
 COMMON_INC=../common/inc/
 ENV_INC=./inc/
