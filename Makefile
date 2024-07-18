@@ -1,4 +1,6 @@
 # Tests
+#include tests/chunk/chunk.mk # TODO: this test is failing
+include tests/crt/crt.mk
 include tests/ntt-dilithium/ntt-dilithium.mk
 include tests/ntt-kyber/ntt-kyber.mk
 

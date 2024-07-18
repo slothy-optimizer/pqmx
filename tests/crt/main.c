@@ -664,5 +664,6 @@ int main(void)
         }
     }
 
+    debug_printf( "ALL GOOD!\n" );
     return( 0 );
 }
