@@ -22,6 +22,7 @@ SABER_SOURCES += rng.c
 # Assembly sources required for this test
 SABER_ASMS += saber_round.s
 SABER_ASMS += montgomery.s
-SABER_ASMS += auto/inv_ntt_u32_33556993_28678040_incomplete.s
-SABER_ASMS += auto/ntt_u32_33556993_28678040_incomplete.s
-SABER_ASMS += auto/ntt_u32_33556993_28678040_incomplete_double.s
+SABER_ASM_DIR = ../../asm/auto/saber 
+SABER_ASMS += $(SABER_ASM_DIR)/inv_ntt_u32_33556993_28678040_incomplete.s
+SABER_ASMS += $(SABER_ASM_DIR)/ntt_u32_33556993_28678040_incomplete.s
+SABER_ASMS += $(SABER_ASM_DIR)/ntt_u32_33556993_28678040_incomplete_double.s

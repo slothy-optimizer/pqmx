@@ -11,5 +11,5 @@ KARATSUBA_PLATFORMS += m85-an555
 KARATSUBA_SOURCES += main.c
 
 # Assembly sources required for this test
-KARATSUBA_ASMS += karatsuba.s
+KARATSUBA_ASMS += ../../asm/manual/karatsuba/karatsuba.s
 

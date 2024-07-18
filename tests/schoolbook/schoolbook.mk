@@ -11,7 +11,8 @@ SCHOOLBOOK_PLATFORMS += m85-an555
 SCHOOLBOOK_SOURCES += main.c
 
 # Assembly sources required for this test
-SCHOOLBOOK_ASMS += poly_u16_32_acc.s
-SCHOOLBOOK_ASMS += auto/poly_u16_mul_32_anticyclic_karatsuba_fwd_mve_simd.s
-SCHOOLBOOK_ASMS += auto/  
-SCHOOLBOOK_ASMS += auto/poly_u16_mul_32_anticyclic_mve_simd.s
+SCHOOLBOOK_ASM_DIR = ../../asm/auto/poly/simd
+SCHOOLBOOK_ASMS += ../../asm/manual/schoolbook/poly_u16_32_acc.s
+SCHOOLBOOK_ASMS += $(SCHOOLBOOK_ASM_DIR)/poly_u16_mul_32_anticyclic_karatsuba_fwd_mve_simd.s
+SCHOOLBOOK_ASMS += $(SCHOOLBOOK_ASM_DIR)/poly_u16_mul_32_mve_simd.s
+SCHOOLBOOK_ASMS += $(SCHOOLBOOK_ASM_DIR)/poly_u16_mul_32_anticyclic_mve_simd.s
