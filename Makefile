@@ -26,6 +26,7 @@ include tests/poly/poly.mk
 include tests/sqmag/sqmag.mk
 include tests/toom/toom.mk
 include tests/transpose/transpose.mk
+include tests/unpack/unpack.mk
 
 testname = $(shell echo $(1) | tr '[a-z]' '[A-Z]' | tr '-' '_')
 testdir = $(addprefix $(2),tests/$(1)/)
