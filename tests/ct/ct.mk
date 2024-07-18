@@ -11,5 +11,5 @@ CT_PLATFORMS += m85-an555
 CT_SOURCES += main.c
 
 # Assembly sources required for this test
-CT_ASMS += ct.s
+CT_ASMS += ../../asm/manual/ct/ct.s
 
