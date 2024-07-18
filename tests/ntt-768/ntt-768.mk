@@ -5,7 +5,9 @@ TESTS += ntt-768
 
 # Platforms this test should run on (matching the directory name in envs/)
 NTT_768_PLATFORMS += m55-an547
-NTT_768_PLATFORMS += m85-an555
+
+# TODO: Currently overflows flash, but can probably tweak the linker script to make it work; need to be tested on the board
+#NTT_768_PLATFORMS += m85-an555
 
 # C sources required for this test
 NTT_768_SOURCES += main.c
