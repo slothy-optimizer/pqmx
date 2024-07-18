@@ -16,7 +16,6 @@ builds          := $(addprefix build-, $(platformtests))
 runs            := $(addprefix run-, $(platformtests))
 checks          := $(addprefix check-, $(platformtests))
 cleans          := $(addprefix clean-, $(platformtests))
-standalones     := $(addprefix standalone-, $(platformtests))
 
 .PHONY: all
 all: ${builds}
@@ -42,20 +41,9 @@ ${checks}: check-%:
 .PHONY: check
 check: ${checks}
 
-.PHONY: ${standalones}
-${standalones}: standalone-%:
-	make -C envs/$(platform) clean
-	mkdir -p standalone/$@/test_src/
-	cp -rL envs/$(platform)/* standalone/$@/
-	cp -rL $(call testsources,$(test),./) $(call testasms,$(test),./) $(call testother,$(test),./)  standalone/$@/test_src/
-
-.PHONY: standalone
-standalone: ${standalones}
-
 .PHONY: ${cleans}
 ${cleans}: clean-%:
 	make -C envs/$(platform) clean
 
 .PHONY: clean
 clean: ${cleans}
-	rm -rf standalone

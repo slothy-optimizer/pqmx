@@ -1,18 +1,12 @@
 # Makefile for images for AN547
 
-# default values (when not called from the root Makefile - used in standalone artifacts)
-TARGET  ?= test.elf
-SOURCES ?= $(wildcard test_src/*.c)
-ASMS    ?= $(wildcard test_src/*.s)
-TESTDIR ?= test_src
-
 CC = arm-none-eabi-gcc
 LD := $(CC)
 
 SRC_DIR=./src
 BUILD_DIR=./build
 
-COMMON_INC=common/inc/
+COMMON_INC=../common/inc/
 ENV_INC=./inc/
 
 SYSROOT := $(shell $(CC) --print-sysroot)
@@ -56,7 +50,7 @@ LDFLAGS += \
 
 all: $(TARGET)
 
-HAL_SOURCES = $(wildcard $(SRC_DIR)/*.c) $(wildcard $(SRC_DIR)/*/*.c) $(wildcard common/src/*.c)
+HAL_SOURCES = $(wildcard $(SRC_DIR)/*.c) $(wildcard $(SRC_DIR)/*/*.c) $(wildcard ../common/src/*.c)
 OBJECTS_HAL = $(patsubst %.c, $(BUILD_DIR)/%.c.o, $(abspath $(HAL_SOURCES)))
 OBJECTS_SOURCES=$(patsubst %.c, $(BUILD_DIR)/%.c.o, $(abspath $(SOURCES)))
 OBJECTS_C = $(OBJECTS_SOURCES) $(OBJECTS_HAL)

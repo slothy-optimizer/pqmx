@@ -23,9 +23,3 @@ NTT_DILITHIUM_ASMS += $(NTT_DILITHIUM_ASM_DIR)/ntt_dilithium_12_34_56_78.s
 NTT_DILITHIUM_ASMS += $(NTT_DILITHIUM_ASM_DIR)/ntt_dilithium_123_456_78_opt_size_m55.s
 NTT_DILITHIUM_ASMS += $(NTT_DILITHIUM_ASM_DIR)/ntt_dilithium_123_456_78_opt_size_m85.s
 NTT_DILITHIUM_ASMS += $(NTT_DILITHIUM_ASM_DIR)/ntt_dilithium_123_456_78.s
-
-# Additional required files (needed for packaging a standalone artifact)
-NTT_DILITHIUM_OTHER += $(NTT_DILITHIUM_ASM_DIR)/ntt_dilithium_12_34_56_78_twiddles.s
-NTT_DILITHIUM_OTHER += $(NTT_DILITHIUM_ASM_DIR)/ntt_dilithium_123_456_78_twiddles.s
-NTT_DILITHIUM_OTHER += misc.h
-NTT_DILITHIUM_OTHER += poly.h

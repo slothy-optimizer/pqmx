@@ -23,9 +23,3 @@ NTT_KYBER_ASMS += $(NTT_KYBER_ASM_DIR)/ntt_kyber_1_23_45_67_no_trans.s
 NTT_KYBER_ASMS += $(NTT_KYBER_ASM_DIR)/ntt_kyber_12_345_67_opt_size_m55.s
 NTT_KYBER_ASMS += $(NTT_KYBER_ASM_DIR)/ntt_kyber_12_345_67_opt_size_m85.s
 NTT_KYBER_ASMS += $(NTT_KYBER_ASM_DIR)/ntt_kyber_12_345_67.s
-
-# Additional required files (needed for packaging a standalone artifact)
-NTT_KYBER_OTHER += $(NTT_KYBER_ASM_DIR)/ntt_kyber_1_23_45_67_twiddles.s
-NTT_KYBER_OTHER += $(NTT_KYBER_ASM_DIR)/ntt_kyber_12_345_67_twiddles.s
-NTT_KYBER_OTHER += poly.h
-NTT_KYBER_OTHER += misc.h
