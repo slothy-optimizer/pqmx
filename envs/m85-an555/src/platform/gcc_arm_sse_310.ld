@@ -40,14 +40,14 @@ __ROM_SIZE = 0x00020000;
   </h>
  -----------------------------------------------------------------------------*/
 /* This is DTCM */
-__RAM_BASE = 0x30000000;
-__RAM_SIZE = 0x00008000;
+//__RAM_BASE = 0x30000000;
+//__RAM_SIZE = 0x00008000;
 
 
 
 /* This is internal SRAM which may be slower */
-//__RAM_BASE = 0x21000000;
-//__RAM_SIZE = 0x00010000;
+__RAM_BASE = 0x21000000;
+__RAM_SIZE = 0x00010000;
 
 /*--------------------- Stack / Heap Configuration ----------------------------
   <h> Stack / Heap Configuration
