@@ -1,6 +1,7 @@
 # Makefile for images for AN555
-
-CC = arm-none-eabi-gcc
+PREFIX = arm-none-eabi
+CC = $(PREFIX)-gcc
+OBJCOPY = $(PREFIX)-objcopy
 LD := $(CC)
 
 SRC_DIR=./src
@@ -72,6 +73,8 @@ $(OBJECTS_ASM): $(BUILD_DIR)/%.o: %
 
 $(TARGET): $(OBJECTS) $(LDSCRIPT)
 	$(LD) $(LDFLAGS) -o $@ $(OBJECTS)
+	$(OBJCOPY) -S -Obinary $@ $@.bin
+
 
 .PHONY: build
 build: $(TARGET)
@@ -84,5 +87,5 @@ check:
 
 
 clean: 
-	rm -f *.elf
+	rm -f *.elf *.bin
 	rm -rf $(BUILD_DIR)

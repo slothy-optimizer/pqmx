@@ -39,8 +39,15 @@ __ROM_SIZE = 0x00020000;
     <o1> RAM Size (in Bytes) <0x0-0xFFFFFFFF:8>
   </h>
  -----------------------------------------------------------------------------*/
-__RAM_BASE = 0x31000000;
-__RAM_SIZE = 0x00010000;
+/* This is DTCM */
+__RAM_BASE = 0x30000000;
+__RAM_SIZE = 0x00008000;
+
+
+
+/* This is internal SRAM which may be slower */
+//__RAM_BASE = 0x21000000;
+//__RAM_SIZE = 0x00010000;
 
 /*--------------------- Stack / Heap Configuration ----------------------------
   <h> Stack / Heap Configuration
@@ -48,8 +55,8 @@ __RAM_SIZE = 0x00010000;
     <o1> Heap Size (in Bytes) <0x0-0xFFFFFFFF:8>
   </h>
   -----------------------------------------------------------------------------*/
-__STACK_SIZE = 0x00000400;
-__HEAP_SIZE  = 0x00000C00;
+__STACK_SIZE = 0x00006000;
+__HEAP_SIZE  = 0x00000000;
 
 /*
  *-------------------- <<< end of configuration section >>> -------------------
@@ -296,7 +303,7 @@ SECTIONS
     __StackTop = .;
   } > RAM
   PROVIDE(__stack = __StackTop);
-  
+
   /* ARMv8-M stack sealing:
      to use ARMv8-M stack sealing uncomment '.stackseal' section
    */
