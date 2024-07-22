@@ -98,6 +98,6 @@ int main(void)
     ret = test_unpack();
     if( ret != 0 )
         return( 1 );
-
+    debug_printf( "ALL GOOD!\n" );
     return( 0 );
 }

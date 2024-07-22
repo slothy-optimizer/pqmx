@@ -39,8 +39,15 @@ __ROM_SIZE = 0x00020000;
     <o1> RAM Size (in Bytes) <0x0-0xFFFFFFFF:8>
   </h>
  -----------------------------------------------------------------------------*/
-__RAM_BASE = 0x30000000;
-__RAM_SIZE = 0x00007F00;
+/* This is DTCM */
+//__RAM_BASE = 0x30000000;
+//__RAM_SIZE = 0x00008000;
+
+
+
+/* This is internal SRAM which may be slower */
+__RAM_BASE = 0x21000000;
+__RAM_SIZE = 0x00010000;
 
 /*--------------------- Stack / Heap Configuration ----------------------------
   <h> Stack / Heap Configuration
@@ -132,7 +139,7 @@ SECTIONS
   /*
    * SG veneers:
    * All SG veneers are placed in the special output section .gnu.sgstubs. Its start address
-   * must be set, either with the command line option ‘--section-start’ or in a linker script,
+   * must be set, either with the command line option ï¿½--section-startï¿½ or in a linker script,
    * to indicate where to place these veneers in memory.
    */
 /*

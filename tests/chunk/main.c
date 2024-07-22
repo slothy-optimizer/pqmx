@@ -97,22 +97,26 @@ int main(void)
 {
     int ret = 0;
 
-   test_radix11_reduce_x4_m4();
-   test_radix11_reduce_x4_m4_v2();
-    test_radix11_reduce_x4_m4_v3();
-    test_radix11_reduce_x4_lob();
-    test_radix11_reduce_x4_lob_64bit();
+    ret |= test_radix11_reduce_x4_m4();
+    ret |= test_radix11_reduce_x4_m4_v2();
+    ret |= test_radix11_reduce_x4_m4_v3();
+    ret |= test_radix11_reduce_x4_lob();
+    ret |= test_radix11_reduce_x4_lob_64bit();
 
-    test_radix11_reduce_x4_mve_basic();
-    test_radix11_reduce_x4_mve_vmla();
-    test_radix11_reduce_x4_mve_vmla_v2();
-   test_radix11_reduce_x4_mve_vmla_v3();
-   test_radix11_reduce_x4_mve_vmla_v4();
+    ret |= test_radix11_reduce_x4_mve_basic();
+    ret |= test_radix11_reduce_x4_mve_vmla();
+    ret |= test_radix11_reduce_x4_mve_vmla_v2();
+    ret |= test_radix11_reduce_x4_mve_vmla_v3();
+    ret |= test_radix11_reduce_x4_mve_vmla_v4();
 
-    test_radix11_reduce_x4_mve_vqdmlah();
-   test_radix11_reduce_x4_mve_vqdmlah_v3();
-   test_radix11_reduce_x4_mve_vqdmlah_v4();
-    test_radix11_reduce_x4_mve_vqdmlah_v5();
+    ret |= test_radix11_reduce_x4_mve_vqdmlah();
+    ret |= test_radix11_reduce_x4_mve_vqdmlah_v3();
+    ret |= test_radix11_reduce_x4_mve_vqdmlah_v4();
+    ret |= test_radix11_reduce_x4_mve_vqdmlah_v5();
 
+
+    if(ret == 0){
+        debug_printf( "ALL GOOD!\n" );
+    }
     return( ret );
 }

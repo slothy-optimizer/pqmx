@@ -53,5 +53,6 @@ int main (void)
     }
 
     debug_test_ok();
+    debug_printf( "ALL GOOD!\n" );
     return( 0 );
 }

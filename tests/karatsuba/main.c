@@ -348,5 +348,9 @@ int main(void)
     ret |= test_karatsuba_fwd();
 #endif /* TEST_KARATSUBA_FWD */
 
+    if(ret == 0){
+        debug_printf( "ALL GOOD!\n" );
+    }
+
     return( ret );
 }

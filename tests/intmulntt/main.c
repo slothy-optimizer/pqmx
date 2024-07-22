@@ -583,5 +583,6 @@ int main(void)
             return( ret );
     }
 
+    debug_printf( "ALL GOOD!\n" );
     return( ret );
 }
