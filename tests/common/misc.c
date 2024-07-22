@@ -76,13 +76,19 @@
                             const char *prefix )                       \
  {                                                                     \
      unsigned idx;                                                     \
-     for( idx = 0; idx < entries; idx += 8 )                           \
+     for( idx = 0; idx + 8 <= entries; idx += 8 )                      \
      {                                                                 \
          debug_printf( "%s [%#04x-%#04x]: %#04x %#04x %#04x %#04x %#04x %#04x %#04x %#04x\n",        \
                        prefix, idx, idx+8,                             \
                        buf[idx+0], buf[idx+1], buf[idx+2], buf[idx+3], \
                        buf[idx+4], buf[idx+5], buf[idx+6], buf[idx+7] ); \
-     }                                                                 \
+     }                                                                   \
+     debug_printf( "%s [%#04x-%#04x]:", prefix, idx, entries);           \
+     for(; idx < entries; idx++ )                                        \
+     {                                                                   \
+         debug_printf( " %#04x", buf[idx]);                              \
+     }                                                                   \
+     debug_printf("\n");                                                 \
  }
  GEN_PRINT_BUF(8)
  GEN_PRINT_BUF(16)
@@ -96,13 +102,19 @@
                             const char *prefix )                       \
  {                                                                     \
      unsigned idx;                                                     \
-     for( idx = 0; idx < entries; idx += 8 )                           \
+     for( idx = 0; idx + 8 <= entries; idx += 8 )                      \
      {                                                                 \
          debug_printf( "%s [%u-%u]: %d %d %d %d %d %d %d %d\n",        \
                        prefix, idx, idx+8,                             \
                        buf[idx+0], buf[idx+1], buf[idx+2], buf[idx+3], \
                        buf[idx+4], buf[idx+5], buf[idx+6], buf[idx+7] ); \
      }                                                                 \
+     debug_printf( "%s [%#04x-%#04x]:", prefix, idx, entries);           \
+     for(; idx < entries; idx++ )                                        \
+     {                                                                   \
+         debug_printf( " %d", buf[idx]);                                 \
+     }                                                                   \
+     debug_printf("\n");                                                 \
  }
 GEN_PRINT_BUF_S(8)
 GEN_PRINT_BUF_S(16)
