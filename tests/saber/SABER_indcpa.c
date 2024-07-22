@@ -21,9 +21,9 @@ void indcpa_kem_keypair( uint8_t pk[SABER_INDCPA_PUBLICKEYBYTES],
     uint8_t seed_s[SABER_NOISE_SEEDBYTES];
     int i, j;
 
-    randombytes( seed_A, SABER_SEEDBYTES );
+    randombytes_saber( seed_A, SABER_SEEDBYTES );
     shake128_wrap( seed_A, SABER_SEEDBYTES, seed_A, SABER_SEEDBYTES );
-    randombytes( seed_s, SABER_NOISE_SEEDBYTES );
+    randombytes_saber( seed_s, SABER_NOISE_SEEDBYTES );
 
     GenMatrix( A, seed_A );
     GenSecret( s, seed_s );

@@ -79,11 +79,11 @@ interface [`tests/inc/hal.h`](tests/inc/hal.h). This flexibility is useful in or
 simulators of MVE-implementations.
 
 The supported test environments are located in [`envs`](envs/).
-As of now, we are supporting two platforms: 
+As of now, we are supporting two platforms:
  - [Arm® Corstone™ SSE-300 with Cortex®-M55 and Ethos™-U55 (AN547)](https://developer.arm.com/downloads/view/AN547)
  - [Arm® Corstone™ SSE-310 with Cortex®-M85 and Ethos™-U55 (AN555)](https://developer.arm.com/downloads/view/AN555)
 
-The former can be emulated using qemu (>=6.0). 
+The former can be emulated using qemu (>=6.0).
 Previously, the freely available FVPs for the Arm<sup>&reg;</sup> Corstone&trade;-300 MPS2 and Arm<sup>&reg;</sup> Corstone&trade;-300 MPS3 were also supported.
 However, these are currently no longer maintained (see https://github.com/slothy-optimizer/pqmx/issues/7).
 
@@ -122,3 +122,12 @@ make run-m55-an547_helloworld
 
 after setting up the required tooling, to check that the tools are in the
 right place and working as expected.
+
+#### Autocompletion
+
+On MacOS+zshrc, add the following to your `.zshrc` to support autocompletion with `make`:
+
+```
+zstyle ':completion::complete:make:*:targets' call-command true
+autoload -U compinit && compinit
+```

@@ -17,25 +17,16 @@ void randombytes_init(const int i){
 }
 
 int
-randombytes(unsigned char *x, unsigned long long xlen)
+randombytes_saber(unsigned char *x, unsigned long long xlen)
 {
 
 	unsigned long long i;
-	
+
 	for(i=0;i<xlen;i++){
 		x[i]=(char)const_rand;
 	}
-	
+
 	const_rand++;
 
 	return 1;
 }
-
-
-
-
-
-
-
-
-
