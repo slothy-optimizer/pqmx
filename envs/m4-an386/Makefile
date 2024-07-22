@@ -6,8 +6,6 @@ LD := $(CC)
 SRC_DIR=./src
 BUILD_DIR=./build/$(TARGET)
 
-
-
 COMMON_INC=../common/inc/
 ENV_INC=./inc/
 TEST_COMMON=../../tests/common/
@@ -15,8 +13,6 @@ MBED_OS_DIR=../../submodules/mbed-os/
 
 MBED_OS_TARGET_DIR = $(MBED_OS_DIR)/targets/TARGET_ARM_FM/TARGET_FVP_MPS2/TARGET_FVP_MPS2_M4/device
 MBED_OS_CMSIS = $(MBED_OS_DIR)/cmsis/CMSIS_5/CMSIS/TARGET_CORTEX_M/
-
-
 
 ARCH_FLAGS += -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16
 LDSCRIPT = $(BUILD_DIR)/generated.M4.ld
@@ -95,6 +91,6 @@ $(LDSCRIPT): $(MBED_OS_TARGET_DIR)/TOOLCHAIN_GCC_ARM/MPS2.ld
 	[ -d $(@D) ] || $(Q)mkdir -p $(@D); \
 	$(CC) -x assembler-with-cpp -E -Wp,-P $(CFLAGS) $< -o $@
 
-clean: 
+clean:
 	rm -f *.elf
 	rm -rf $(BUILD_DIR)
