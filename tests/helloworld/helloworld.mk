@@ -6,6 +6,7 @@ TESTS += helloworld
 # Platforms this test should run on (matching the directory name in envs/)
 HELLOWORLD_PLATFORMS += m55-an547
 HELLOWORLD_PLATFORMS += m85-an555
+HELLOWORLD_PLATFORMS += m4-an386
 
 # C sources required for this test
 HELLOWORLD_SOURCES += main.c

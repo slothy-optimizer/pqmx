@@ -22,6 +22,8 @@
  *
  */
 
+
+#if defined(__ARM_FEATURE_MVE)
 .syntax unified
 .type mve_test, %function
 .global mve_test
@@ -37,3 +39,4 @@ mve_test:
         vpop {d0-d1}
         pop {r4}
         bx lr
+#endif

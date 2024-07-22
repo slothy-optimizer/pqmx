@@ -30,10 +30,13 @@ void mve_test( void *src, uint16_t *dst );
 
 int main (void)
 {
+
+    #if defined(__ARM_FEATURE_MVE)
     uint16_t test_vector[] = { 1, 2, 3, 4, 5, 6, 7, 8 };
     uint16_t sum;
+    #endif
 
-#if defined(EXEC_TB)
+#if defined(EXEC_TB) && defined(__ARM_FEATURE_MVE)
     EXECTB_Init();
     enableCde();
     initTick();
@@ -42,6 +45,7 @@ int main (void)
     /* Test preamble */
     debug_test_start( "Hello World!" );
 
+    #if defined(__ARM_FEATURE_MVE)
     measure_start();
     mve_test( test_vector, &sum );
     measure_end();
@@ -51,6 +55,7 @@ int main (void)
         debug_test_fail();
         return( 1 );
     }
+    #endif
 
     debug_test_ok();
     debug_printf( "ALL GOOD!\n" );
