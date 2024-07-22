@@ -1,7 +1,7 @@
 # Tests
 # TODO: commented out tests are failing; need to look into it
 
-#include tests/chunk/chunk.mk
+include tests/chunk/chunk.mk
 include tests/crt/crt.mk
 include tests/ct/ct.mk
 include tests/flt-fft/flt-fft.mk
@@ -9,7 +9,7 @@ include tests/fx-fft/fx-fft.mk
 include tests/helloworld/helloworld.mk
 include tests/intmulntt/intmulntt.mk
 include tests/karatsuba/karatsuba.mk
-# include tests/montgomery/montgomery.mk
+include tests/montgomery/montgomery.mk
 include tests/ntt-192/ntt-192.mk
 include tests/ntt-256/ntt-256.mk
 include tests/ntt-384/ntt-384.mk

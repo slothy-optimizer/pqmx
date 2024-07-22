@@ -3381,7 +3381,7 @@ montgomery_u16_round_mve:
         mov r10, #(MODULUS_Q16)
         movw r9, #:lower16:MODULUS_Q16_INV_U16
         mov r10, #(-3329) /* Modulus */
-        mov r8, #8        /* Iterations */
+        mov r8, #(VECTOR_LENGTH/8)        /* Iterations */
 
         /* Half of the even scalar to multiply with */
         ldrh r4, [r1,#0]

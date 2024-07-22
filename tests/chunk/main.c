@@ -48,7 +48,7 @@ void radix11_reduce_x4_C( uint32_t *data )
     }
 }
 
-#define MAKE_TEST(funcname)                                     \
+#define MAKE_TEST(funcname,top_clear)                           \
 int test_radix11_reduce_x4_ ## funcname()                       \
 {                                                               \
     uint32_t data     [SIZE+3];                                 \
@@ -56,9 +56,10 @@ int test_radix11_reduce_x4_ ## funcname()                       \
                                                                 \
     debug_test_start( "test radix11_reduce_x4_" #funcname );    \
                                                                 \
-    fill_random_u32( data, SIZE );                              \
-    /* Clear highest bit */                                     \
-    for( size_t i=0; i<SIZE+3; i++ ) data[i] >>= 1;             \
+    fill_random_u32( data, SIZE + 3 );                          \
+    /* Clear highest bit, plus potentially further bits */      \
+    /* depending on the bounds assumptions of the algorithm */  \
+    for( size_t i=0; i<SIZE+3; i++ ) data[i] >>= (1+top_clear); \
     memcpy( data_copy, data, sizeof( data ) );                  \
     measure_start();                                            \
     radix11_reduce_x4_asm_ ## funcname( data );                 \
@@ -68,7 +69,12 @@ int test_radix11_reduce_x4_ ## funcname()                       \
     if( memcmp( data, data_copy, sizeof( data ) ) != 0 )        \
     {                                                           \
         debug_print_buf_u32( data_copy, SIZE+3, "ref" );        \
-        debug_print_buf_u32( data, SIZE+3, "actual" );                    \
+        debug_print_buf_u32( data, SIZE+3, "actual" );          \
+        for (size_t i=0; i < SIZE+3; i++) {                     \
+            if(data[i] != data_copy[i]) {                       \
+                debug_printf("Divergence at %#04x\n", (unsigned) i);       \
+            }                                                           \
+        }                                                               \
         debug_test_fail();                                      \
         return( 1 );                                            \
     }                                                           \
@@ -77,21 +83,22 @@ int test_radix11_reduce_x4_ ## funcname()                       \
     return( 0 );                                                \
 }
 
-MAKE_TEST(m4);
-MAKE_TEST(m4_v2);
-MAKE_TEST(m4_v3);
-MAKE_TEST(lob);
-MAKE_TEST(lob_64bit);
-MAKE_TEST(mve_basic);
-MAKE_TEST(mve_vmla);
-MAKE_TEST(mve_vmla_v2);
-MAKE_TEST(mve_vmla_v3);
-MAKE_TEST(mve_vmla_v4);
-MAKE_TEST(mve_vqdmlah);
+MAKE_TEST(m4,0);
+MAKE_TEST(m4_v2,0);
+MAKE_TEST(m4_v3,0);
+MAKE_TEST(lob,0);
+MAKE_TEST(lob_64bit,0);
+MAKE_TEST(mve_basic,0);
+MAKE_TEST(mve_vmla,0);
+MAKE_TEST(mve_vmla_v2,0);
+MAKE_TEST(mve_vmla_v3,0);
+MAKE_TEST(mve_vmla_v4,0);
 
-MAKE_TEST(mve_vqdmlah_v3);
-MAKE_TEST(mve_vqdmlah_v4);
-MAKE_TEST(mve_vqdmlah_v5);
+// vqdmlah-based chunking requires smaller inputs
+MAKE_TEST(mve_vqdmlah,1);
+MAKE_TEST(mve_vqdmlah_v3,1);
+MAKE_TEST(mve_vqdmlah_v4,1);
+MAKE_TEST(mve_vqdmlah_v5,1);
 
 int main(void)
 {
@@ -113,7 +120,6 @@ int main(void)
     ret |= test_radix11_reduce_x4_mve_vqdmlah_v3();
     ret |= test_radix11_reduce_x4_mve_vqdmlah_v4();
     ret |= test_radix11_reduce_x4_mve_vqdmlah_v5();
-
 
     if(ret == 0){
         debug_printf( "ALL GOOD!\n" );
