@@ -1,4 +1,4 @@
-# Makefile for images for AN386
+# Makefile for images for AN500
 
 CC = arm-none-eabi-gcc
 LD := $(CC)
@@ -11,11 +11,11 @@ ENV_INC=./inc/
 TEST_COMMON=../../tests/common/
 MBED_OS_DIR=../../submodules/mbed-os/
 
-MBED_OS_TARGET_DIR = $(MBED_OS_DIR)/targets/TARGET_ARM_FM/TARGET_FVP_MPS2/TARGET_FVP_MPS2_M4/device
+MBED_OS_TARGET_DIR = $(MBED_OS_DIR)/targets/TARGET_ARM_FM/TARGET_FVP_MPS2/TARGET_FVP_MPS2_M7/device
 MBED_OS_CMSIS = $(MBED_OS_DIR)/cmsis/CMSIS_5/CMSIS/TARGET_CORTEX_M/
 
-ARCH_FLAGS += -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16
-LDSCRIPT = $(BUILD_DIR)/generated.M4.ld
+ARCH_FLAGS += -mcpu=cortex-m7 -mthumb -mfloat-abi=hard -mfpu=fpv5-d16
+LDSCRIPT = $(BUILD_DIR)/generated.M7.ld
 
 SYSROOT := $(shell $(CC) --print-sysroot)
 
@@ -35,7 +35,7 @@ CFLAGS += \
 	-I$(TEST_COMMON) \
 
 CFLAGS += \
- 	-DMPS2 -DMPS2_AN386 \
+ 	-DMPS2 -DMPS2_AN500 \
 	$(ARCH_FLAGS) \
 	--specs=nosys.specs
 
@@ -81,10 +81,10 @@ $(TARGET): $(OBJECTS) $(LDSCRIPT)
 build: $(TARGET)
 
 run: $(TARGET)
-	qemu-system-arm -M mps2-an386 -nographic -semihosting -kernel $(TARGET)
+	qemu-system-arm -M mps2-an500 -nographic -semihosting -kernel $(TARGET)
 
 check: $(TARGET)
-	qemu-system-arm -M mps2-an386 -nographic -semihosting -kernel $(TARGET) | tail -n 2 | grep "ALL GOOD!" || exit 1
+	qemu-system-arm -M mps2-an500 -nographic -semihosting -kernel $(TARGET) | tail -n 2 | grep "ALL GOOD!" || exit 1
 
 
 $(LDSCRIPT): $(MBED_OS_TARGET_DIR)/TOOLCHAIN_GCC_ARM/MPS2.ld

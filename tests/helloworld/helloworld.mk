@@ -7,6 +7,7 @@ TESTS += helloworld
 HELLOWORLD_PLATFORMS += m55-an547
 HELLOWORLD_PLATFORMS += m85-an555
 HELLOWORLD_PLATFORMS += m4-an386
+HELLOWORLD_PLATFORMS += m7-an500
 
 # C sources required for this test
 HELLOWORLD_SOURCES += main.c
