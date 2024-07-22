@@ -13,9 +13,9 @@ of post-quantum cryptography targeting Cortex-M4, with a focus on CPUs implement
 Helium&trade; Technology), such as the [Arm<sup>&reg;</sup>
 Cortex&trade;-M55](https://www.arm.com/products/silicon-ip-cpu/cortex-m/cortex-m55) processor.
 
-### SLOTHY + HeLight
+### SLOTHY
 
-This repository also contains the source code for the SLOTHY/HeLight assembly superoptimizer, discussed in the paper [Fast and Clean: Auditable high-performance assembly via constraint solving](https://eprint.iacr.org/2022/1303). See [helight/README.md](helight/README.md) for more information.
+This repository also contains the source code for the SLOTHY assembly superoptimizer, discussed in the paper [Fast and Clean: Auditable high-performance assembly via constraint solving](https://eprint.iacr.org/2022/1303). See [slothy/README.md](slothy/README.md) for more information.
 
 ### M-Profile Vector Extension (MVE)
 
@@ -36,7 +36,7 @@ The main components of the repository are the following:
 * [`asm`](asm): Core primitives in optimized assembly, mostly auto-generated.
 * [`tests`](tests): C-based tests for core primitives using a minimal hardware abstraction layer (HAL).
 * [`envs`](envs): Test environments implementing the HAL.
-* [`helight`](helight): The SLOTHY/HeLight assembly superoptimizer. See the [README](helight/README.md) for more information.
+* [`slothy`](slothy): The SLOTHY assembly superoptimizer. See the [README](slothy/README.md) for more information.
 
 The following sections explain each component in greater detail.
 
@@ -78,17 +78,21 @@ As mentioned above, the tests from [`tests/`](tests/) can be run in any environm
 interface [`tests/inc/hal.h`](tests/inc/hal.h). This flexibility is useful in order to test the MVE assembly in different models or
 simulators of MVE-implementations.
 
-The supported test environments are located in [`envs`](envs/). For now, there are two test environments for testing
-functional behaviour, based on the freely available FVPs for the Arm<sup>&reg;</sup> Corstone&trade;-300 MPS2 and Arm<sup>&reg;</sup> Corstone&trade;-300 MPS3. See
-[`envs/fvp-corstone300-mps2/`](./envs/fvp-corstone300-mps2/) and [`envs/fvp-corstone300-mps3/`](./envs/fvp-corstone300-mps3/) for more information, including build and usage instructions.
+The supported test environments are located in [`envs`](envs/).
+As of now, we are supporting two platforms: 
+ - [Arm® Corstone™ SSE-300 with Cortex®-M55 and Ethos™-U55 (AN547)](https://developer.arm.com/downloads/view/AN547)
+ - [Arm® Corstone™ SSE-310 with Cortex®-M85 and Ethos™-U55 (AN555)](https://developer.arm.com/downloads/view/AN555)
+
+The former can be emulated using qemu (>=6.0). 
+Previously, the freely available FVPs for the Arm<sup>&reg;</sup> Corstone&trade;-300 MPS2 and Arm<sup>&reg;</sup> Corstone&trade;-300 MPS3 were also supported.
+However, these are currently no longer maintained (see https://github.com/slothy-optimizer/pqmx/issues/7).
 
 Writing a new test environment requires the provisioning of build, run and debug scripts, plus an implementation of the
-test HAL [`tests/inc/hal.h`](tests/inc/hal.h). The actual test sources can then be moved into the test environment through a symbolic
-link. This way, there's no need to each test for each test environment, but instead a choice of test environment + test
-can be run by linking the test into the environment's template and building/running it. If you have added a new test
+test HAL [`tests/inc/hal.h`](tests/inc/hal.h).
+If you have added a new test
 environment, you can test that it works against the HelloWorld test in [`tests/helloworld`](tests/helloworld/).
 
-To run the tests in qemu, the target `run-m55-an547-{test_name}` can be used. It will build the executable from the sources and run it using `qemu-system-arm -M mps3-an547  -nographic -semihosting -kernel`.
+To run the tests in qemu, the target `run-m55-an547_{test_name}` can be used. It will build the executable from the sources and run it using `qemu-system-arm -M mps3-an547  -nographic -semihosting -kernel`.
 
 ## License
 
@@ -98,46 +102,23 @@ The software is provided under an MIT license. Contributions to this project are
 
 ### Prerequisites
 
-#### Code generation
-
-Code generation requires Python 3. Call `init.sh` to build a Python environment suitable for running the Python scripts
-in this repository, and run `source envsetup.sh` to enter it and set the encessary environment variables.
-
 #### Compilation
 
 Compilation requires a toolchain supporting Armv8.1-M, such as Arm Compiler 6.14 or GNU Arm Embedded Toolchain 10-2020-q4-major or
-higher. See [README](./envs/fvp-corstone300-mps2/README.md) for installation instructions.
-
-#### Corstone-300 MPS2/MPS3 FVP test environment
-
-In addition to an Armv8.1-M capable compiler, the Corstone-300 MPS2/MPS3 FVP test environment requires CMSIS 5 plus the corresponding CMSIS pack, and
-the FVP itself. See the corresponding README ([MPS2](./envs/fvp-corstone300-mps3/README.md),[MPS2](./envs/fvp-corstone300-mps3/README.md)) for detailed instructions.
+higher.
 
 ### Usage flow
 
-Make sure you have entered the Python environment via `source envsetup.sh`.
 
 The code in this repository can then be generated, compiled and run via `make`:
-
-* `make codegen` generates all auto-generated assembly in `asm/auto` and copies them to the relevant tests `tests/*/auto/`.
-* `make {build,run,debug}-{m55-mps2-fvp,m55-mps3-fvp}-{helloworld,ntt,schoolbook,transpose,montgomery,permute,toom}` builds/runs/debugs the chosen
-  test in the chosen test environment. For example, `make
-  run-m55-mps3-fvp-schoolbook` will generate the MVE assembly for schoolbook multiplication and build and run it in the
-  Cortex-M55 FVP test environment.
+* `make {build,run}-{m55-an547,m85-an555}-{helloworld,ntt-kyber,ntt-dilithium}` builds/runs the chosen
+  test in the chosen test environment.
 
 We recommend trying
 
 ```
-make run-m55-mps3-fvp-helloworld
+make run-m55-an547_helloworld
 ```
 
-after setting up the required tooling for the Corstone-300 FVP test environment, to check that the tools are in the
+after setting up the required tooling, to check that the tools are in the
 right place and working as expected.
-
-#### Choice of compiler
-
-By default, Arm Compiler will be used. If you wish to use GCC instead, supply `USE_GCC=1` to the above invocations of
-`make`, e.g. `make USE_GCC=1 run-m55-mps3-fvp-helloworld`.
-
-Note that if you have previously built any tests with a different compiler, you will need to run `make clean` to remove
-incorrect build artifacts.
