@@ -1,7 +1,7 @@
 # Tests
 # TODO: commented out tests are failing; need to look into it
 
-#include tests/chunk/chunk.mk
+include tests/chunk/chunk.mk
 include tests/crt/crt.mk
 include tests/ct/ct.mk
 include tests/flt-fft/flt-fft.mk
