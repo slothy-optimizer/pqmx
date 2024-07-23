@@ -17,9 +17,19 @@
       imports = [ ];
       systems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" "x86_64-darwin" ];
       perSystem = { pkgs, ... }:
+        let
+          libopencm3 = pkgs.callPackage ./libopencm3.nix {
+            targets = [ "stm32/f4" "stm32/f7" ];
+          };
+          mbed-os = pkgs.callPackage ./mbed-os.nix {
+            targets = [ "mps2_m4" "mps2_m7" ];
+          };
+        in
         {
           devShells.default = pkgs.mkShellNoCC {
             packages = builtins.attrValues {
+              libopencm3 = libopencm3;
+              mbed-os = mbed-os;
               inherit (pkgs)
                 gcc-arm-embedded-13
                 direnv
@@ -28,6 +38,8 @@
                 qemu
                 ;
             };
+            OPENCM3_DIR = ''${libopencm3}'';
+            MBED_OS_DIR = ''${mbed-os}'';
           };
         };
       flake = {
