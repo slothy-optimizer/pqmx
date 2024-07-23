@@ -5,12 +5,19 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: nix develop -c bash -e {0}
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         submodules: true
-    - name: install dependencies
-      run: sudo apt install gcc-arm-none-eabi qemu-system
+    - name: Setup nix
+      uses: ./.github/actions/setup-nix
+      with:
+        script: |
+          arm-none-eabi-gcc --version
+          qemu-system-arm --version
     - name: Make all
       run: |
         make -j$(nproc) check
