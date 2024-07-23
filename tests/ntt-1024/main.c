@@ -28,7 +28,8 @@
 
 #include <string.h>
 
-/* #define TEST_NTT_CHECK_INVOLUTION */
+#if !defined(TEST_NTT_1024_NO_DEFAULT_CONFIG)
+#define TEST_NTT_CHECK_INVOLUTION
 #define TEST_NTT
 #define TEST_NTT_REV4
 #define TEST_NTT_BITREV                 /* Enable/Disable test for NTT             */
@@ -40,6 +41,8 @@
 #define NTT_INCOMPLETE           /* Enable to compute 6-layer incomplete NTT.    */
 
 #define TEST_POLY_MUL
+#else
+#endif /* TEST_NTT_1024_NO_DEFAULT_CONFIG */
 
 //#define TEST_CORE_ONLY
 
@@ -356,6 +359,7 @@ int run_test_ntt()
 }
 #endif
 
+#if defined(TEST_NTT_REV4)
 #if !defined(TEST_CORE_ONLY)
 int run_test_ntt_rev4()
 {
@@ -402,8 +406,9 @@ int run_test_ntt_rev4()
     return( 0 );
 }
 #endif
+#endif
 
-
+#if defined(TEST_NTT_BITREV)
 #if !defined(TEST_CORE_ONLY)
 int run_test_ntt_bitrev()
 {
@@ -461,7 +466,9 @@ int run_test_ntt_bitrev()
     return( 0 );
 }
 #endif
+#endif
 
+#if defined(TEST_NTT_FWD_INV_BITREV)
 #if !defined(TEST_CORE_ONLY)
 int run_test_ntt_fwd_inv_bitrev()
 {
@@ -522,8 +529,10 @@ int run_test_ntt_fwd_inv_bitrev()
     return( 0 );
 }
 #endif
+#endif
 
 #if !defined(TEST_CORE_ONLY)
+#if defined(TEST_NTT_SKIPFIRST)
 int run_test_ntt_skipfirst()
 {
     debug_test_start( "NTT u32, skip first" );
@@ -563,7 +572,9 @@ int run_test_ntt_skipfirst()
 
     return( 0 );
 }
+#endif
 
+#if defined(TEST_NTT_BITREV_SKIPFIRST)
 int run_test_ntt_bitrev_skipfirst()
 {
     debug_test_start( "NTT u32, bitrev, skip first" );
@@ -603,7 +614,11 @@ int run_test_ntt_bitrev_skipfirst()
 
     return( 0 );
 }
+#endif
+
 #else
+
+#if defined(TEST_NTT_SKIPFIRST)
 int run_test_ntt_skipfirst()
 {
     int32_t src[NTT_SIZE]      __attribute__((aligned(16)));
@@ -612,7 +627,9 @@ int run_test_ntt_skipfirst()
     measure_end();
     return( 0 );
 }
+#endif
 
+#if defined(TEST_NTT_BITREV_SKIPFIRST)
 int run_test_ntt_bitrev_skipfirst()
 {
     int32_t src[NTT_SIZE]      __attribute__((aligned(16)));
@@ -621,6 +638,7 @@ int run_test_ntt_bitrev_skipfirst()
     measure_end();
     return( 0 );
 }
+#endif
 #endif
 
 #if !defined(TEST_CORE_ONLY)
@@ -634,6 +652,7 @@ int32_t ntt_root_for_block( int layer, int block )
     return( root );
 }
 
+#if defined(TEST_NTT_DOUBLE)
 int run_test_ntt_incomplete_double()
 {
     debug_test_start( "NTT incomplete double u32" );
@@ -716,7 +735,9 @@ int run_test_ntt_incomplete_double()
 
     return( 0 );
 }
+#endif
 
+#if defined(TEST_NTT_DOUBLE_REV4)
 int run_test_ntt_incomplete_double_rev4()
 {
     debug_test_start( "NTT incomplete double u32, rev4" );
@@ -800,8 +821,11 @@ int run_test_ntt_incomplete_double_rev4()
 
     return( 0 );
 }
+#endif
 
 #else /* TEST_CORE_ONLY */
+
+#if defined(TEST_NTT_DOUBLE)
 int run_test_ntt_incomplete_double()
 {
     int32_t src[NTT_SIZE]       __attribute__((aligned(16)));
@@ -815,7 +839,9 @@ int run_test_ntt_incomplete_double()
     debug_test_ok();
     return( 0 );
 }
+#endif
 
+#if defined(TEST_NTT_DOUBLE_REV4)
 int run_test_ntt_incomplete_double_rev4()
 {
     int32_t src[NTT_SIZE]       __attribute__((aligned(16)));
@@ -829,15 +855,21 @@ int run_test_ntt_incomplete_double_rev4()
     debug_test_ok();
     return( 0 );
 }
+#endif
+
 #endif /* TEST_CORE_ONLY */
 
 void poly_mul_1024( int32_t *dst, int32_t *srcA, int32_t *srcB )
 {
+    int32_t params[] = {
+        modulus, modulus_inv_u32
+    };
+
     int32_t tmpB[2*NTT_SIZE];
     ntt_u32_mve_rev4( srcA );
     ntt_u32_mve_double_rev4( srcB, tmpB );
-    twisted_cyclic_mul_deg4_u32_add_sub_rev_mve( srcA, tmpB, dst );
-    //ntt_u32_mve_bitrev_skipfirst( dst );
+    twisted_cyclic_mul_deg4_u32_add_sub_rev_mve( srcA, tmpB, dst, params );
+    ntt_u32_mve_bitrev_skipfirst( dst );
 }
 
 int run_test_poly_mul()
@@ -937,5 +969,6 @@ int main(void)
         return( 1 );
 #endif /* TEST_NTT_DOUBLE */
 
+    debug_printf( "ALL GOOD!\n" );
     return( ret );
 }

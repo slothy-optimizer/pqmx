@@ -15,7 +15,7 @@ include tests/ntt-256/ntt-256.mk
 include tests/ntt-384/ntt-384.mk
 include tests/ntt-512/ntt-512.mk
 include tests/ntt-768/ntt-768.mk
-#include tests/ntt-1024/ntt-1024.mk
+include tests/ntt-1024/ntt-1024-all.mk
 include tests/ntt-n256/ntt-n256.mk
 include tests/ntt-dilithium/ntt-dilithium.mk
 include tests/ntt-kyber/ntt-kyber.mk
