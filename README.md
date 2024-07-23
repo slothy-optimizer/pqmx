@@ -100,12 +100,21 @@ The software is provided under an MIT license. Contributions to this project are
 
 ## Getting started
 
-### Prerequisites
+### Environment Setup
 
-#### Compilation
+All the development and build dependencies are specified in [flake.nix](flake.nix). We recommend installing them using [nix](https://nixos.org/download/).
 
-Compilation requires a toolchain supporting Armv8.1-M, such as Arm Compiler 6.14 or GNU Arm Embedded Toolchain 10-2020-q4-major or
-higher.
+- **Setup with nix**
+    - Running `nix develop` will execute a bash shell with the development environment specified in [flake.nix](flake.nix).
+    - Alternatively, you can enable `direnv` by using `direnv allow`, allowing it to handle the environment setup for you.
+
+    - As flake is still an experimental feature of nix, `--experimental-features 'nix-command flakes'` is needed when running the nix command. Alternatively, add the following to your `~/.config/nix/nix.conf` or `/etc/nix/nix.conf`:
+```
+experimental-features = nix-command flakes
+```
+
+- If you are not using nix, please ensure you have installed the same versions as specified in [flake.nix](flake.nix).
+
 
 ### Usage flow
 

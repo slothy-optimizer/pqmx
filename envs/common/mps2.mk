@@ -7,7 +7,7 @@ BUILD_DIR=./build/$(TARGET)
 COMMON_INC=../common/inc/
 ENV_INC=./inc/
 TEST_COMMON=../../tests/common/
-MBED_OS_DIR=../../submodules/mbed-os/
+MBED_OS_DIR ?= ../../submodules/mbed-os/
 
 
 MBED_OS_CMSIS = $(MBED_OS_DIR)/cmsis/CMSIS_5/CMSIS/TARGET_CORTEX_M/
