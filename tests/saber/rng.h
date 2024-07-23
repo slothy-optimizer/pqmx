@@ -12,7 +12,6 @@
 
 void randombytes_init(const int i);
 
-#define randombytes SABER_randombytes
-int randombytes(unsigned char *x, unsigned long long xlen);
+int randombytes_saber(unsigned char *x, unsigned long long xlen);
 
 #endif /* rng_h */

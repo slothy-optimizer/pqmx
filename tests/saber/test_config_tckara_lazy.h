@@ -7,9 +7,11 @@
  * Uncoment exactly one of the following three lines.
  */
 
+#if !defined(SABER_L)
 //#define SABER_L 2  /* LightSaber */
-#define SABER_L 3    /* Saber */
-//#define SABER_L 4  /* FireSaber */
+//#define SABER_L 3    /* Saber */
+#define SABER_L 4  /* FireSaber */
+#endif
 
 /*
  * Implementation strategy

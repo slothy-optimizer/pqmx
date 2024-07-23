@@ -188,14 +188,12 @@ int main(void)
 {
     int ret = 0;
 
-#if defined(EXEC_TB)
-    EXECTB_Init();
-    enableCde();
-    initTick();
-#endif /* EXEC_TB */
-
     ret |= test_kem_cpa();
     ret |= test_kem_cca();
+
+    if (ret == 0){
+        debug_printf( "ALL GOOD!\n" );
+    }
 
     return( ret );
 }

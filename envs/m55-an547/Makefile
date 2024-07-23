@@ -35,6 +35,8 @@ CFLAGS += \
 	$(ARCH_FLAGS) \
 	--specs=nosys.specs
 
+CFLAGS += $(CFLAGS_EXTRA)
+
 LDSCRIPT = $(SRC_DIR)/platform/mps3.ld
 
 LDFLAGS += \
@@ -54,7 +56,7 @@ all: $(TARGET)
 
 HAL_SOURCES = $(wildcard $(SRC_DIR)/*.c) $(wildcard $(SRC_DIR)/*/*.c) $(wildcard ../common/src/*.c)
 OBJECTS_HAL = $(patsubst %.c, $(BUILD_DIR)/%.c.o, $(abspath $(HAL_SOURCES)))
-TEST_COMMON_SOURCES = $(wildcard $(TEST_COMMON)/*.c) 
+TEST_COMMON_SOURCES = $(wildcard $(TEST_COMMON)/*.c)
 OBJECTS_TEST_COMMON = $(patsubst %.c, $(BUILD_DIR)/%.c.o, $(abspath $(TEST_COMMON_SOURCES)))
 OBJECTS_SOURCES=$(patsubst %.c, $(BUILD_DIR)/%.c.o, $(abspath $(SOURCES)))
 OBJECTS_C = $(OBJECTS_SOURCES) $(OBJECTS_HAL) $(OBJECTS_TEST_COMMON)
@@ -69,7 +71,7 @@ $(OBJECTS_C): $(BUILD_DIR)/%.o: %
 $(OBJECTS_ASM): $(BUILD_DIR)/%.o: %
 	mkdir -p $(@D)
 	$(CC) -x assembler-with-cpp $(CFLAGS) -c -o $@ $<
- 
+
 $(TARGET): $(OBJECTS) $(LDSCRIPT)
 	$(LD) $(LDFLAGS) -o $@ $(OBJECTS)
 
@@ -82,6 +84,6 @@ run: $(TARGET)
 check: $(TARGET)
 	qemu-system-arm -M mps3-an547  -nographic -semihosting -kernel $(TARGET) | tail -n 1 | grep "ALL GOOD!" || exit 1
 
-clean: 
+clean:
 	rm -f *.elf
 	rm -rf $(BUILD_DIR)
