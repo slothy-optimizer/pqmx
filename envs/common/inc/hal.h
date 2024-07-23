@@ -26,7 +26,14 @@
 #define MVE_POLY_ARITHMETIC_TESTS_HAL
 
 #include <stdint.h>
+#include <stdlib.h>
 #include <hal_env.h>
+
+enum clock_mode {
+    CLOCK_FAST,
+    CLOCK_BENCHMARK
+};
+
 
 /* Request random data. */
 extern uint8_t get_random_byte();

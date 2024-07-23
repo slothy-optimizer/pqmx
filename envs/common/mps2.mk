@@ -1,5 +1,3 @@
-# Makefile for images for AN547
-
 CC = arm-none-eabi-gcc
 LD := $(CC)
 
@@ -9,55 +7,53 @@ BUILD_DIR=./build/$(TARGET)
 COMMON_INC=../common/inc/
 ENV_INC=./inc/
 TEST_COMMON=../../tests/common/
+MBED_OS_DIR=../../submodules/mbed-os/
+
+
+MBED_OS_CMSIS = $(MBED_OS_DIR)/cmsis/CMSIS_5/CMSIS/TARGET_CORTEX_M/
 
 SYSROOT := $(shell $(CC) --print-sysroot)
+
 CFLAGS += \
 	-O3 \
-	-Wall -Wextra -Wshadow \
-	-fno-common \
-	-ffunction-sections \
-	-fdata-sections \
+	-std=gnu99 \
 	--sysroot=$(SYSROOT) \
-	-DARMCM55 \
+	-Wall -Wextra -Wshadow -Werror \
+	-MMD \
+	-fno-common \
 	-I$(COMMON_INC) \
 	-I$(ENV_INC) \
 	-I$(SRC_DIR) \
 	-I$(TESTDIR) \
-	-I$(TEST_COMMON) \
-	-I$(SRC_DIR)/platform
-
-ARCH_FLAGS += \
-	-march=armv8.1-m.main+mve.fp \
-	-mthumb \
-	-mfloat-abi=softfp  \
+	-I$(MBED_OS_CMSIS)/Include \
+	-I$(MBED_OS_TARGET_DIR) \
+	-I$(TEST_COMMON)
 
 CFLAGS += \
 	$(ARCH_FLAGS) \
 	--specs=nosys.specs
 
-CFLAGS += $(CFLAGS_EXTRA)
-
-LDSCRIPT = $(SRC_DIR)/platform/mps3.ld
-
 LDFLAGS += \
-	-Wl,--gc-sections \
-	-L.
-
-LDFLAGS += \
-	--specs=nosys.specs \
+	-Wl,--wrap=_sbrk \
 	-Wl,--wrap=_open \
+	-Wl,--wrap=_close \
+	-Wl,--wrap=_isatty \
+	-Wl,--wrap=_kill \
+	-Wl,--wrap=_lseek \
 	-Wl,--wrap=_read \
 	-Wl,--wrap=_write \
-	-ffreestanding \
+	-Wl,--wrap=_fstat \
+	-Wl,--wrap=_getpid \
+	--specs=nosys.specs \
 	-T$(LDSCRIPT) \
 	$(ARCH_FLAGS)
 
 all: $(TARGET)
 
-HAL_SOURCES = $(wildcard $(SRC_DIR)/*.c) $(wildcard $(SRC_DIR)/*/*.c)
+HAL_SOURCES = ../common/src/hal-mps2.c
+HAL_ASMS = $(MBED_OS_TARGET_DIR)/TOOLCHAIN_GCC_ARM/startup_MPS2.S
 OBJECTS_HAL = $(patsubst %.c, $(BUILD_DIR)/%.c.o, $(abspath $(HAL_SOURCES)))
-TEST_COMMON_SOURCES = $(wildcard $(TEST_COMMON)/*.c)
-OBJECTS_TEST_COMMON = $(patsubst %.c, $(BUILD_DIR)/%.c.o, $(abspath $(TEST_COMMON_SOURCES)))
+OBJECTS_HAL += $(patsubst %.S, $(BUILD_DIR)/%.S.o, $(abspath $(HAL_ASMS)))
 OBJECTS_SOURCES=$(patsubst %.c, $(BUILD_DIR)/%.c.o, $(abspath $(SOURCES)))
 OBJECTS_C = $(OBJECTS_SOURCES) $(OBJECTS_HAL) $(OBJECTS_TEST_COMMON)
 OBJECTS_ASM = $(patsubst %.s, $(BUILD_DIR)/%.s.o, $(abspath $(ASMS)))
@@ -79,10 +75,14 @@ $(TARGET): $(OBJECTS) $(LDSCRIPT)
 build: $(TARGET)
 
 run: $(TARGET)
-	qemu-system-arm -M mps3-an547  -nographic -semihosting -kernel $(TARGET)
+	qemu-system-arm -M $(QEMU_PLATFORM) -nographic -semihosting -kernel $(TARGET)
 
 check: $(TARGET)
-	qemu-system-arm -M mps3-an547  -nographic -semihosting -kernel $(TARGET) | tail -n 1 | grep "ALL GOOD!" || exit 1
+	qemu-system-arm -M $(QEMU_PLATFORM) -nographic -semihosting -kernel $(TARGET) | tail -n 2 | grep "ALL GOOD!" || exit 1
+
+$(LDSCRIPT): $(MBED_OS_TARGET_DIR)/TOOLCHAIN_GCC_ARM/MPS2.ld
+	[ -d $(@D) ] || $(Q)mkdir -p $(@D); \
+	$(CC) -x assembler-with-cpp -E -Wp,-P $(CFLAGS) $< -o $@
 
 clean:
 	rm -f *.elf
