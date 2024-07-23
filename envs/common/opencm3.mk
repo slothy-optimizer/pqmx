@@ -85,7 +85,7 @@ $(TARGET): $(OBJECTS) $(LDSCRIPT) $(LDDEPS)
 	$(OBJCOPY) -Oihex $(TARGET) $(TARGET).hex
 
 flash: $(TARGET)
-	openocd -f board/st_nucleo_f7.cfg -c 'program $(TARGET).hex verify reset exit'
+	openocd -f $(OPENOCD_CFG) -c 'program $(TARGET).hex verify reset exit'
 
 run:
 	@echo "WARNING: Target platform does not support the run- target. Use the flash- target instead to flash to the board. Skipping"
