@@ -57,6 +57,13 @@ int main (void)
     }
     #endif
 
+    measure_start();
+    for(int i=0;i<1000;i++){
+        asm("nop");
+    }
+    measure_end();
+
+
     debug_test_ok();
     debug_printf( "ALL GOOD!\n" );
     return( 0 );

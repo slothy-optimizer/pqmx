@@ -243,7 +243,6 @@ void debug_printf(const char * format, ... )
 void debug_test_ok()   { hal_send_str( "Ok\n"    ); }
 void debug_test_fail() { hal_send_str( "FAIL!\n" ); }
 
-
 void sys_tick_handler(void) {
     ++overflowcnt;
 }
@@ -257,6 +256,22 @@ uint64_t hal_get_time() {
         }
     }
 }
+
+static uint64_t _measure_start = 0;
+
+/* Stubs to enable/disable measurements. */
+void measure_end()
+{
+    uint64_t dur = hal_get_time() - _measure_start;
+    debug_printf( "cycles: %llu\n", dur );
+}
+
+void measure_start()
+{
+    _measure_start = hal_get_time();
+}
+
+
 
 /* End of BSS is where the heap starts (defined in the linker script) */
 extern char end;
