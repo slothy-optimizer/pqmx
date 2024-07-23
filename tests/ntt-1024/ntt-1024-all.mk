@@ -1,0 +1,10 @@
+include tests/ntt-1024/ntt-1024-full.mk
+include tests/ntt-1024/ntt-1024-rev4.mk
+include tests/ntt-1024/ntt-1024-bitrev.mk
+include tests/ntt-1024/ntt-1024-skipfirst.mk
+include tests/ntt-1024/ntt-1024-bitrev-skipfirst.mk
+include tests/ntt-1024/ntt-1024-polymul.mk
+include tests/ntt-1024/ntt-1024-fwd-inv-bitrev.mk
+include tests/ntt-1024/ntt-1024-double.mk
+include tests/ntt-1024/ntt-1024-double-rev4.mk
+include tests/ntt-1024/ntt-1024-complete.mk
