@@ -1,0 +1,47 @@
+vmov.w r6, s2
+ldr.w r14, [r0, #7*32/4]
+ldr.w r8, [r0, #6*32/4]
+smull r11, r7, r14, r6
+smull r14, r8, r8, r6
+ldr.w r4, [r0, #2*32/4]
+mul r1, r11, r2
+ldr.w r9, [r0, #3*32/4]
+mul r5, r14, r2
+vmov.w r12, s4
+smlal r11, r7, r1, r3
+ldr.w r11, [r0, #5*32/4]
+ldr.w r10, [r0, #1*32/4]
+smull r11, r1, r11, r6
+add r9, r7
+smlal r14, r8, r5, r3
+sub.w r5, r9, r7, lsl #1
+mul r14, r11, r2
+add r4, r8
+smull r5, r7, r5, r12
+smlal r11, r1, r14, r3
+sub.w r8, r4, r8, lsl #1
+mul r14, r5, r2
+ldr.w r11, [r0, #4*32/4]
+smull r11, r6, r11, r6
+add r10, r1
+smlal r5, r7, r14, r3
+sub.w r14, r10, r1, lsl #1
+smull r5, r12, r8, r12
+vmov.w r8, s7
+add r14, r7
+mul r1, r11, r2
+sub.w r7, r14, r7, lsl #1
+smull r8, r14, r14, r8
+smlal r11, r6, r1, r3
+mul r1, r8, r2
+mul r11, r5, r2
+smlal r8, r14, r1, r3
+vmov.w r1, s3
+smull r4, r8, r4, r1
+smlal r5, r12, r11, r3
+ldr.w r5, [r0]
+mul r11, r4, r2
+add r5, r6
+smull r1, r9, r9, r1
+smlal r4, r8, r11, r3
+sub.w r4, r5, r6, lsl #1
