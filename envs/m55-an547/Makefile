@@ -84,6 +84,9 @@ run: $(TARGET)
 check: $(TARGET)
 	qemu-system-arm -M mps3-an547  -nographic -semihosting -kernel $(TARGET) | tail -n 1 | grep "ALL GOOD!" || exit 1
 
+flash:
+	@echo "WARNING: Target platform does not support the flash- targets. Skipping"
+
 clean:
 	rm -f *.elf
 	rm -rf $(BUILD_DIR)

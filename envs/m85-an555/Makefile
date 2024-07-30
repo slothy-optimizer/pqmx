@@ -87,6 +87,8 @@ run:
 check:
 	@echo "WARNING: AN555 is not supported by qemu. Skipping"
 
+flash:
+	@echo "WARNING: Target platform does not support the flash- targets. Skipping"
 
 clean:
 	rm -f *.elf *.bin

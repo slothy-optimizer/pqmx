@@ -41,6 +41,7 @@ builds          := $(addprefix build-, $(platformtests))
 runs            := $(addprefix run-, $(platformtests))
 checks          := $(addprefix check-, $(platformtests))
 cleans          := $(addprefix clean-, $(platformtests))
+flashs          := $(addprefix flash-, $(platformtests))
 
 .PHONY: all
 all: ${builds}
@@ -65,6 +66,10 @@ ${checks}: check-%:
 
 .PHONY: check
 check: ${checks}
+
+.PHONY: ${flashs}
+${flashs}: flash-%:
+	make -C envs/$(platform) flash CFLAGS_EXTRA='$(call testcflags,$(test))' SOURCES='$(call testsources,$(test),../../)' ASMS='$(call testasms,$(test),../../)' TARGET=$(call elfname,$(test)) TESTDIR=$(call testdir,$(test),../../)
 
 .PHONY: ${cleans}
 ${cleans}: clean-%:

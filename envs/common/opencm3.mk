@@ -1,18 +1,34 @@
-CC = arm-none-eabi-gcc
+# SPDX-License-Identifier: Apache-2.0
+PREFIX = arm-none-eabi
+CC = $(PREFIX)-gcc
+CPP = $(CC)
 LD := $(CC)
+OBJCOPY = $(PREFIX)-objcopy
 
+OPENCM3_DIR ?=
 SRC_DIR=./src
 BUILD_DIR=./build/$(TARGET)
-
 COMMON_INC=../common/inc/
 ENV_INC=./inc/
 TEST_COMMON=../../tests/common/
-MBED_OS_DIR ?= ../../submodules/mbed-os/
 
 
-MBED_OS_CMSIS = $(MBED_OS_DIR)/cmsis/CMSIS_5/CMSIS/TARGET_CORTEX_M/
+override LDSCRIPT := $(BUILD_DIR)/generated.$(DEVICE).ld
+include $(OPENCM3_DIR)/mk/genlink-config.mk
+include $(OPENCM3_DIR)/mk/genlink-rules.mk
+include $(OPENCM3_DIR)/mk/gcc-rules.mk
+
+
+CFLAGS += $(ARCH_FLAGS)
+
+LDFLAGS += \
+	-nostartfiles \
+	-T$(LDSCRIPT) \
+	$(ARCH_FLAGS)
+
 
 SYSROOT := $(shell $(CC) --print-sysroot)
+
 
 CFLAGS += \
 	-O3 \
@@ -21,19 +37,16 @@ CFLAGS += \
 	-Wall -Wextra -Wshadow -Werror \
 	-MMD \
 	-fno-common \
+	$(CPPFLAGS) \
 	-I$(COMMON_INC) \
 	-I$(ENV_INC) \
 	-I$(SRC_DIR) \
 	-I$(TESTDIR) \
-	-I$(MBED_OS_CMSIS)/Include \
-	-I$(MBED_OS_TARGET_DIR) \
 	-I$(TEST_COMMON)
 
-CFLAGS += \
-	$(ARCH_FLAGS) \
-	--specs=nosys.specs
 
 LDFLAGS += \
+	--specs=nosys.specs \
 	-Wl,--wrap=_sbrk \
 	-Wl,--wrap=_open \
 	-Wl,--wrap=_close \
@@ -44,14 +57,13 @@ LDFLAGS += \
 	-Wl,--wrap=_write \
 	-Wl,--wrap=_fstat \
 	-Wl,--wrap=_getpid \
-	--specs=nosys.specs \
-	-T$(LDSCRIPT) \
-	$(ARCH_FLAGS)
+	-ffreestanding \
+	-Lobj \
+	-Wl,--gc-sections
 
 all: $(TARGET)
 
-HAL_SOURCES = ../common/src/hal-mps2.c
-HAL_ASMS = $(MBED_OS_TARGET_DIR)/TOOLCHAIN_GCC_ARM/startup_MPS2.S
+HAL_SOURCES = ../common/src/hal-opencm3.c
 OBJECTS_HAL = $(patsubst %.c, $(BUILD_DIR)/%.c.o, $(abspath $(HAL_SOURCES)))
 OBJECTS_HAL += $(patsubst %.S, $(BUILD_DIR)/%.S.o, $(abspath $(HAL_ASMS)))
 OBJECTS_SOURCES=$(patsubst %.c, $(BUILD_DIR)/%.c.o, $(abspath $(SOURCES)))
@@ -68,25 +80,22 @@ $(OBJECTS_ASM): $(BUILD_DIR)/%.o: %
 	mkdir -p $(@D)
 	$(CC) -x assembler-with-cpp $(CFLAGS) -c -o $@ $<
 
-$(TARGET): $(OBJECTS) $(LDSCRIPT)
-	$(LD) $(LDFLAGS) -o $@ $(OBJECTS)
+$(TARGET): $(OBJECTS) $(LDSCRIPT) $(LDDEPS)
+	$(LD) $(LDFLAGS) -o $@ $(OBJECTS)  -Wl,--start-group $(LDLIBS) -Wl,--end-group
+	$(OBJCOPY) -Oihex $(TARGET) $(TARGET).hex
+
+flash: $(TARGET)
+	openocd -f $(OPENOCD_CFG) -c 'program $(TARGET).hex verify reset exit'
+
+run:
+	@echo "WARNING: Target platform does not support the run- target. Use the flash- target instead to flash to the board. Skipping"
+
+check:
+	@echo "WARNING: Target platform does not support the check- target. Use the flash- target instead to flash to the board. Skipping"
 
 .PHONY: build
 build: $(TARGET)
 
-run: $(TARGET)
-	qemu-system-arm -M $(QEMU_PLATFORM) -nographic -semihosting -kernel $(TARGET)
-
-check: $(TARGET)
-	qemu-system-arm -M $(QEMU_PLATFORM) -nographic -semihosting -kernel $(TARGET) | tail -n 2 | grep "ALL GOOD!" || exit 1
-
-$(LDSCRIPT): $(MBED_OS_TARGET_DIR)/TOOLCHAIN_GCC_ARM/MPS2.ld
-	[ -d $(@D) ] || $(Q)mkdir -p $(@D); \
-	$(CC) -x assembler-with-cpp -E -Wp,-P $(CFLAGS) $< -o $@
-
-flash:
-	@echo "WARNING: Target platform does not support the flash- targets. Skipping"
-
 clean:
-	rm -f *.elf
+	rm -f *.elf *.hex
 	rm -rf $(BUILD_DIR)

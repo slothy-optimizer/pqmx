@@ -56,6 +56,21 @@ uint64_t hal_get_time() {
     }
 }
 
+static uint64_t _measure_start = 0;
+
+/* Stubs to enable/disable measurements. */
+void measure_end()
+{
+    uint64_t dur = hal_get_time() - _measure_start;
+    debug_printf( "cycles: %llu\n", dur );
+}
+
+void measure_start()
+{
+    _measure_start = hal_get_time();
+}
+
+
 void hal_setup(const enum clock_mode clock) {
     (void) clock;
 }
