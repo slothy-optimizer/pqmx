@@ -98,7 +98,7 @@ void debug_test_start( const char *testname ){
 
 void debug_printf(const char * format, ... )
 {
-    char str[100];
+    char str[200];
     va_list argp;
     va_start( argp, format );
     vsnprintf(str, sizeof str, format, argp );
