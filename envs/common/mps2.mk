@@ -50,10 +50,12 @@ LDFLAGS += \
 
 all: $(TARGET)
 
-HAL_SOURCES = ../common/src/hal-mps2.c
+HAL_SOURCES = ../common/src/hal-mps2.c ../common/src/randombytes.c
 HAL_ASMS = $(MBED_OS_TARGET_DIR)/TOOLCHAIN_GCC_ARM/startup_MPS2.S
 OBJECTS_HAL = $(patsubst %.c, $(BUILD_DIR)/%.c.o, $(abspath $(HAL_SOURCES)))
 OBJECTS_HAL += $(patsubst %.S, $(BUILD_DIR)/%.S.o, $(abspath $(HAL_ASMS)))
+TEST_COMMON_SOURCES = $(wildcard $(TEST_COMMON)/*.c)
+OBJECTS_TEST_COMMON = $(patsubst %.c, $(BUILD_DIR)/%.c.o, $(abspath $(TEST_COMMON_SOURCES)))
 OBJECTS_SOURCES=$(patsubst %.c, $(BUILD_DIR)/%.c.o, $(abspath $(SOURCES)))
 OBJECTS_C = $(OBJECTS_SOURCES) $(OBJECTS_HAL) $(OBJECTS_TEST_COMMON)
 OBJECTS_ASM = $(patsubst %.s, $(BUILD_DIR)/%.s.o, $(abspath $(ASMS)))

@@ -3,6 +3,7 @@
 #include <sys/cdefs.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include "randombytes.h"
 
 #define SERIAL_BAUD 38400
 
@@ -322,6 +323,13 @@ void measure_end()
 void measure_start()
 {
     _measure_start = hal_get_time();
+}
+
+uint8_t get_random_byte()
+{
+    uint32_t data;
+    randombytes((uint8_t *)&data,sizeof(data));
+    return (uint8_t) data;
 }
 
 
