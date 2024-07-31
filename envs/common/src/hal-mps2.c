@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 #include <stdarg.h>
 #include <stdio.h>
+#include "randombytes.h"
 #include <hal.h>
 #if defined(MPS2_AN385)
 #include <CMSDK_CM3.h>
@@ -109,6 +110,15 @@ void debug_printf(const char * format, ... )
 
 void debug_test_ok()   { hal_send_str( "Ok\n"    ); }
 void debug_test_fail() { hal_send_str( "FAIL!\n" ); }
+
+uint8_t get_random_byte()
+{
+    uint32_t data;
+    randombytes((uint8_t *)&data,sizeof(data));
+    return (uint8_t) data;
+}
+
+
 
 #if !defined(NO_SEMIHOSTING_EXIT)
 // TODO(dsprenkels) Currently, we only exit the QEMU host when a the program
