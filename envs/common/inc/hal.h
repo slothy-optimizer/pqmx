@@ -55,6 +55,8 @@ extern void measure_start();
 extern void measure_end();
 #endif /* MVE_POLY_ARITHETIC_MEASURE_MACRO */
 
+uint64_t hal_get_time();
+
 /* Debugging stubs
  *
  * Those stubs can either be defined as macros (which is especially

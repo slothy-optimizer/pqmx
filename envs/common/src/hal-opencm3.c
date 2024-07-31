@@ -13,6 +13,7 @@
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/usart.h>
 #include <libopencm3/stm32/flash.h>
+#include <libopencm3/cm3/scb.h>
 
 #if defined(STM32F207ZG)
 #include <libopencm3/stm32/rng.h>
@@ -193,6 +194,52 @@ void usart_setup() {
     #endif
 }
 
+#if defined(STM32F7)
+#define DWT_LAR_PTR                         ((volatile unsigned int *) 0xe0001fb0)
+#define DWT_LAR_KEY                         0xC5ACCE55
+#define SCB_DCISW_SET_Pos                   5U                                            /*!< SCB DCISW: Set Position */
+#define SCB_DCISW_SET_Msk                  (0x1FFUL << SCB_DCISW_SET_Pos)                 /*!< SCB DCISW: Set Mask */
+#define SCB_CCR_DC_Pos                      16U                                           /*!< SCB CCR: Cache enable bit Position */
+#define SCB_CCR_DC_Msk                     (1UL << SCB_CCR_DC_Pos)                        /*!< SCB CCR: Cache enable bit Mask */
+#define SCB_CCSIDR_NUMSETS_Pos             13U                                            /*!< SCB CCSIDR: NumSets Position */
+#define SCB_CCSIDR_NUMSETS_Msk             (0x7FFFUL << SCB_CCSIDR_NUMSETS_Pos)           /*!< SCB CCSIDR: NumSets Mask */
+#define SCB_DCISW_WAY_Pos                  30U                                            /*!< SCB DCISW: Way Position */
+#define SCB_DCISW_WAY_Msk                  (3UL << SCB_DCISW_WAY_Pos)                     /*!< SCB DCISW: Way Mask */
+#define SCB_CCSIDR_ASSOCIATIVITY_Pos        3U                                            /*!< SCB CCSIDR: Associativity Position */
+#define SCB_CCSIDR_ASSOCIATIVITY_Msk       (0x3FFUL << SCB_CCSIDR_ASSOCIATIVITY_Pos)      /*!< SCB CCSIDR: Associativity Mask */
+#define SCB_CCR_DC_Pos                      16U                                           /*!< SCB CCR: Cache enable bit Position */
+#define SCB_CCR_DC_Msk                     (1UL << SCB_CCR_DC_Pos)                        /*!< SCB CCR: Cache enable bit Mask */
+#define SCB_CCR_IC_Pos                      17U                                           /*!< SCB CCR: Instruction cache enable bit Position */
+#define SCB_CCR_IC_Msk                     (1UL << SCB_CCR_IC_Pos)                        /*!< SCB CCR: Instruction cache enable bit Mask */
+
+#define CCSIDR_WAYS(x) (((x) & SCB_CCSIDR_ASSOCIATIVITY_Msk) >> SCB_CCSIDR_ASSOCIATIVITY_Pos)
+#define CCSIDR_SETS(x) (((x) & SCB_CCSIDR_NUMSETS_Msk ) >> SCB_CCSIDR_NUMSETS_Pos )
+
+static void SCB_EnableICache(void){
+    SCB_ICIALLU = 0L;
+    SCB_CCR |= (uint32_t) SCB_CCR_IC_Msk ;
+}
+
+static void SCB_EnableDCache(void){
+    uint32_t ccsidr;
+    uint32_t sets;
+    uint32_t ways;
+
+    ccsidr = SCB_CCSIDR;
+    /* invalidate D-Cache */
+    sets = (uint32_t)(CCSIDR_SETS(ccsidr));
+    do {
+      ways = (uint32_t)(CCSIDR_WAYS(ccsidr));
+      do {
+        SCB_DCISW = (((sets << SCB_DCISW_SET_Pos) & SCB_DCISW_SET_Msk) |
+                      ((ways << SCB_DCISW_WAY_Pos) & SCB_DCISW_WAY_Msk)  );
+      } while (ways-- != 0U);
+    } while(sets-- != 0U);
+    SCB_CCR |= (uint32_t)SCB_CCR_DC_Msk;  /* enable D-Cache */
+}
+#endif
+
+
 void systick_setup() {
     /* Systick is always the same on libopencm3 */
     systick_set_clocksource(STK_CSR_CLKSOURCE_AHB);
@@ -206,6 +253,12 @@ void hal_setup(const enum clock_mode clock) {
     usart_setup();
     systick_setup();
     rng_enable();
+
+
+    #if defined(STM32F7)
+    SCB_EnableICache();
+    SCB_EnableDCache();
+    #endif
 
     // wait for the first systick overflow
     // improves reliability of the benchmarking scripts since it makes it much
@@ -231,7 +284,7 @@ void debug_test_start( const char *testname ){
 
 void debug_printf(const char * format, ... )
 {
-    char str[100];
+    char str[200];
     va_list argp;
     va_start( argp, format );
     vsnprintf(str, sizeof str, format, argp );

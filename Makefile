@@ -19,6 +19,7 @@ include tests/ntt-dilithium/ntt-dilithium.mk
 include tests/ntt-kyber/ntt-kyber.mk
 include tests/permute/permute.mk
 include tests/poly/poly.mk
+include tests/profiling/profiling.mk
 include tests/saber/saber_tc.mk
 include tests/saber/saber_ntt_full.mk
 include tests/saber/saber_ntt_partial.mk
