@@ -7,6 +7,7 @@ include tests/fx-fft/fx-fft.mk
 include tests/helloworld/helloworld.mk
 include tests/intmulntt/intmulntt.mk
 include tests/karatsuba/karatsuba.mk
+include tests/keccak/keccak.mk
 include tests/montgomery/montgomery.mk
 include tests/ntt-192/ntt-192.mk
 include tests/ntt-256/ntt-256.mk
@@ -16,6 +17,7 @@ include tests/ntt-768/ntt-768.mk
 include tests/ntt-1024/ntt-1024-all.mk
 include tests/ntt-n256/ntt-n256.mk
 include tests/ntt-dilithium/ntt-dilithium.mk
+include tests/ntt-dilithium-m7/ntt-dilithium-m7.mk
 include tests/ntt-kyber/ntt-kyber.mk
 include tests/permute/permute.mk
 include tests/poly/poly.mk
