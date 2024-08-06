@@ -21,6 +21,8 @@ extern void KeccakP1600_Permute_24rounds(void*);
 
 /* Slothy */
 extern void KeccakF1600_StatePermute_opt_m7(void*);
+extern void KeccakP1600_Permute_24rounds_opt_m7(void*);
+extern void KeccakF1600_StatePermute_old_opt_m7(void*);
 
 #define MAKE_BENCH_KECCAKF(var, func)                                \
     int bench_keccakf_##var()                                        \
@@ -55,6 +57,8 @@ MAKE_BENCH_KECCAKF(ref_old, KeccakF1600_StatePermute_old)
 MAKE_BENCH_KECCAKF(m7, KeccakP1600_Permute_24rounds)
 
 MAKE_BENCH_KECCAKF(opt_m7, KeccakF1600_StatePermute_opt_m7)
+MAKE_BENCH_KECCAKF(old_opt_m7, KeccakF1600_StatePermute_old_opt_m7)
+MAKE_BENCH_KECCAKF(m7_opt_m7, KeccakP1600_Permute_24rounds_opt_m7)
 
 
 #define MAKE_TEST_KECCAKF(var, func, ref_func)                         \
@@ -103,7 +107,7 @@ MAKE_TEST_KECCAKF(m7, KeccakP1600_Permute_24rounds, KeccakF1600_StatePermute_pqm
 
 int main(void)
 {
-    debug_test_start( "Keccak" );
+    debug_test_start( "Keccak new" );
     /* Test correctness */
     if(test_keccakf_pqm4() != 0){
         return 1;
@@ -119,6 +123,8 @@ int main(void)
     bench_keccakf_m7();
     
     bench_keccakf_opt_m7();
+    bench_keccakf_old_opt_m7();
+    bench_keccakf_m7_opt_m7();
 
     debug_test_ok();
     debug_printf( "ALL GOOD!\n" );

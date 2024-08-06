@@ -20,5 +20,7 @@ KECCAK_ASMDIR = ../../asm/manual/keccak
 KECCAK_ASMS += $(KECCAK_ASMDIR)/keccakf1600_pqm4.s
 KECCAK_ASMS += $(KECCAK_ASMDIR)/keccakf1600.s
 KECCAK_ASMS += $(KECCAK_ASMDIR)/keccakf1600_old.s
+KECCAK_ASMS += $(KECCAK_ASMDIR)/keccakf1600_old_opt_m7.s
 KECCAK_ASMS += $(KECCAK_ASMDIR)/keccakf1600_m7.s
 KECCAK_ASMS += $(KECCAK_ASMDIR)/keccakf1600_opt_m7.s
+KECCAK_ASMS += $(KECCAK_ASMDIR)/keccakf1600_m7_opt_m7.s
