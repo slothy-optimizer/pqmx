@@ -1,4 +1,5 @@
 # Tests
+include tests/dilithium-all/dilithium-all.mk
 include tests/chunk/chunk.mk
 include tests/crt/crt.mk
 include tests/ct/ct.mk
