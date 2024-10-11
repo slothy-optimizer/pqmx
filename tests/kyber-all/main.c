@@ -50,6 +50,12 @@
 void ntt_fast(int16_t *, int16_t *, int16_t *, int16_t *, int16_t *);
 void ntt_fast_opt_m7(int16_t *, int16_t *, int16_t *, int16_t *, int16_t *);
 
+void invntt_fast(int16_t *, int16_t *, int16_t *, int16_t *, int16_t *);
+void invntt_fast_opt_m7(int16_t *, int16_t *, int16_t *, int16_t *, int16_t *);
+
+void pointwise_add(int16_t *, int16_t *, int16_t *, int16_t *, int16_t *);
+void pointwise_add_opt_m7(int16_t *, int16_t *, int16_t *, int16_t *, int16_t *);
+
 #define NTT_LAYERS             7
 #define NTT_SIZE               256
 
@@ -102,6 +108,11 @@ int test_ ## var ()                                                         \
 MAKE_TEST_FWD(ntt_pqm4, ntt_fast, ntt_fast, 0)
 MAKE_TEST_FWD(ntt_pqm4_opt, ntt_fast_opt_m7, ntt_fast, 0)
 
+MAKE_TEST_FWD(invntt_pqm4, invntt_fast, invntt_fast, 0)
+MAKE_TEST_FWD(invntt_pqm4_opt, invntt_fast_opt_m7, invntt_fast, 0)
+
+MAKE_TEST_FWD(pointwise_add_pqm4, pointwise_add, pointwise_add, 0)
+MAKE_TEST_FWD(pointwise_add_pqm4_opt, pointwise_add_opt_m7, pointwise_add, 0)
 
 static int cmp_uint64_t(const void *a, const void *b)
 {
@@ -137,6 +148,12 @@ static int cmp_uint64_t(const void *a, const void *b)
 MAKE_BENCH(ntt_pqm4,ntt_fast)
 MAKE_BENCH(ntt_pqm4_opt,ntt_fast_opt_m7)
 
+MAKE_BENCH(invntt_pqm4,invntt_fast)
+MAKE_BENCH(invntt_pqm4_opt,invntt_fast_opt_m7)
+
+MAKE_BENCH(pointwise_add_pqm4,pointwise_add)
+MAKE_BENCH(pointwise_add_pqm4_opt,pointwise_add_opt_m7)
+
 
 int main(void)
 {
@@ -146,10 +163,18 @@ int main(void)
     /* Test cases */
     if( test_ntt_pqm4() != 0 ){return( 1 );}
     if( test_ntt_pqm4_opt() != 0 ){return( 1 );}
-
+    if( test_invntt_pqm4() != 0 ){return( 1 );}
+    if( test_invntt_pqm4_opt() != 0 ){return( 1 );}
+    if( test_pointwise_add_pqm4() != 0 ){return( 1 );}
+    if( test_pointwise_add_pqm4_opt() != 0 ){return( 1 );}
 
     bench_ntt_pqm4();
     bench_ntt_pqm4_opt();
+    bench_invntt_pqm4();
+    bench_invntt_pqm4_opt();
+    bench_pointwise_add_pqm4();
+    bench_pointwise_add_pqm4_opt();
+
 
     /* Test cases */
     debug_printf( "Done!\n" );

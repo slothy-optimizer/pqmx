@@ -14,3 +14,9 @@ KYBER_ALL_SOURCES += main.c
 KYBER_ALL_ASM_DIR = ../../asm/manual/kyber-all
 KYBER_ALL_ASMS += $(KYBER_ALL_ASM_DIR)/ntt_kyber.s
 KYBER_ALL_ASMS += $(KYBER_ALL_ASM_DIR)/ntt_kyber_opt_m7.s
+
+KYBER_ALL_ASMS += $(KYBER_ALL_ASM_DIR)/intt_kyber.s
+KYBER_ALL_ASMS += $(KYBER_ALL_ASM_DIR)/intt_kyber_opt_m7.s
+
+KYBER_ALL_ASMS += $(KYBER_ALL_ASM_DIR)/add_kyber.s
+KYBER_ALL_ASMS += $(KYBER_ALL_ASM_DIR)/add_kyber_opt_m7.s
