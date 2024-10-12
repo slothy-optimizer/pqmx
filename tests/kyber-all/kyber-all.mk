@@ -9,6 +9,7 @@ KYBER_ALL_PLATFORMS += nucleo-f767zi
 
 # C sources required for this test
 KYBER_ALL_SOURCES += main.c
+KYBER_ALL_SOURCES += ntt-acle.c
 
 # Assembly sources required for this test
 KYBER_ALL_ASM_DIR = ../../asm/manual/kyber-all

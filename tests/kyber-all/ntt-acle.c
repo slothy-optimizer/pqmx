@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0 or CC0-1.0
 #include <stdint.h>
 #include "params.h"
-#include "ntt.h"
-#include "basemul.h"
 #include <arm_acle.h>
+
+#define __pkhtb(a, b) (((uint32_t)a) & 0xFFFF0000) ^ (((b) >> 16) & 0xFFFF)
 
 static const int32_t twiddles_plantard_ntt[128] = {
     2230699446, 3328631909, 4243360600, 3408622288, 812805467, 2447447570, 1094061961,
@@ -308,9 +308,36 @@ void invntt_acle(int16_t r[256]) {
     }
 }
 
+static inline void basemul(int32_t r[1], const int32_t a[1], const int32_t b[1], int32_t zeta, int add) {
+    int32_t t1, t2;
+    int32_t qa = 26632;
+    int32_t q = 3329;
+    int32_t qinv = 0x6ba8f301;
+    int32_t a0 = a[0];
+    int32_t b0 = b[0];
+
+    t1 = __smlawt(zeta, b0, 0);
+    t1 = __smlabb(t1, q, qa);
+    t1 = __smlatt(a0, t1, 0);
+    t1 = __smlabb(a0, b0, t1);
+    t1 = qinv * t1;
+    t1 = __smlatb(t1, q, qa);
+
+    t2 = __smuadx(a0, b0);
+    t2 = qinv * t2;
+    t2 = __smlatb(t2, q, qa);
+
+    if (add) {
+        t1 = __pkhtb(t2, t1);
+        r[0] = __uadd16(t1, r[0]);
+    } else {
+        r[0] = __pkhtb(t2, t1);
+    }
+}
+
 void basemul_plantard_acle(int16_t r[256], const int16_t a[256], const int16_t b[256], int add) {
     unsigned int i;
-    for (i = 0; i < MLKEM_N / 4; i++) {
+    for (i = 0; i < KYBER_N / 4; i++) {
         basemul((int32_t *) &r[4 * i],     (int32_t *) &a[4 * i],     (int32_t *) &b[4 * i], twiddles_plantard_basemul[i], add);
         basemul((int32_t *) &r[4 * i + 2], (int32_t *) &a[4 * i + 2], (int32_t *) &b[4 * i + 2], -twiddles_plantard_basemul[i], add);
     }
@@ -319,7 +346,7 @@ void basemul_plantard_acle(int16_t r[256], const int16_t a[256], const int16_t b
 void frombytes_basemul_plantard(int16_t r[256], const int16_t b[256], const unsigned char *a, int add) {
     unsigned int i;
     int16_t ap[4];
-    for (i = 0; i < MLKEM_N / 4; i++) {
+    for (i = 0; i < KYBER_N / 4; i++) {
         ap[0] = ((a[6 * i + 0] >> 0) | ((uint16_t)a[6 * i + 1] << 8)) & 0xFFF;
         ap[1] = ((a[6 * i + 1] >> 4) | ((uint16_t)a[6 * i + 2] << 4)) & 0xFFF;
         ap[2] = ((a[6 * i + 3] >> 0) | ((uint16_t)a[6 * i + 4] << 8)) & 0xFFF;
