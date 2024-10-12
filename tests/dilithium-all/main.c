@@ -49,6 +49,9 @@
 void pqcrystals_dilithium_ntt(int32_t *, int32_t *, int32_t *, int32_t *, int32_t *);
 void pqcrystals_dilithium_ntt_opt_m7(int32_t *, int32_t *, int32_t *, int32_t *, int32_t *);
 
+void pqcrystals_dilithium_invntt_tomont(int32_t *, int32_t *, int32_t *, int32_t *, int32_t *);
+void pqcrystals_dilithium_invntt_tomont_opt_m7(int32_t *, int32_t *, int32_t *, int32_t *, int32_t *);
+
 void __asm_asymmetric_mul_257_16(int32_t *, int32_t *, int32_t *, int32_t *, int32_t *);
 void __asm_asymmetric_mul_257_16_opt_m7(int32_t *, int32_t *, int32_t *, int32_t *, int32_t *);
 
@@ -144,6 +147,9 @@ int test_ ## var ()                                                     \
 MAKE_TEST_FWD(ntt_pqm4, pqcrystals_dilithium_ntt, pqcrystals_dilithium_ntt, 0)
 MAKE_TEST_FWD(ntt_pqm4_opt, pqcrystals_dilithium_ntt_opt_m7, pqcrystals_dilithium_ntt, 0)
 
+MAKE_TEST_FWD(intt_pqm4, pqcrystals_dilithium_invntt_tomont, pqcrystals_dilithium_invntt_tomont, 0)
+MAKE_TEST_FWD(intt_pqm4_opt, pqcrystals_dilithium_invntt_tomont_opt_m7, pqcrystals_dilithium_invntt_tomont, 0)
+
 MAKE_TEST_FWD(asymmetric_mul_257_16_pqm4, __asm_asymmetric_mul_257_16, __asm_asymmetric_mul_257_16, 0)
 MAKE_TEST_FWD(asymmetric_mul_257_16_pqm4_opt, __asm_asymmetric_mul_257_16_opt_m7, __asm_asymmetric_mul_257_16, 0)
 
@@ -217,6 +223,9 @@ static int cmp_uint64_t(const void *a, const void *b)
 MAKE_BENCH(ntt_pqm4,pqcrystals_dilithium_ntt)
 MAKE_BENCH(ntt_pqm4_opt,pqcrystals_dilithium_ntt_opt_m7)
 
+MAKE_BENCH(intt_pqm4,pqcrystals_dilithium_invntt_tomont)
+MAKE_BENCH(intt_pqm4_opt,pqcrystals_dilithium_invntt_tomont_opt_m7)
+
 MAKE_BENCH(asymmetric_mul_257_16_pqm4,__asm_asymmetric_mul_257_16)
 MAKE_BENCH(asymmetric_mul_257_16_pqm4_opt,__asm_asymmetric_mul_257_16_opt_m7)
 
@@ -264,6 +273,8 @@ int main(void)
     /* Test cases */
     if( test_ntt_pqm4() != 0 ){return( 1 );}
     if( test_ntt_pqm4_opt() != 0 ){return( 1 );}
+    if( test_intt_pqm4() != 0 ){return( 1 );}
+    if( test_intt_pqm4_opt() != 0 ){return( 1 );}
     if( test_asymmetric_mul_257_16_pqm4() != 0 ){return( 1 );}
     if( test_asymmetric_mul_257_16_pqm4_opt() != 0 ){return( 1 );}
     if( test_point_mul_257_16_pqm4() != 0 ){return( 1 );}
@@ -292,6 +303,9 @@ int main(void)
 
     bench_ntt_pqm4();
     bench_ntt_pqm4_opt();
+
+    bench_intt_pqm4();
+    bench_intt_pqm4_opt();
 
     bench_asymmetric_mul_257_16_pqm4();
     bench_asymmetric_mul_257_16_pqm4_opt();
