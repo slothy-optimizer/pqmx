@@ -410,7 +410,7 @@ static int cmp_uint64_t(const void *a, const void *b)
         qsort(cycles, REPEAT_MEDIAN, sizeof(uint64_t), cmp_uint64_t);         \
         debug_printf(#func " repeat %d, %d",                                  \
                      REPEAT *REPEAT_MEDIAN, (cycles[REPEAT_MEDIAN >> 1]));    \
-        add_benchmark_results(#func, (cycles[REPEAT_MEDIAN >> 1]));           \
+        add_benchmark_results(#var, (cycles[REPEAT_MEDIAN >> 1]));           \
         return (0);                                                           \
     }
 
@@ -434,7 +434,7 @@ static int cmp_uint64_t(const void *a, const void *b)
         qsort(cycles, REPEAT_MEDIAN, sizeof(uint64_t), cmp_uint64_t);         \
         debug_printf(#var " repeat %d, %d",                                   \
                      REPEAT *REPEAT_MEDIAN, (cycles[REPEAT_MEDIAN >> 1]));    \
-        add_benchmark_results(#func, (cycles[REPEAT_MEDIAN >> 1]));           \
+        add_benchmark_results(#var, (cycles[REPEAT_MEDIAN >> 1]));           \
         return (0);                                                           \
     }
 
@@ -459,7 +459,7 @@ static int cmp_uint64_t(const void *a, const void *b)
         qsort(cycles, REPEAT_MEDIAN, sizeof(uint64_t), cmp_uint64_t);         \
         debug_printf(#var " repeat %d, %d",                                   \
                      REPEAT *REPEAT_MEDIAN, (cycles[REPEAT_MEDIAN >> 1]));    \
-        add_benchmark_results(#func, (cycles[REPEAT_MEDIAN >> 1]));           \
+        add_benchmark_results(#var, (cycles[REPEAT_MEDIAN >> 1]));           \
         return (0);                                                           \
     }
 
@@ -485,7 +485,7 @@ static int cmp_uint64_t(const void *a, const void *b)
         qsort(cycles, REPEAT_MEDIAN, sizeof(uint64_t), cmp_uint64_t);         \
         debug_printf(#var " repeat %d, %d",                                   \
                      REPEAT *REPEAT_MEDIAN, (cycles[REPEAT_MEDIAN >> 1]));    \
-        add_benchmark_results(#func, (cycles[REPEAT_MEDIAN >> 1]));           \
+        add_benchmark_results(#var, (cycles[REPEAT_MEDIAN >> 1]));           \
         return (0);                                                           \
     }
 
@@ -509,7 +509,7 @@ static int cmp_uint64_t(const void *a, const void *b)
         qsort(cycles, REPEAT_MEDIAN, sizeof(uint64_t), cmp_uint64_t);         \
         debug_printf(#var " repeat %d, %d",                                   \
                      REPEAT *REPEAT_MEDIAN, (cycles[REPEAT_MEDIAN >> 1]));    \
-        add_benchmark_results(#func, (cycles[REPEAT_MEDIAN >> 1]));           \
+        add_benchmark_results(#var, (cycles[REPEAT_MEDIAN >> 1]));           \
         return (0);                                                           \
     }
 
@@ -534,47 +534,47 @@ static int cmp_uint64_t(const void *a, const void *b)
         qsort(cycles, REPEAT_MEDIAN, sizeof(uint64_t), cmp_uint64_t);         \
         debug_printf(#var " repeat %d, %d",                                   \
                      REPEAT *REPEAT_MEDIAN, (cycles[REPEAT_MEDIAN >> 1]));    \
-        add_benchmark_results(#func, (cycles[REPEAT_MEDIAN >> 1]));           \
+        add_benchmark_results(#var, (cycles[REPEAT_MEDIAN >> 1]));           \
         return (0);                                                           \
     }
 
-MAKE_BENCH_1(ntt_pqm4,ntt_fast_wrap)
-MAKE_BENCH_1(ntt_pqm4_opt,ntt_fast_opt_m7_wrap)
-MAKE_BENCH_1(ntt_acle,ntt_acle)
+MAKE_BENCH_1(kyber_ntt_pqm4,ntt_fast_wrap)
+MAKE_BENCH_1(kyber_ntt_pqm4_opt_m7,ntt_fast_opt_m7_wrap)
+MAKE_BENCH_1(kyber_ntt_acle,ntt_acle)
 
-MAKE_BENCH_1(invntt_pqm4,invntt_fast_wrap)
-MAKE_BENCH_1(invntt_pqm4_opt,invntt_fast_opt_m7_wrap)
-MAKE_BENCH_1(invntt_acle,invntt_acle)
+MAKE_BENCH_1(kyber_invntt_pqm4,invntt_fast_wrap)
+MAKE_BENCH_1(kyber_invntt_pqm4_opt_m7,invntt_fast_opt_m7_wrap)
+MAKE_BENCH_1(kyber_invntt_acle,invntt_acle)
 
-MAKE_BENCH_1(barrett_reduce_pqm4,asm_barrett_reduce)
-MAKE_BENCH_1(barrett_reduce_pqm4_opt,asm_barrett_reduce_opt_m7)
+MAKE_BENCH_1(kyber_barrett_reduce_pqm4,asm_barrett_reduce)
+MAKE_BENCH_1(kyber_barrett_reduce_pqm4_opt_m7,asm_barrett_reduce_opt_m7)
 
-MAKE_BENCH_1(fromplant_pqm4,asm_fromplant)
-MAKE_BENCH_1(fromplant_pqm4_opt,asm_fromplant_opt_m7)
+MAKE_BENCH_1(kyber_fromplant_pqm4,asm_fromplant)
+MAKE_BENCH_1(kyber_fromplant_pqm4_opt_m7,asm_fromplant_opt_m7)
 
-MAKE_BENCH_3(pointwise_add_pqm4,pointwise_add)
-MAKE_BENCH_3(pointwise_add_pqm4_opt,pointwise_add_opt_m7)
+MAKE_BENCH_3(kyber_pointwise_add_pqm4,pointwise_add)
+MAKE_BENCH_3(kyber_pointwise_add_pqm4_opt_m7,pointwise_add_opt_m7)
 
-MAKE_BENCH_3(pointwise_sub_pqm4,pointwise_sub)
-MAKE_BENCH_3(pointwise_sub_pqm4_opt,pointwise_sub_opt_m7)
+MAKE_BENCH_3(kyber_pointwise_sub_pqm4,pointwise_sub)
+MAKE_BENCH_3(kyber_pointwise_sub_pqm4_opt_m7,pointwise_sub_opt_m7)
 
-MAKE_BENCH_basemul_32(basemul_16_32, basemul_asm_opt_16_32);
-MAKE_BENCH_basemul_32(basemul_16_32_opt, basemul_asm_opt_16_32_opt_m7);
+MAKE_BENCH_basemul_32(kyber_basemul_16_32, basemul_asm_opt_16_32);
+MAKE_BENCH_basemul_32(kyber_basemul_16_32_opt_m7, basemul_asm_opt_16_32_opt_m7);
 
-MAKE_BENCH_basemul_32(basemul_acc_32_32, basemul_asm_acc_opt_32_32);
-MAKE_BENCH_basemul_32(basemul_acc_32_32_opt, basemul_asm_acc_opt_32_32_opt_m7);
+MAKE_BENCH_basemul_32(kyber_basemul_acc_32_32, basemul_asm_acc_opt_32_32);
+MAKE_BENCH_basemul_32(kyber_basemul_acc_32_32_opt_m7, basemul_asm_acc_opt_32_32_opt_m7);
 
-MAKE_BENCH_basemul_32_16(basemul_acc_32_16, basemul_asm_acc_opt_32_16);
-MAKE_BENCH_basemul_32_16(basemul_acc_32_16_opt, basemul_asm_acc_opt_32_16_opt_m7);
+MAKE_BENCH_basemul_32_16(kyber_basemul_acc_32_16, basemul_asm_acc_opt_32_16);
+MAKE_BENCH_basemul_32_16(kyber_basemul_acc_32_16_opt_m7, basemul_asm_acc_opt_32_16_opt_m7);
 
-MAKE_BENCH_frombytes_mul_32(frombytes_mul_16_32, frombytes_mul_asm_16_32_wrap);
-MAKE_BENCH_frombytes_mul_32(frombytes_mul_16_32_opt, frombytes_mul_asm_16_32_opt_m7_wrap);
+MAKE_BENCH_frombytes_mul_32(kyber_frombytes_mul_16_32, frombytes_mul_asm_16_32_wrap);
+MAKE_BENCH_frombytes_mul_32(kyber_frombytes_mul_16_32_opt_m7, frombytes_mul_asm_16_32_opt_m7_wrap);
 
-MAKE_BENCH_frombytes_mul_32(frombytes_mul_acc_32_32, frombytes_mul_asm_acc_32_32_wrap);
-MAKE_BENCH_frombytes_mul_32(frombytes_mul_acc_32_32_opt, frombytes_mul_asm_acc_32_32_opt_m7_wrap);
+MAKE_BENCH_frombytes_mul_32(kyber_frombytes_mul_acc_32_32, frombytes_mul_asm_acc_32_32_wrap);
+MAKE_BENCH_frombytes_mul_32(kyber_frombytes_mul_acc_32_32_opt_m7, frombytes_mul_asm_acc_32_32_opt_m7_wrap);
 
-MAKE_BENCH_frombytes_mul_32_16(frombytes_mul_acc_32_16, frombytes_mul_asm_acc_32_16_wrap);
-MAKE_BENCH_frombytes_mul_32_16(frombytes_mul_acc_32_16_opt, frombytes_mul_asm_acc_32_16_opt_m7_wrap);
+MAKE_BENCH_frombytes_mul_32_16(kyber_frombytes_mul_acc_32_16, frombytes_mul_asm_acc_32_16_wrap);
+MAKE_BENCH_frombytes_mul_32_16(kyber_frombytes_mul_acc_32_16_opt_m7, frombytes_mul_asm_acc_32_16_opt_m7_wrap);
 
 int main(void)
 {
@@ -621,43 +621,43 @@ int main(void)
     if( test_frombytes_mul_acc_32_16() != 0 ){return( 1 );}
     if( test_frombytes_mul_acc_32_16_opt() != 0 ){return( 1 );}
 
-    bench_ntt_pqm4();
-    bench_ntt_pqm4_opt();
-    bench_ntt_acle();
+    bench_kyber_ntt_pqm4();
+    bench_kyber_ntt_pqm4_opt_m7();
+    bench_kyber_ntt_acle();
 
-    bench_invntt_pqm4();
-    bench_invntt_pqm4_opt();
-    bench_invntt_acle();
+    bench_kyber_invntt_pqm4();
+    bench_kyber_invntt_pqm4_opt_m7();
+    bench_kyber_invntt_acle();
 
-    bench_barrett_reduce_pqm4();
-    bench_barrett_reduce_pqm4_opt();
+    bench_kyber_barrett_reduce_pqm4();
+    bench_kyber_barrett_reduce_pqm4_opt_m7();
 
-    bench_fromplant_pqm4();
-    bench_fromplant_pqm4_opt();
+    bench_kyber_fromplant_pqm4();
+    bench_kyber_fromplant_pqm4_opt_m7();
 
-    bench_pointwise_add_pqm4();
-    bench_pointwise_add_pqm4_opt();
+    bench_kyber_pointwise_add_pqm4();
+    bench_kyber_pointwise_add_pqm4_opt_m7();
 
-    bench_pointwise_sub_pqm4();
-    bench_pointwise_sub_pqm4_opt();
+    bench_kyber_pointwise_sub_pqm4();
+    bench_kyber_pointwise_sub_pqm4_opt_m7();
 
-    bench_basemul_16_32();
-    bench_basemul_16_32_opt();
+    bench_kyber_basemul_16_32();
+    bench_kyber_basemul_16_32_opt_m7();
 
-    bench_basemul_acc_32_32();
-    bench_basemul_acc_32_32_opt();
+    bench_kyber_basemul_acc_32_32();
+    bench_kyber_basemul_acc_32_32_opt_m7();
 
-    bench_basemul_acc_32_16();
-    bench_basemul_acc_32_16_opt();
+    bench_kyber_basemul_acc_32_16();
+    bench_kyber_basemul_acc_32_16_opt_m7();
 
-    bench_frombytes_mul_16_32();
-    bench_frombytes_mul_16_32_opt();
+    bench_kyber_frombytes_mul_16_32();
+    bench_kyber_frombytes_mul_16_32_opt_m7();
 
-    bench_frombytes_mul_acc_32_32();
-    bench_frombytes_mul_acc_32_32_opt();
+    bench_kyber_frombytes_mul_acc_32_32();
+    bench_kyber_frombytes_mul_acc_32_32_opt_m7();
 
-    bench_frombytes_mul_acc_32_16();
-    bench_frombytes_mul_acc_32_16_opt();
+    bench_kyber_frombytes_mul_acc_32_16();
+    bench_kyber_frombytes_mul_acc_32_16_opt_m7();
 
     /* Test cases */
     debug_printf( "Done!\n" );
