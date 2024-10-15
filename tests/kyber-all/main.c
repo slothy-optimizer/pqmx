@@ -74,11 +74,35 @@ void basemul_asm_acc_opt_32_16_opt_m7(int16_t *, const int16_t *, const int16_t 
 #define NTT_LAYERS             7
 #define NTT_SIZE               256
 
+typedef struct {
+    char name[100];
+    uint64_t cycles;
+} benchmark_result;
+
+benchmark_result results[100];
+int benchmark_cnt = 0;
+
+static void add_benchmark_results(char *name, uint64_t cycles){
+    if(benchmark_cnt == 100) return;
+
+    results[benchmark_cnt].cycles = cycles;
+    strncpy(results[benchmark_cnt].name, name, 100);
+    benchmark_cnt++;
+}
+
+static void dump_benchmarks_tex(void){
+    for(int i=0;i<benchmark_cnt;i++){
+
+        debug_printf("\\DefineVar{%s}{%llu}", results[i].name, results[i].cycles);
+    }
+}
+
 /*
  * Test cases
  */
 
 int16_t modulus         = 3329;
+
 
 
 #define MAKE_TEST_1(var,func,ref_func)                                      \
@@ -386,6 +410,7 @@ static int cmp_uint64_t(const void *a, const void *b)
         qsort(cycles, REPEAT_MEDIAN, sizeof(uint64_t), cmp_uint64_t);         \
         debug_printf(#func " repeat %d, %d",                                  \
                      REPEAT *REPEAT_MEDIAN, (cycles[REPEAT_MEDIAN >> 1]));    \
+        add_benchmark_results(#func, (cycles[REPEAT_MEDIAN >> 1]));           \
         return (0);                                                           \
     }
 
@@ -409,6 +434,7 @@ static int cmp_uint64_t(const void *a, const void *b)
         qsort(cycles, REPEAT_MEDIAN, sizeof(uint64_t), cmp_uint64_t);         \
         debug_printf(#var " repeat %d, %d",                                   \
                      REPEAT *REPEAT_MEDIAN, (cycles[REPEAT_MEDIAN >> 1]));    \
+        add_benchmark_results(#func, (cycles[REPEAT_MEDIAN >> 1]));           \
         return (0);                                                           \
     }
 
@@ -433,6 +459,7 @@ static int cmp_uint64_t(const void *a, const void *b)
         qsort(cycles, REPEAT_MEDIAN, sizeof(uint64_t), cmp_uint64_t);         \
         debug_printf(#var " repeat %d, %d",                                   \
                      REPEAT *REPEAT_MEDIAN, (cycles[REPEAT_MEDIAN >> 1]));    \
+        add_benchmark_results(#func, (cycles[REPEAT_MEDIAN >> 1]));           \
         return (0);                                                           \
     }
 
@@ -458,6 +485,7 @@ static int cmp_uint64_t(const void *a, const void *b)
         qsort(cycles, REPEAT_MEDIAN, sizeof(uint64_t), cmp_uint64_t);         \
         debug_printf(#var " repeat %d, %d",                                   \
                      REPEAT *REPEAT_MEDIAN, (cycles[REPEAT_MEDIAN >> 1]));    \
+        add_benchmark_results(#func, (cycles[REPEAT_MEDIAN >> 1]));           \
         return (0);                                                           \
     }
 
@@ -481,6 +509,7 @@ static int cmp_uint64_t(const void *a, const void *b)
         qsort(cycles, REPEAT_MEDIAN, sizeof(uint64_t), cmp_uint64_t);         \
         debug_printf(#var " repeat %d, %d",                                   \
                      REPEAT *REPEAT_MEDIAN, (cycles[REPEAT_MEDIAN >> 1]));    \
+        add_benchmark_results(#func, (cycles[REPEAT_MEDIAN >> 1]));           \
         return (0);                                                           \
     }
 
@@ -505,6 +534,7 @@ static int cmp_uint64_t(const void *a, const void *b)
         qsort(cycles, REPEAT_MEDIAN, sizeof(uint64_t), cmp_uint64_t);         \
         debug_printf(#var " repeat %d, %d",                                   \
                      REPEAT *REPEAT_MEDIAN, (cycles[REPEAT_MEDIAN >> 1]));    \
+        add_benchmark_results(#func, (cycles[REPEAT_MEDIAN >> 1]));           \
         return (0);                                                           \
     }
 
@@ -572,7 +602,7 @@ int main(void)
 
     if( test_pointwise_sub_pqm4() != 0 ){return( 1 );}
     if( test_pointwise_sub_pqm4_opt() != 0 ){return( 1 );}
-    
+
     if( test_basemul_16_32() != 0 ){return( 1 );}
     if( test_basemul_16_32_opt() != 0 ){return( 1 );}
 
@@ -631,6 +661,10 @@ int main(void)
 
     /* Test cases */
     debug_printf( "Done!\n" );
+
+    debug_printf("======================" );
+    dump_benchmarks_tex();
+    debug_printf("======================\n" );
     debug_printf( "ALL GOOD!\n" );
     return( ret );
 }

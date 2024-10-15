@@ -98,6 +98,30 @@ void pqcrystals_dilithium_small_asm_reduce32_central_opt_m7(int32_t *, int32_t *
 #define NTT_LAYER_GAP          ( NTT_LAYERS - NTT_INCOMPLETE_LAYERS )
 #define NTT_LAYER_STRIDE       (1u << NTT_LAYER_GAP )
 
+
+typedef struct {
+    char name[100];
+    uint64_t cycles;
+} benchmark_result;
+
+benchmark_result results[100];
+int benchmark_cnt = 0;
+
+static void add_benchmark_results(char *name, uint64_t cycles){
+    if(benchmark_cnt == 100) return;
+
+    results[benchmark_cnt].cycles = cycles;
+    strncpy(results[benchmark_cnt].name, name, 100);
+    benchmark_cnt++;
+}
+
+static void dump_benchmarks_tex(void){
+    for(int i=0;i<benchmark_cnt;i++){
+
+        debug_printf("\\DefineVar{%s}{%llu}", results[i].name, results[i].cycles);
+    }
+}
+
 /*
  * Test cases
  */
@@ -216,6 +240,7 @@ static int cmp_uint64_t(const void *a, const void *b)
         qsort(cycles, REPEAT_MEDIAN, sizeof(uint64_t), cmp_uint64_t);         \
         debug_printf(#func " repeat %d, %d",                                  \
                      REPEAT *REPEAT_MEDIAN, (cycles[REPEAT_MEDIAN >> 1]));    \
+        add_benchmark_results(#func, (cycles[REPEAT_MEDIAN >> 1]));           \
         return (0);                                                           \
     }
 
@@ -348,6 +373,11 @@ int main(void)
 
 
     debug_printf( "Done!\n" );
+
+    debug_printf("======================" );
+    dump_benchmarks_tex();
+    debug_printf("======================\n" );
+
     debug_printf( "ALL GOOD!\n" );
     return( ret );
 }
