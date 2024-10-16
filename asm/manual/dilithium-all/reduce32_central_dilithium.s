@@ -1,0 +1,1 @@
+../../../slothy/examples/naive/armv7m/reduce32_central_dilithium.s
