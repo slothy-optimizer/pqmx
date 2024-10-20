@@ -143,6 +143,14 @@ int test_ ## var ()                                                     \
     /* Setup input */                                                       \
     fill_random_u32( (uint32_t*) src, NTT_SIZE );                           \
     mod_reduce_buf_s32( src, NTT_SIZE, modulus );                           \
+    fill_random_u32( (uint32_t*) src1, NTT_SIZE );                           \
+    mod_reduce_buf_s32( src1, NTT_SIZE, modulus );                           \
+    fill_random_u32( (uint32_t*) src2, NTT_SIZE );                           \
+    mod_reduce_buf_s32( src2, NTT_SIZE, modulus );                           \
+    fill_random_u32( (uint32_t*) src3, NTT_SIZE );                           \
+    mod_reduce_buf_s32( src3, NTT_SIZE, modulus );                           \
+    fill_random_u32( (uint32_t*) src4, NTT_SIZE );                           \
+    mod_reduce_buf_s32( src4, NTT_SIZE, modulus );                           \
                                                                             \
     /* Step 1: Reference NTT */                                             \
     memcpy( src_copy, src, sizeof( src ) );                                 \
