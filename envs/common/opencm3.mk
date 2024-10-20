@@ -89,6 +89,9 @@ $(TARGET): $(OBJECTS) $(LDSCRIPT) $(LDDEPS)
 flash: $(TARGET)
 	openocd -f $(OPENOCD_CFG) -c 'program $(TARGET).hex verify reset exit'
 
+count: $(TARGET)
+	python3 ../common/inst_count.py $(TARGET)
+
 run:
 	@echo "WARNING: Target platform does not support the run- target. Use the flash- target instead to flash to the board. Skipping"
 
