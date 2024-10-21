@@ -49,7 +49,7 @@ void small_ntt_opt_m7(int16_t *a) {
 }
 
 void small_invntt_tomont_opt_m7(int16_t *a) {
-    small_invntt_asm_769(a, zetas_inv_asm_769);
+    small_invntt_asm_769_opt_m7(a, zetas_inv_asm_769);
 }
 
 void small_point_mul_opt_m7(int16_t *out, int16_t *in) {
