@@ -9,6 +9,7 @@ DILITHIUM_ALL_PLATFORMS += nucleo-f767zi
 
 # C sources required for this test
 DILITHIUM_ALL_SOURCES += main.c
+DILITHIUM_ALL_SOURCES += ref.c
 
 # Assembly sources required for this test
 DILITHIUM_ALL_ASM_DIR = ../../asm/manual/dilithium-all
