@@ -71,6 +71,17 @@ void basemul_asm_acc_opt_32_32_opt_m7(int32_t *, const int16_t *, const int16_t 
 void basemul_asm_acc_opt_32_16(int16_t *, const int16_t *, const int16_t *, const int16_t *, const int32_t *);
 void basemul_asm_acc_opt_32_16_opt_m7(int16_t *, const int16_t *, const int16_t *, const int16_t *, const int32_t *);
 
+
+// TODO: instruction counting does not work for more than 4 arguments; use a wrapper for now -- need to fix this later
+void basemul_asm_acc_opt_32_16_wrap(int16_t * a, const int16_t *b, const int16_t *c, const int16_t *d){
+    int32_t yyy[256]= {0};
+    basemul_asm_acc_opt_32_16(a,b,c,d, yyy);
+}
+void basemul_asm_acc_opt_32_16_opt_m7_wrap(int16_t * a, const int16_t *b, const int16_t *c, const int16_t *d){
+    int32_t yyy[256]= {0};
+    basemul_asm_acc_opt_32_16_opt_m7(a,b,c,d, yyy);
+}
+
 #define NTT_LAYERS             7
 #define NTT_SIZE               256
 
