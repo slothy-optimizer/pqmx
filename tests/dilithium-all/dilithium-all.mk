@@ -26,7 +26,6 @@ DILITHIUM_ALL_ASMS += $(DILITHIUM_ALL_ASM_DIR)/pointwise_769_asymmetric_dilithiu
 DILITHIUM_ALL_ASMS += $(DILITHIUM_ALL_ASM_DIR)/pointwise_769_dilithium.s
 DILITHIUM_ALL_ASMS += $(DILITHIUM_ALL_ASM_DIR)/pointwise_acc_montgomery_dilithium.s
 DILITHIUM_ALL_ASMS += $(DILITHIUM_ALL_ASM_DIR)/pointwise_montgomery_dilithium.s
-DILITHIUM_ALL_ASMS += $(DILITHIUM_ALL_ASM_DIR)/reduce32_central_dilithium.s
 DILITHIUM_ALL_ASMS += $(DILITHIUM_ALL_ASM_DIR)/reduce32_dilithium.s
 
 DILITHIUM_ALL_ASMS += $(DILITHIUM_ALL_ASM_DIR)/basemul_257_asymmetric_dilithium_opt_m7.s
@@ -42,5 +41,4 @@ DILITHIUM_ALL_ASMS += $(DILITHIUM_ALL_ASM_DIR)/pointwise_769_asymmetric_dilithiu
 DILITHIUM_ALL_ASMS += $(DILITHIUM_ALL_ASM_DIR)/pointwise_769_dilithium_opt_m7.s
 DILITHIUM_ALL_ASMS += $(DILITHIUM_ALL_ASM_DIR)/pointwise_acc_montgomery_dilithium_opt_m7.s
 DILITHIUM_ALL_ASMS += $(DILITHIUM_ALL_ASM_DIR)/pointwise_montgomery_dilithium_opt_m7.s
-DILITHIUM_ALL_ASMS += $(DILITHIUM_ALL_ASM_DIR)/reduce32_central_dilithium_opt_m7.s
 DILITHIUM_ALL_ASMS += $(DILITHIUM_ALL_ASM_DIR)/reduce32_dilithium_opt_m7.s
