@@ -139,6 +139,8 @@ def main():
 
     args = parser.parse_args()
     
+    counts = {}
+
     with open(args.elf, 'rb') as f:
         elffile = ELFFile(f)
 
@@ -155,8 +157,16 @@ def main():
                     print(f"{k}: TIMEOUT")
                 else:
                     print(f"{k}: {count}")
+                    counts[k] = count
             except uc.unicorn.UcError:
                 print(f"{k}: FAIL")
 
+    def defvar(name, value):
+        print(f"\\DefineVar{{{name}}}{{{value}}}")
+
+    print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+    for k in counts:
+        defvar(f"{args.elf}_{k}_instrcount", counts[k])
+    print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
 if __name__ == "__main__":
     main()
