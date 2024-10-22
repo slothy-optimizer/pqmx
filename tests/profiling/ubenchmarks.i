@@ -26,23 +26,11 @@ _ubench_\name\():
         @ mov.w loop_cnt, #10
         \preamble\()
         nop
-        nop
-        nop
-        nop
-        nop
-        nop
         .align 2
 1:
 .rept 100
         \code\()
 .endr
-        nop
-        nop
-        nop
-        nop
-        nop
-        nop
-
         \end_of_iteration\()
         @ subs.w loop_cnt, loop_cnt, #1
         @ bne.w 1b
