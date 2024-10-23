@@ -47,8 +47,8 @@
 #include "params.h"
 #include "poly.h"
 #include "ntt-acle.h"
-#include "ntt-asm.h"
 #include "frombytes-asm.h"
+#include "ntt-asm.h"
 
 void asm_barrett_reduce(int16_t *);
 void asm_barrett_reduce_opt_m7(int16_t *);
@@ -277,6 +277,45 @@ int test_ ## var ()                                                         \
     return( 0 );                                                            \
 }
 
+#define MAKE_TEST_frombytes_mul(var,func,ref_func)                          \
+int test_ ## var ()                                                         \
+{                                                                           \
+    debug_printf("Test for " #var);                                         \
+    int16_t dst[NTT_SIZE]  __attribute__((aligned(16)));                    \
+    int16_t src1[NTT_SIZE] __attribute__((aligned(16)));                    \
+    uint8_t src2[KYBER_POLYBYTES] __attribute__((aligned(16)));             \
+    int16_t dst_copy[NTT_SIZE] __attribute__((aligned(16)));                \
+                                                                            \
+    /* Setup input */                                                       \
+    fill_random_u16( (uint16_t*) dst, NTT_SIZE );                           \
+    mod_reduce_buf_s16( dst, NTT_SIZE, modulus );                           \
+    fill_random_u16( (uint16_t*) src1, NTT_SIZE );                          \
+    mod_reduce_buf_s16( src1, NTT_SIZE, modulus );                          \
+    fill_random_u8( src2, KYBER_POLYBYTES );                                \
+                                                                            \
+    /* Step 1: Reference */                                                 \
+    memcpy(dst_copy, dst, sizeof dst);                                      \
+    ref_func( dst_copy, src1, src2);                                        \
+    mod_reduce_buf_s16( dst_copy, NTT_SIZE, modulus );                      \
+                                                                            \
+                                                                            \
+    /* Step 2: Optimized */                                                 \
+    (func)( dst, src1, src2);                                               \
+                                                                            \
+    mod_reduce_buf_s16( dst, NTT_SIZE, modulus );                           \
+    if( compare_buf_u16( (uint16_t const*) dst, (uint16_t const*) dst_copy, \
+                         NTT_SIZE ) != 0 )                                  \
+    {                                                                       \
+        debug_print_buf_s16( dst_copy, NTT_SIZE, "Reference" );             \
+        debug_print_buf_s16( dst, NTT_SIZE, "This" );                       \
+        debug_test_fail();                                                  \
+        return( 1 );                                                        \
+    }                                                                       \
+    debug_test_ok();                                                        \
+                                                                            \
+    return( 0 );                                                            \
+}
+
 #define MAKE_TEST_frombytes_mul_32(var,func,ref_func)                       \
 int test_ ## var ()                                                         \
 {                                                                           \
@@ -399,6 +438,17 @@ MAKE_TEST_frombytes_mul_32(frombytes_mul_acc_32_32_opt, frombytes_mul_asm_acc_32
 MAKE_TEST_frombytes_mul_32_16(frombytes_mul_acc_32_16, frombytes_mul_asm_acc_32_16_wrap, frombytes_mul_asm_acc_32_16_wrap);
 MAKE_TEST_frombytes_mul_32_16(frombytes_mul_acc_32_16_opt, frombytes_mul_asm_acc_32_16_opt_m7_wrap, frombytes_mul_asm_acc_32_16_wrap);
 
+MAKE_TEST_3(basemul_pqm4, basemul_asm_wrap, basemul_asm_wrap)
+MAKE_TEST_3(basemul_pqm4_opt, basemul_asm_opt_m7_wrap, basemul_asm_wrap)
+
+MAKE_TEST_3(basemul_acc_pqm4, basemul_asm_acc_wrap, basemul_asm_acc_wrap)
+MAKE_TEST_3(basemul_acc_pqm4_opt, basemul_asm_acc_opt_m7_wrap, basemul_asm_acc_wrap)
+
+MAKE_TEST_frombytes_mul(frombytes_mul_asm_pqm4, frombytes_mul_asm_wrap, frombytes_mul_asm_wrap)
+MAKE_TEST_frombytes_mul(frombytes_mul_asm_pqm4_opt, frombytes_mul_asm_opt_m7_wrap, frombytes_mul_asm_wrap)
+
+MAKE_TEST_frombytes_mul(frombytes_mul_asm_acc_pqm4, frombytes_mul_asm_acc_wrap, frombytes_mul_asm_acc_wrap)
+MAKE_TEST_frombytes_mul(frombytes_mul_asm_acc_pqm4_opt, frombytes_mul_asm_acc_opt_m7_wrap, frombytes_mul_asm_acc_wrap)
 
 static int cmp_uint64_t(const void *a, const void *b)
 {
@@ -502,6 +552,30 @@ static int cmp_uint64_t(const void *a, const void *b)
         return (0);                                                           \
     }
 
+#define MAKE_BENCH_frombytes_mul(var, func)                                   \
+    int bench_##var()                                                         \
+    {                                                                         \
+        uint64_t t1, t2;                                                      \
+        uint64_t cycles[REPEAT_MEDIAN];                                       \
+        int16_t dst[NTT_SIZE] __attribute__((aligned(16)))  = {0};            \
+        int16_t src1[NTT_SIZE] __attribute__((aligned(16))) = {0};            \
+        uint8_t src2[KYBER_POLYBYTES] __attribute__((aligned(16))) = {0};     \
+        (func)(dst, src1, src2);                                              \
+        for (size_t cnt_median = 0; cnt_median < REPEAT_MEDIAN; cnt_median++) \
+        {                                                                     \
+            t1 = hal_get_time();                                              \
+            for (size_t cnt = 0; cnt < REPEAT; cnt++)                         \
+                (func)(dst, src1, src2);                                      \
+            t2 = hal_get_time();                                              \
+            cycles[cnt_median] = (t2 - t1) / REPEAT;                          \
+        }                                                                     \
+        qsort(cycles, REPEAT_MEDIAN, sizeof(uint64_t), cmp_uint64_t);         \
+        debug_printf(#var " repeat %d, %d",                                   \
+                     REPEAT *REPEAT_MEDIAN, (cycles[REPEAT_MEDIAN >> 1]));    \
+        add_benchmark_results(#var, (cycles[REPEAT_MEDIAN >> 1]));            \
+        return (0);                                                           \
+    }
+
 #define MAKE_BENCH_frombytes_mul_32(var, func)                                \
     int bench_##var()                                                         \
     {                                                                         \
@@ -590,6 +664,18 @@ MAKE_BENCH_frombytes_mul_32(kyber_frombytes_mul_acc_32_32_opt_m7, frombytes_mul_
 MAKE_BENCH_frombytes_mul_32_16(kyber_frombytes_mul_acc_32_16, frombytes_mul_asm_acc_32_16_wrap);
 MAKE_BENCH_frombytes_mul_32_16(kyber_frombytes_mul_acc_32_16_opt_m7, frombytes_mul_asm_acc_32_16_opt_m7_wrap);
 
+MAKE_BENCH_3(kyber_basemul_asm_pqm4,basemul_asm_wrap)
+MAKE_BENCH_3(kyber_basemul_asm_pqm4_opt_m7,basemul_asm_opt_m7_wrap)
+
+MAKE_BENCH_3(kyber_basemul_asm_acc_pqm4,basemul_asm_acc_wrap)
+MAKE_BENCH_3(kyber_basemul_asm_acc_pqm4_opt_m7,basemul_asm_acc_opt_m7_wrap)
+
+MAKE_BENCH_frombytes_mul(kyber_frombytes_mul_pqm4,frombytes_mul_asm_wrap)
+MAKE_BENCH_frombytes_mul(kyber_frombytes_mul_pqm4_opt,frombytes_mul_asm_opt_m7_wrap)
+
+MAKE_BENCH_frombytes_mul(kyber_frombytes_mul_acc_pqm4,frombytes_mul_asm_acc_wrap)
+MAKE_BENCH_frombytes_mul(kyber_frombytes_mul_acc_pqm4_opt,frombytes_mul_asm_acc_opt_m7_wrap)
+
 int main(void)
 {
     int ret = 0;
@@ -636,6 +722,12 @@ int main(void)
     if( test_frombytes_mul_acc_32_16() != 0 ){return( 1 );}
     if( test_frombytes_mul_acc_32_16_opt() != 0 ){return( 1 );}
 
+    if( test_basemul_pqm4() != 0 ){return( 1 );}
+    if( test_basemul_pqm4_opt() != 0 ){return( 1 );}
+
+    if( test_basemul_acc_pqm4() != 0 ){return( 1 );}
+    if( test_basemul_acc_pqm4_opt() != 0 ){return( 1 );}
+
     bench_kyber_ntt_pqm4();
     bench_kyber_ntt_pqm4_opt_m7();
     bench_kyber_ntt_acle();
@@ -674,6 +766,12 @@ int main(void)
 
     bench_kyber_frombytes_mul_acc_32_16();
     bench_kyber_frombytes_mul_acc_32_16_opt_m7();
+
+    bench_kyber_basemul_asm_pqm4();
+    bench_kyber_basemul_asm_pqm4_opt_m7();
+
+    bench_kyber_basemul_asm_acc_pqm4();
+    bench_kyber_basemul_asm_acc_pqm4_opt_m7();
 
     /* Test cases */
     debug_printf( "Done!\n" );
