@@ -10,6 +10,11 @@ KYBER_ALL_PLATFORMS += nucleo-f767zi
 # C sources required for this test
 KYBER_ALL_SOURCES += main.c
 KYBER_ALL_SOURCES += ntt-acle.c
+KYBER_ALL_SOURCES += fips202.c
+
+# Keccak source
+KYBER_ALL_ASMS +=  ../../asm/manual/keccak/keccakf1600_old_opt_m7.s
+KYBER_ALL_ASMS +=  keccakf1600-misc.s
 
 # Assembly sources required for this test
 KYBER_ALL_ASM_DIR = ../../asm/manual/kyber-all
@@ -62,26 +67,26 @@ KYBER_ALL_ASMS += $(KYBER_ALL_ASM_DIR)/frombytes_mul_acc_kyber_opt_m7.s
 KYBER_ALL_ASMS += $(KYBER_ALL_ASM_DIR)/frombytes_mul_kyber.s
 KYBER_ALL_ASMS += $(KYBER_ALL_ASM_DIR)/frombytes_mul_kyber_opt_m7.s
 
-# KYBER_ALL_ASMS += $(KYBER_ALL_ASM_DIR)/matacc_acc_kyber.s
-# KYBER_ALL_ASMS += $(KYBER_ALL_ASM_DIR)/matacc_acc_kyber_opt_m7.s
+KYBER_ALL_ASMS += $(KYBER_ALL_ASM_DIR)/matacc_acc_kyber.s
+KYBER_ALL_ASMS += $(KYBER_ALL_ASM_DIR)/matacc_acc_kyber_opt_m7.s
 
-# KYBER_ALL_ASMS += $(KYBER_ALL_ASM_DIR)/matacc_asm_cache_16_32_kyber.s
-# KYBER_ALL_ASMS += $(KYBER_ALL_ASM_DIR)/matacc_asm_cache_16_32_kyber_opt_m7.s
+KYBER_ALL_ASMS += $(KYBER_ALL_ASM_DIR)/matacc_asm_cache_16_32_kyber.s
+KYBER_ALL_ASMS += $(KYBER_ALL_ASM_DIR)/matacc_asm_cache_16_32_kyber_opt_m7.s
 
-# KYBER_ALL_ASMS += $(KYBER_ALL_ASM_DIR)/matacc_asm_cache_32_16_kyber.s
-# KYBER_ALL_ASMS += $(KYBER_ALL_ASM_DIR)/matacc_asm_cache_32_16_kyber_opt_m7.s
+KYBER_ALL_ASMS += $(KYBER_ALL_ASM_DIR)/matacc_asm_cache_32_16_kyber.s
+KYBER_ALL_ASMS += $(KYBER_ALL_ASM_DIR)/matacc_asm_cache_32_16_kyber_opt_m7.s
 
-# KYBER_ALL_ASMS += $(KYBER_ALL_ASM_DIR)/matacc_asm_cache_32_32_kyber.s
-# KYBER_ALL_ASMS += $(KYBER_ALL_ASM_DIR)/matacc_asm_cache_32_32_kyber_opt_m7.s
+KYBER_ALL_ASMS += $(KYBER_ALL_ASM_DIR)/matacc_asm_cache_32_32_kyber.s
+KYBER_ALL_ASMS += $(KYBER_ALL_ASM_DIR)/matacc_asm_cache_32_32_kyber_opt_m7.s
 
-# KYBER_ALL_ASMS += $(KYBER_ALL_ASM_DIR)/matacc_asm_opt_16_32_kyber.s
-# KYBER_ALL_ASMS += $(KYBER_ALL_ASM_DIR)/matacc_asm_opt_16_32_kyber_opt_m7.s
+KYBER_ALL_ASMS += $(KYBER_ALL_ASM_DIR)/matacc_asm_opt_16_32_kyber.s
+KYBER_ALL_ASMS += $(KYBER_ALL_ASM_DIR)/matacc_asm_opt_16_32_kyber_opt_m7.s
 
-# KYBER_ALL_ASMS += $(KYBER_ALL_ASM_DIR)/matacc_asm_opt_32_16_kyber.s
-# KYBER_ALL_ASMS += $(KYBER_ALL_ASM_DIR)/matacc_asm_opt_32_16_kyber_opt_m7.s
+KYBER_ALL_ASMS += $(KYBER_ALL_ASM_DIR)/matacc_asm_opt_32_16_kyber.s
+KYBER_ALL_ASMS += $(KYBER_ALL_ASM_DIR)/matacc_asm_opt_32_16_kyber_opt_m7.s
 
-# KYBER_ALL_ASMS += $(KYBER_ALL_ASM_DIR)/matacc_asm_opt_32_32_kyber.s
-# KYBER_ALL_ASMS += $(KYBER_ALL_ASM_DIR)/matacc_asm_opt_32_32_kyber_opt_m7.s
+KYBER_ALL_ASMS += $(KYBER_ALL_ASM_DIR)/matacc_asm_opt_32_32_kyber.s
+KYBER_ALL_ASMS += $(KYBER_ALL_ASM_DIR)/matacc_asm_opt_32_32_kyber_opt_m7.s
 
-# KYBER_ALL_ASMS += $(KYBER_ALL_ASM_DIR)/matacc_kyber.s
-# KYBER_ALL_ASMS += $(KYBER_ALL_ASM_DIR)/matacc_kyber_opt_m7.s
+KYBER_ALL_ASMS += $(KYBER_ALL_ASM_DIR)/matacc_kyber.s
+KYBER_ALL_ASMS += $(KYBER_ALL_ASM_DIR)/matacc_kyber_opt_m7.s
