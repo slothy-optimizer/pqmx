@@ -1267,6 +1267,12 @@ int main(void)
     if( test_matacc_asm_pqm4() != 0 ){return( 1 );}
     if( test_matacc_asm_pqm4_opt() != 0 ){return( 1 );}
 
+    if( test_frombytes_mul_asm_pqm4() != 0 ){return( 1 );}
+    if( test_frombytes_mul_asm_pqm4_opt() != 0 ){return( 1 );}
+
+    if( test_frombytes_mul_asm_acc_pqm4() != 0 ){return( 1 );}
+    if( test_frombytes_mul_asm_acc_pqm4_opt() != 0 ){return( 1 );}
+
     if( test_matacc_asm_acc_pqm4() != 0 ){return( 1 );}
     if( test_matacc_asm_acc_pqm4_opt() != 0 ){return( 1 );}
 
@@ -1332,6 +1338,12 @@ int main(void)
 
     bench_kyber_basemul_asm_acc_pqm4();
     bench_kyber_basemul_asm_acc_pqm4_opt_m7();
+
+    bench_kyber_frombytes_mul_pqm4();
+    bench_kyber_frombytes_mul_pqm4_opt();
+
+    bench_kyber_frombytes_mul_acc_pqm4();
+    bench_kyber_frombytes_mul_acc_pqm4_opt();
 
     bench_kyber_matacc_asm_pqm4();
     bench_kyber_matacc_asm_pqm4_opt();
