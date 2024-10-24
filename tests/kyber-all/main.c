@@ -1182,34 +1182,34 @@ MAKE_BENCH_3(kyber_basemul_asm_acc_pqm4,basemul_asm_acc_wrap)
 MAKE_BENCH_3(kyber_basemul_asm_acc_pqm4_opt_m7,basemul_asm_acc_opt_m7_wrap)
 
 MAKE_BENCH_frombytes_mul(kyber_frombytes_mul_pqm4,frombytes_mul_asm_wrap)
-MAKE_BENCH_frombytes_mul(kyber_frombytes_mul_pqm4_opt,frombytes_mul_asm_opt_m7_wrap)
+MAKE_BENCH_frombytes_mul(kyber_frombytes_mul_pqm4_opt_m7,frombytes_mul_asm_opt_m7_wrap)
 
 MAKE_BENCH_frombytes_mul(kyber_frombytes_mul_acc_pqm4,frombytes_mul_asm_acc_wrap)
-MAKE_BENCH_frombytes_mul(kyber_frombytes_mul_acc_pqm4_opt,frombytes_mul_asm_acc_opt_m7_wrap)
+MAKE_BENCH_frombytes_mul(kyber_frombytes_mul_acc_pqm4_opt_m7,frombytes_mul_asm_acc_opt_m7_wrap)
 
 MAKE_BENCH_matacc(kyber_matacc_asm_pqm4,matacc_asm)
-MAKE_BENCH_matacc(kyber_matacc_asm_pqm4_opt,matacc_asm_opt_m7)
+MAKE_BENCH_matacc(kyber_matacc_asm_pqm4_opt_m7,matacc_asm_opt_m7)
 
 MAKE_BENCH_matacc(kyber_matacc_asm_acc_pqm4,matacc_asm_acc)
-MAKE_BENCH_matacc(kyber_matacc_asm_acc_pqm4_opt,matacc_asm_acc_opt_m7)
+MAKE_BENCH_matacc(kyber_matacc_asm_acc_pqm4_opt_m7,matacc_asm_acc_opt_m7)
 
 MAKE_BENCH_matacc_cache_32(kyber_matacc_asm_cache_16_32_pqm4,matacc_asm_cache_16_32)
-MAKE_BENCH_matacc_cache_32(kyber_matacc_asm_cache_16_32_pqm4_opt,matacc_asm_cache_16_32_opt_m7)
+MAKE_BENCH_matacc_cache_32(kyber_matacc_asm_cache_16_32_pqm4_opt_m7,matacc_asm_cache_16_32_opt_m7)
 
 MAKE_BENCH_matacc_cache_32(kyber_matacc_asm_cache_32_32_pqm4,matacc_asm_cache_32_32)
-MAKE_BENCH_matacc_cache_32(kyber_matacc_asm_cache_32_32_pqm4_opt,matacc_asm_cache_32_32_opt_m7)
+MAKE_BENCH_matacc_cache_32(kyber_matacc_asm_cache_32_32_pqm4_opt_m7,matacc_asm_cache_32_32_opt_m7)
 
 MAKE_BENCH_matacc_cache_32_16(kyber_matacc_asm_cache_32_16_pqm4,matacc_asm_cache_32_16)
-MAKE_BENCH_matacc_cache_32_16(kyber_matacc_asm_cache_32_16_pqm4_opt,matacc_asm_cache_32_16_opt_m7)
+MAKE_BENCH_matacc_cache_32_16(kyber_matacc_asm_cache_32_16_pqm4_opt_m7,matacc_asm_cache_32_16_opt_m7)
 
 MAKE_BENCH_matacc_opt_32(kyber_matacc_asm_opt_16_32_pqm4,matacc_asm_opt_16_32)
-MAKE_BENCH_matacc_opt_32(kyber_matacc_asm_opt_16_32_pqm4_opt,matacc_asm_opt_16_32_opt_m7)
+MAKE_BENCH_matacc_opt_32(kyber_matacc_asm_opt_16_32_pqm4_opt_m7,matacc_asm_opt_16_32_opt_m7)
 
 MAKE_BENCH_matacc_opt_32(kyber_matacc_asm_opt_32_32_pqm4,matacc_asm_opt_32_32)
-MAKE_BENCH_matacc_opt_32(kyber_matacc_asm_opt_32_32_pqm4_opt,matacc_asm_opt_32_32_opt_m7)
+MAKE_BENCH_matacc_opt_32(kyber_matacc_asm_opt_32_32_pqm4_opt_m7,matacc_asm_opt_32_32_opt_m7)
 
 MAKE_BENCH_matacc_opt_32_16(kyber_matacc_asm_opt_32_16_pqm4,matacc_asm_opt_32_16)
-MAKE_BENCH_matacc_opt_32_16(kyber_matacc_asm_opt_32_16_pqm4_opt,matacc_asm_opt_32_16_opt_m7)
+MAKE_BENCH_matacc_opt_32_16(kyber_matacc_asm_opt_32_16_pqm4_opt_m7,matacc_asm_opt_32_16_opt_m7)
 
 
 int main(void)
@@ -1340,34 +1340,34 @@ int main(void)
     bench_kyber_basemul_asm_acc_pqm4_opt_m7();
 
     bench_kyber_frombytes_mul_pqm4();
-    bench_kyber_frombytes_mul_pqm4_opt();
+    bench_kyber_frombytes_mul_pqm4_opt_m7();
 
     bench_kyber_frombytes_mul_acc_pqm4();
-    bench_kyber_frombytes_mul_acc_pqm4_opt();
+    bench_kyber_frombytes_mul_acc_pqm4_opt_m7();
 
     bench_kyber_matacc_asm_pqm4();
-    bench_kyber_matacc_asm_pqm4_opt();
+    bench_kyber_matacc_asm_pqm4_opt_m7();
 
     bench_kyber_matacc_asm_acc_pqm4();
-    bench_kyber_matacc_asm_acc_pqm4_opt();
+    bench_kyber_matacc_asm_acc_pqm4_opt_m7();
 
     bench_kyber_matacc_asm_cache_16_32_pqm4();
-    bench_kyber_matacc_asm_cache_16_32_pqm4_opt();
+    bench_kyber_matacc_asm_cache_16_32_pqm4_opt_m7();
 
     bench_kyber_matacc_asm_cache_32_32_pqm4();
-    bench_kyber_matacc_asm_cache_32_32_pqm4_opt();
+    bench_kyber_matacc_asm_cache_32_32_pqm4_opt_m7();
     
     bench_kyber_matacc_asm_cache_32_16_pqm4();
-    bench_kyber_matacc_asm_cache_32_16_pqm4_opt();
+    bench_kyber_matacc_asm_cache_32_16_pqm4_opt_m7();
 
     bench_kyber_matacc_asm_opt_16_32_pqm4();
-    bench_kyber_matacc_asm_opt_16_32_pqm4_opt();
+    bench_kyber_matacc_asm_opt_16_32_pqm4_opt_m7();
 
     bench_kyber_matacc_asm_opt_32_32_pqm4();
-    bench_kyber_matacc_asm_opt_32_32_pqm4_opt();
+    bench_kyber_matacc_asm_opt_32_32_pqm4_opt_m7();
     
     bench_kyber_matacc_asm_opt_32_16_pqm4();
-    bench_kyber_matacc_asm_opt_32_16_pqm4_opt();
+    bench_kyber_matacc_asm_opt_32_16_pqm4_opt_m7();
 
 
     /* Test cases */
