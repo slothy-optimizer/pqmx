@@ -22,13 +22,32 @@ extern void KeccakF1600_StatePermute_old(void*);
 extern void KeccakP1600_Permute_24rounds(void*);
 
 /* Slothy */
-extern void KeccakF1600_StatePermute_opt_m7(void*);
 extern void KeccakP1600_Permute_24rounds_opt_m7(void*);
 extern void KeccakF1600_StatePermute_old_opt_m7(void*);
+extern void KeccakF1600_StatePermute_pqm4_opt_m7(void*);
 
-void KeccakF1600_StatePermute_part(void*);
-void KeccakF1600_StatePermute_part_opt_m7(void*);
-void KeccakF1600_StatePermute_part_dummy(void*);
+typedef struct {
+    char name[100];
+    uint64_t cycles;
+} benchmark_result;
+
+benchmark_result results[100];
+int benchmark_cnt = 0;
+
+static void add_benchmark_results(char *name, uint64_t cycles){
+    if(benchmark_cnt == 100) return;
+
+    results[benchmark_cnt].cycles = cycles;
+    strncpy(results[benchmark_cnt].name, name, 100);
+    benchmark_cnt++;
+}
+
+static void dump_benchmarks_tex(void){
+    for(int i=0;i<benchmark_cnt;i++){
+
+        debug_printf("\\DefineVar{%s}{%llu}", results[i].name, results[i].cycles);
+    }
+}
 
 static int cmp_uint64_t(const void *a, const void *b)
 {
@@ -58,29 +77,25 @@ static int cmp_uint64_t(const void *a, const void *b)
             cycles[cnt_median] = (t2 - t1) / REPEAT;                          \
         }                                                                     \
         qsort(cycles, REPEAT_MEDIAN, sizeof(uint64_t), cmp_uint64_t);         \
-        debug_printf(#func " repeat %d, %d",                                  \
+        debug_printf(#func " repeat %d, %d\n",                                  \
                      REPEAT *REPEAT_MEDIAN, (cycles[REPEAT_MEDIAN >> 1]));    \
+        add_benchmark_results(#var, (cycles[REPEAT_MEDIAN >> 1]));           \
                                                                               \
         return (0);                                                           \
     }
 
-MAKE_BENCH_KECCAKF(ref, KeccakF1600_StatePermute_pqm4)
-MAKE_BENCH_KECCAKF(ref_old, KeccakF1600_StatePermute_old)
-MAKE_BENCH_KECCAKF(m7, KeccakP1600_Permute_24rounds)
+MAKE_BENCH_KECCAKF(keccak_pqm4, KeccakF1600_StatePermute_pqm4)
+MAKE_BENCH_KECCAKF(keccak_old, KeccakF1600_StatePermute_old)
+MAKE_BENCH_KECCAKF(keccak_m7, KeccakP1600_Permute_24rounds)
 
-MAKE_BENCH_KECCAKF(opt_m7, KeccakF1600_StatePermute_opt_m7)
-MAKE_BENCH_KECCAKF(old_opt_m7, KeccakF1600_StatePermute_old_opt_m7)
-MAKE_BENCH_KECCAKF(m7_opt_m7, KeccakP1600_Permute_24rounds_opt_m7)
-
-MAKE_BENCH_KECCAKF(part, KeccakF1600_StatePermute_part)
-MAKE_BENCH_KECCAKF(part_opt_m7, KeccakF1600_StatePermute_part_opt_m7)
-MAKE_BENCH_KECCAKF(overhead_dummy, KeccakF1600_StatePermute_part_dummy)
+MAKE_BENCH_KECCAKF(keccak_old_opt_m7, KeccakF1600_StatePermute_old_opt_m7)
+MAKE_BENCH_KECCAKF(keccak_m7_opt_m7, KeccakP1600_Permute_24rounds_opt_m7)
+MAKE_BENCH_KECCAKF(keccak_pqm4_opt_m7, KeccakF1600_StatePermute_pqm4_opt_m7)
 
 #define MAKE_TEST_KECCAKF(var, func, ref_func)                         \
     int test_keccakf_##var()                                           \
     {                                                                  \
         debug_printf("Keccakf for " #func);                            \
-        uint64_t t0, t1;                                               \
         char str[100];                                                 \
         char byte_str[8];                                             \
         uint8_t state[STATE_SIZE] __attribute__((aligned(16)));        \
@@ -94,10 +109,7 @@ MAKE_BENCH_KECCAKF(overhead_dummy, KeccakF1600_StatePermute_part_dummy)
         memcpy(state_copy, state, sizeof(state));                      \
         KeccakF1600_StatePermute_pqm4(state_copy);                          \
         /* Step 2: MVE-based Keccakf */                                \
-        t0 = hal_get_time();                                           \
         (func)(state);                                                 \
-        t1 = hal_get_time();                                           \
-        sprintf(str, "t=%llu", (t1 - t0));                             \
         int err = 0;                                                   \
         for (uint32_t i = 0; i < STATE_SIZE; i++)                      \
         {                                                              \
@@ -117,39 +129,50 @@ MAKE_BENCH_KECCAKF(overhead_dummy, KeccakF1600_StatePermute_part_dummy)
         return (0);                                                    \
     }
 
-MAKE_TEST_KECCAKF(pqm4, KeccakF1600_StatePermute_old, KeccakF1600_StatePermute_pqm4)
+MAKE_TEST_KECCAKF(old, KeccakF1600_StatePermute_old, KeccakF1600_StatePermute_pqm4)
 MAKE_TEST_KECCAKF(m7, KeccakP1600_Permute_24rounds, KeccakF1600_StatePermute_pqm4)
 
 MAKE_TEST_KECCAKF(old_opt_m7, KeccakF1600_StatePermute_old_opt_m7, KeccakF1600_StatePermute_pqm4)
+MAKE_TEST_KECCAKF(pqm4_opt_m7, KeccakF1600_StatePermute_pqm4_opt_m7, KeccakF1600_StatePermute_pqm4)
+MAKE_TEST_KECCAKF(m7_opt_m7, KeccakP1600_Permute_24rounds_opt_m7, KeccakF1600_StatePermute_pqm4)
+
 
 int main(void)
 {
     debug_test_start( "Keccak new" );
     /* Test correctness */
-    if(test_keccakf_pqm4() != 0){
+    if(test_keccakf_old() != 0){
         return 1;
     }
 
-    if(test_keccakf_m7()) {
+    if(test_keccakf_m7() != 0) {
         return 1;
     }
 
-    if(test_keccakf_old_opt_m7()) {
+    if(test_keccakf_old_opt_m7() != 0) {
+        return 1;
+    }
+
+    if(test_keccakf_pqm4_opt_m7() != 0) {
+        return 1;
+    }
+
+    if(test_keccakf_m7_opt_m7() != 0) {
         return 1;
     }
 
     /* Bench */
-    bench_keccakf_ref();
-    bench_keccakf_ref_old();
-    bench_keccakf_m7();
+    bench_keccakf_keccak_pqm4();
+    bench_keccakf_keccak_old();
+    bench_keccakf_keccak_m7();
     
-    bench_keccakf_opt_m7();
-    bench_keccakf_old_opt_m7();
-    bench_keccakf_m7_opt_m7();
+    bench_keccakf_keccak_old_opt_m7();
+    bench_keccakf_keccak_m7_opt_m7();
+    bench_keccakf_keccak_pqm4_opt_m7();
 
-    bench_keccakf_part();
-    bench_keccakf_part_opt_m7();
-    bench_keccakf_overhead_dummy();
+    debug_printf("======================" );
+    dump_benchmarks_tex();
+    debug_printf("======================\n" );
 
     debug_test_ok();
     debug_printf( "ALL GOOD!\n" );
