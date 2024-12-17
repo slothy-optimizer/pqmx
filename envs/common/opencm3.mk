@@ -92,6 +92,9 @@ flash: $(TARGET)
 count: $(TARGET)
 	python3 ../common/inst_count.py $(TARGET)
 
+size: $(TARGET)
+	python3 ../common/code_size.py $(TARGET)
+
 run:
 	@echo "WARNING: Target platform does not support the run- target. Use the flash- target instead to flash to the board. Skipping"
 

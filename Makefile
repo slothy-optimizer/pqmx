@@ -47,6 +47,7 @@ checks          := $(addprefix check-, $(platformtests))
 cleans          := $(addprefix clean-, $(platformtests))
 flashs          := $(addprefix flash-, $(platformtests))
 counts          := $(addprefix count-, $(platformtests))
+sizes           := $(addprefix size-, $(platformtests))
 
 .PHONY: all
 all: ${builds}
@@ -79,6 +80,10 @@ ${flashs}: flash-%:
 .PHONY: ${counts}
 ${counts}: count-%:
 	make -C envs/$(platform) count CFLAGS_EXTRA='$(call testcflags,$(test))' SOURCES='$(call testsources,$(test),../../)' ASMS='$(call testasms,$(test),../../)' TARGET=$(call elfname,$(test)) TESTDIR=$(call testdir,$(test),../../)
+
+.PHONY: ${sizes}
+${sizes}: size-%:
+	make -C envs/$(platform) size CFLAGS_EXTRA='$(call testcflags,$(test))' SOURCES='$(call testsources,$(test),../../)' ASMS='$(call testasms,$(test),../../)' TARGET=$(call elfname,$(test)) TESTDIR=$(call testdir,$(test),../../)
 
 .PHONY: ${cleans}
 ${cleans}: clean-%:
