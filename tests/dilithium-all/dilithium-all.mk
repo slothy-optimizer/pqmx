@@ -6,6 +6,7 @@ TESTS += dilithium-all
 # Platforms this test should run on (matching the directory name in envs/)
 DILITHIUM_ALL_PLATFORMS += m7-an500
 DILITHIUM_ALL_PLATFORMS += nucleo-f767zi
+DILITHIUM_ALL_PLATFORMS += stm32f4discovery
 
 # C sources required for this test
 DILITHIUM_ALL_SOURCES += main.c

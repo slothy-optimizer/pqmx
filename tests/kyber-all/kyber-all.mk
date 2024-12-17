@@ -6,6 +6,7 @@ TESTS += kyber-all
 # Platforms this test should run on (matching the directory name in envs/)
 KYBER_ALL_PLATFORMS += m7-an500
 KYBER_ALL_PLATFORMS += nucleo-f767zi
+KYBER_ALL_PLATFORMS += stm32f4discovery
 
 # C sources required for this test
 KYBER_ALL_SOURCES += main.c
