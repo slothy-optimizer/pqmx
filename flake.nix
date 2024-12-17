@@ -44,10 +44,13 @@
                 };
               });
 
+              inherit (pkgs.python311Packages)
+                pyserial;
               inherit (pkgs)
                 direnv
                 nix-direnv
                 openocd
+                coreutils
                 qemu
                 ;
             };
