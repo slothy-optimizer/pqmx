@@ -1,4 +1,6 @@
 # Tests
+include tests/dilithium-all/dilithium-all.mk
+include tests/kyber-all/kyber-all.mk
 include tests/chunk/chunk.mk
 include tests/crt/crt.mk
 include tests/ct/ct.mk
@@ -7,6 +9,7 @@ include tests/fx-fft/fx-fft.mk
 include tests/helloworld/helloworld.mk
 include tests/intmulntt/intmulntt.mk
 include tests/karatsuba/karatsuba.mk
+include tests/keccak/keccak.mk
 include tests/montgomery/montgomery.mk
 include tests/ntt-192/ntt-192.mk
 include tests/ntt-256/ntt-256.mk
@@ -43,6 +46,8 @@ runs            := $(addprefix run-, $(platformtests))
 checks          := $(addprefix check-, $(platformtests))
 cleans          := $(addprefix clean-, $(platformtests))
 flashs          := $(addprefix flash-, $(platformtests))
+counts          := $(addprefix count-, $(platformtests))
+sizes           := $(addprefix size-, $(platformtests))
 
 .PHONY: all
 all: ${builds}
@@ -71,6 +76,14 @@ check: ${checks}
 .PHONY: ${flashs}
 ${flashs}: flash-%:
 	make -C envs/$(platform) flash CFLAGS_EXTRA='$(call testcflags,$(test))' SOURCES='$(call testsources,$(test),../../)' ASMS='$(call testasms,$(test),../../)' TARGET=$(call elfname,$(test)) TESTDIR=$(call testdir,$(test),../../)
+
+.PHONY: ${counts}
+${counts}: count-%:
+	make -C envs/$(platform) count CFLAGS_EXTRA='$(call testcflags,$(test))' SOURCES='$(call testsources,$(test),../../)' ASMS='$(call testasms,$(test),../../)' TARGET=$(call elfname,$(test)) TESTDIR=$(call testdir,$(test),../../)
+
+.PHONY: ${sizes}
+${sizes}: size-%:
+	make -C envs/$(platform) size CFLAGS_EXTRA='$(call testcflags,$(test))' SOURCES='$(call testsources,$(test),../../)' ASMS='$(call testasms,$(test),../../)' TARGET=$(call elfname,$(test)) TESTDIR=$(call testdir,$(test),../../)
 
 .PHONY: ${cleans}
 ${cleans}: clean-%:

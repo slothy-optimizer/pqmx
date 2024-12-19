@@ -1,0 +1,1 @@
+../../../slothy/examples/naive/armv7m/matacc_acc_kyber.s

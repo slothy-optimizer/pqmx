@@ -20,29 +20,21 @@ loop_cnt .req r12
 ubench_\name\():
 _ubench_\name\():
         push_stack
+        cpsid i // disable interrupts
+	dsb
+	isb
         @ mov.w loop_cnt, #10
         \preamble\()
-        nop
-        nop
-        nop
-        nop
-        nop
         nop
         .align 2
 1:
 .rept 100
         \code\()
 .endr
-        nop
-        nop
-        nop
-        nop
-        nop
-        nop
-
         \end_of_iteration\()
         @ subs.w loop_cnt, loop_cnt, #1
         @ bne.w 1b
+        cpsie i // reenable interrupts
         pop_stack
         bx lr
 .endm

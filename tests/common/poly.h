@@ -60,7 +60,7 @@ void mod_reduce_buf_s32   ( int32_t *src, unsigned size, int32_t modulus );
 void mod_reduce_buf_s32_signed( int32_t *src, unsigned size, int32_t modulus );
 void mod_mul_buf_const_s32( int32_t *src, int32_t factor, int32_t *dst,
                             unsigned size, int32_t mod );
-void mod_add_buf_u16( uint16_t *src_a, uint16_t *src_b, uint16_t *dst,
+void mod_add_buf_u32( uint16_t *src_a, uint16_t *src_b, uint16_t *dst,
                       unsigned size );
 void mod_add_buf_s32( int32_t *src_a, int32_t *src_b, int32_t *dst,
                       unsigned size, int32_t modulus );
