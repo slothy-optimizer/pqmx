@@ -45,7 +45,7 @@ static void add_benchmark_results(char *name, uint64_t cycles){
 static void dump_benchmarks_tex(void){
     for(int i=0;i<benchmark_cnt;i++){
 
-        debug_printf("\\DefineVar{%s}{%llu}", results[i].name, results[i].cycles);
+        debug_printf("\\DefineVar{%s_%s}{%llu}", DEVICE, results[i].name, results[i].cycles);
     }
 }
 
