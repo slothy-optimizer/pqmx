@@ -1,1 +1,0 @@
-../../../slothy/examples/opt/armv7m/keccakf1600_m7_opt_m7.s

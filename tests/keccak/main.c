@@ -15,16 +15,16 @@
 
 /* Assembly Functions */
 /* Reference, bit interlaved */
-extern void KeccakF1600_StatePermute_pqm4(void*);
+extern void KeccakF1600_StatePermute_adomnicai_m4(void*);
 /* To be tested, bit interlaved */
-extern void KeccakF1600_StatePermute_old(void*);
+extern void KeccakF1600_StatePermute_xkcp(void*);
 /* M7 optimized code by Alexandre Adomnicai */
-extern void KeccakP1600_Permute_24rounds(void*);
+extern void KeccakF1600_StatePermute_adomnicai_m7(void*);
 
 /* Slothy */
-extern void KeccakP1600_Permute_24rounds_opt_m7(void*);
-extern void KeccakF1600_StatePermute_old_opt_m7(void*);
-extern void KeccakF1600_StatePermute_pqm4_opt_m7(void*);
+extern void KeccakF1600_StatePermute_adomnicai_m7_opt_m7(void*);
+extern void KeccakF1600_StatePermute_xkcp_opt_m7(void*);
+extern void KeccakF1600_StatePermute_adomnicai_m4_opt_m7(void*);
 
 typedef struct {
     char name[100];
@@ -84,13 +84,13 @@ static int cmp_uint64_t(const void *a, const void *b)
         return (0);                                                           \
     }
 
-MAKE_BENCH_KECCAKF(keccak_pqm4, KeccakF1600_StatePermute_pqm4)
-MAKE_BENCH_KECCAKF(keccak_old, KeccakF1600_StatePermute_old)
-MAKE_BENCH_KECCAKF(keccak_m7, KeccakP1600_Permute_24rounds)
+MAKE_BENCH_KECCAKF(keccak_adomnicai_m4, KeccakF1600_StatePermute_adomnicai_m4)
+MAKE_BENCH_KECCAKF(keccak_xkcp, KeccakF1600_StatePermute_xkcp)
+MAKE_BENCH_KECCAKF(keccak_adomnicai_m7, KeccakF1600_StatePermute_adomnicai_m7)
 
-MAKE_BENCH_KECCAKF(keccak_old_opt_m7, KeccakF1600_StatePermute_old_opt_m7)
-MAKE_BENCH_KECCAKF(keccak_m7_opt_m7, KeccakP1600_Permute_24rounds_opt_m7)
-MAKE_BENCH_KECCAKF(keccak_pqm4_opt_m7, KeccakF1600_StatePermute_pqm4_opt_m7)
+MAKE_BENCH_KECCAKF(keccak_xkcp_opt_m7, KeccakF1600_StatePermute_xkcp_opt_m7)
+MAKE_BENCH_KECCAKF(keccak_adomnicai_m7_opt_m7, KeccakF1600_StatePermute_adomnicai_m7_opt_m7)
+MAKE_BENCH_KECCAKF(keccak_adomnicai_m4_opt_m7, KeccakF1600_StatePermute_adomnicai_m4_opt_m7)
 
 #define MAKE_TEST_KECCAKF(var, func, ref_func)                         \
     int test_keccakf_##var()                                           \
@@ -107,7 +107,7 @@ MAKE_BENCH_KECCAKF(keccak_pqm4_opt_m7, KeccakF1600_StatePermute_pqm4_opt_m7)
                                                                        \
         /* Step 1: Reference Keccakf */                                \
         memcpy(state_copy, state, sizeof(state));                      \
-        KeccakF1600_StatePermute_pqm4(state_copy);                          \
+        ref_func(state_copy);                          \
         /* Step 2: MVE-based Keccakf */                                \
         (func)(state);                                                 \
         int err = 0;                                                   \
@@ -129,46 +129,46 @@ MAKE_BENCH_KECCAKF(keccak_pqm4_opt_m7, KeccakF1600_StatePermute_pqm4_opt_m7)
         return (0);                                                    \
     }
 
-MAKE_TEST_KECCAKF(old, KeccakF1600_StatePermute_old, KeccakF1600_StatePermute_pqm4)
-MAKE_TEST_KECCAKF(m7, KeccakP1600_Permute_24rounds, KeccakF1600_StatePermute_pqm4)
+MAKE_TEST_KECCAKF(keccak_xkcp, KeccakF1600_StatePermute_xkcp, KeccakF1600_StatePermute_adomnicai_m4)
+MAKE_TEST_KECCAKF(keccak_adomnicai_m7, KeccakF1600_StatePermute_adomnicai_m7, KeccakF1600_StatePermute_adomnicai_m4)
 
-MAKE_TEST_KECCAKF(old_opt_m7, KeccakF1600_StatePermute_old_opt_m7, KeccakF1600_StatePermute_pqm4)
-MAKE_TEST_KECCAKF(pqm4_opt_m7, KeccakF1600_StatePermute_pqm4_opt_m7, KeccakF1600_StatePermute_pqm4)
-MAKE_TEST_KECCAKF(m7_opt_m7, KeccakP1600_Permute_24rounds_opt_m7, KeccakF1600_StatePermute_pqm4)
+MAKE_TEST_KECCAKF(keccak_xkcp_opt_m7, KeccakF1600_StatePermute_xkcp_opt_m7, KeccakF1600_StatePermute_adomnicai_m4)
+MAKE_TEST_KECCAKF(keccak_adomnicai_m4_opt_m7, KeccakF1600_StatePermute_adomnicai_m4_opt_m7, KeccakF1600_StatePermute_adomnicai_m4)
+MAKE_TEST_KECCAKF(keccak_adomnicai_m7_opt_m7, KeccakF1600_StatePermute_adomnicai_m7_opt_m7, KeccakF1600_StatePermute_adomnicai_m4)
 
 
 int main(void)
 {
     debug_test_start( "Keccak new" );
     /* Test correctness */
-    if(test_keccakf_old() != 0){
+    if(test_keccakf_keccak_xkcp() != 0){
         return 1;
     }
 
-    if(test_keccakf_m7() != 0) {
+    if(test_keccakf_keccak_adomnicai_m7() != 0) {
         return 1;
     }
 
-    if(test_keccakf_old_opt_m7() != 0) {
+    if(test_keccakf_keccak_xkcp_opt_m7() != 0) {
         return 1;
     }
 
-    if(test_keccakf_pqm4_opt_m7() != 0) {
+    if(test_keccakf_keccak_adomnicai_m4_opt_m7() != 0) {
         return 1;
     }
 
-    if(test_keccakf_m7_opt_m7() != 0) {
+    if(test_keccakf_keccak_adomnicai_m7_opt_m7() != 0) {
         return 1;
     }
 
     /* Bench */
-    bench_keccakf_keccak_pqm4();
-    bench_keccakf_keccak_old();
-    bench_keccakf_keccak_m7();
+    bench_keccakf_keccak_adomnicai_m4();
+    bench_keccakf_keccak_xkcp();
+    bench_keccakf_keccak_adomnicai_m7();
     
-    bench_keccakf_keccak_old_opt_m7();
-    bench_keccakf_keccak_m7_opt_m7();
-    bench_keccakf_keccak_pqm4_opt_m7();
+    bench_keccakf_keccak_xkcp_opt_m7();
+    bench_keccakf_keccak_adomnicai_m7_opt_m7();
+    bench_keccakf_keccak_adomnicai_m4_opt_m7();
 
     debug_printf("======================" );
     dump_benchmarks_tex();

@@ -17,9 +17,9 @@ KECCAK_SOURCES += main.c
 # Assembly sources required for this test
 
 KECCAK_ASMDIR = ../../asm/manual/keccak
-KECCAK_ASMS += $(KECCAK_ASMDIR)/keccakf1600_pqm4.s
-KECCAK_ASMS += $(KECCAK_ASMDIR)/keccakf1600_old.s
-KECCAK_ASMS += $(KECCAK_ASMDIR)/keccakf1600_old_opt_m7.s
-KECCAK_ASMS += $(KECCAK_ASMDIR)/keccakf1600_pqm4_opt_m7.s
-KECCAK_ASMS += $(KECCAK_ASMDIR)/keccakf1600_m7.s
-KECCAK_ASMS += $(KECCAK_ASMDIR)/keccakf1600_m7_opt_m7.s
+KECCAK_ASMS += $(KECCAK_ASMDIR)/keccakf1600_adomnicai_m4.s
+KECCAK_ASMS += $(KECCAK_ASMDIR)/keccakf1600_adomnicai_m4_opt_m7.s
+KECCAK_ASMS += $(KECCAK_ASMDIR)/keccakf1600_adomnicai_m7.s
+KECCAK_ASMS += $(KECCAK_ASMDIR)/keccakf1600_adomnicai_m7_opt_m7.s
+KECCAK_ASMS += $(KECCAK_ASMDIR)/keccakf1600_xkcp.s
+KECCAK_ASMS += $(KECCAK_ASMDIR)/keccakf1600_xkcp_opt_m7.s
