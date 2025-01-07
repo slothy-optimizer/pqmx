@@ -76,7 +76,7 @@ OBJECTS = $(OBJECTS_C) $(OBJECTS_ASM)
 
 $(OBJECTS_C): $(BUILD_DIR)/%.o: %
 	mkdir -p $(@D)
-	$(CC) $(CFLAGS) -c -o $@ $<
+	$(CC) $(CFLAGS) -DDEVICE=\"$(DEVICE)\" -c -o $@ $<
 
 $(OBJECTS_ASM): $(BUILD_DIR)/%.o: %
 	mkdir -p $(@D)
