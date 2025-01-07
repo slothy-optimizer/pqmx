@@ -77,9 +77,9 @@ static int cmp_uint64_t(const void *a, const void *b)
             cycles[cnt_median] = (t2 - t1) / REPEAT;                          \
         }                                                                     \
         qsort(cycles, REPEAT_MEDIAN, sizeof(uint64_t), cmp_uint64_t);         \
-        debug_printf(#func " repeat %d, %d\n",                                  \
+        debug_printf(#func " repeat %d, %d\n",                                \
                      REPEAT *REPEAT_MEDIAN, (cycles[REPEAT_MEDIAN >> 1]));    \
-        add_benchmark_results(#var, (cycles[REPEAT_MEDIAN >> 1]));           \
+        add_benchmark_results(#var, (cycles[REPEAT_MEDIAN >> 1]));            \
                                                                               \
         return (0);                                                           \
     }
@@ -97,9 +97,9 @@ MAKE_BENCH_KECCAKF(keccak_adomnicai_m4_opt_m7, KeccakF1600_StatePermute_adomnica
     {                                                                  \
         debug_printf("Keccakf for " #func);                            \
         char str[100];                                                 \
-        char byte_str[8];                                             \
+        char byte_str[8];                                              \
         uint8_t state[STATE_SIZE] __attribute__((aligned(16)));        \
-        for (uint32_t i = 0; i < STATE_SIZE; i++)                               \
+        for (uint32_t i = 0; i < STATE_SIZE; i++)                      \
         {                                                              \
             state[i] = rand();                                         \
         }                                                              \
@@ -107,7 +107,7 @@ MAKE_BENCH_KECCAKF(keccak_adomnicai_m4_opt_m7, KeccakF1600_StatePermute_adomnica
                                                                        \
         /* Step 1: Reference Keccakf */                                \
         memcpy(state_copy, state, sizeof(state));                      \
-        ref_func(state_copy);                          \
+        ref_func(state_copy);                                          \
         /* Step 2: MVE-based Keccakf */                                \
         (func)(state);                                                 \
         int err = 0;                                                   \
@@ -121,7 +121,8 @@ MAKE_BENCH_KECCAKF(keccak_adomnicai_m4_opt_m7, KeccakF1600_StatePermute_adomnica
                 err = 1;                                               \
             }                                                          \
         }                                                              \
-        if(err) return 1;                                              \
+        if (err)                                                       \
+            return 1;                                                  \
                                                                        \
         debug_printf("Test OK\n");                                     \
         debug_printf(str);                                             \
