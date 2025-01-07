@@ -18,6 +18,7 @@ CFLAGS += \
 	-ffunction-sections \
 	-fdata-sections \
 	--sysroot=$(SYSROOT) \
+	-DDEVICE=\"an547\" \
 	-DARMCM55 \
 	-I$(COMMON_INC) \
 	-I$(ENV_INC) \
