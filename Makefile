@@ -7,6 +7,7 @@ include tests/fx-fft/fx-fft.mk
 include tests/helloworld/helloworld.mk
 include tests/intmulntt/intmulntt.mk
 include tests/karatsuba/karatsuba.mk
+include tests/keccak/keccak.mk
 include tests/montgomery/montgomery.mk
 include tests/ntt-192/ntt-192.mk
 include tests/ntt-256/ntt-256.mk
