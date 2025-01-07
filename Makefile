@@ -2,6 +2,7 @@
 include tests/chunk/chunk.mk
 include tests/crt/crt.mk
 include tests/ct/ct.mk
+include tests/dilithium-armv7m/dilithium-armv7m.mk
 include tests/flt-fft/flt-fft.mk
 include tests/fx-fft/fx-fft.mk
 include tests/helloworld/helloworld.mk
