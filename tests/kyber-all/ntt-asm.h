@@ -7,8 +7,6 @@
 void ntt_fast(int16_t *, const int32_t *);
 void ntt_fast_opt_m7(int16_t *, const int32_t *);
 
-void ntt_fast_symbolic_opt_m7(int16_t *, const int32_t *);
-
 void invntt_fast(int16_t *, const int32_t *);
 void invntt_fast_opt_m7(int16_t *, const int32_t *);
 
@@ -90,10 +88,6 @@ static void ntt_fast_wrap(int16_t *p){
 
 static void ntt_fast_opt_m7_wrap(int16_t *p){
     ntt_fast_opt_m7(p, zetas_asm);
-}
-
-static void ntt_fast_symbolic_opt_m7_wrap(int16_t *p){
-    ntt_fast_symbolic_opt_m7(p, zetas_asm);
 }
 
 static void invntt_fast_wrap(int16_t *p){

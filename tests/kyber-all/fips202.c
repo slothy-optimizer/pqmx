@@ -21,8 +21,8 @@
 extern unsigned long long hash_cycles;
 #endif
 
-void KeccakF1600_StatePermute_old_opt_m7(uint64_t * state);
-#define KeccakF1600_StatePermute KeccakF1600_StatePermute_old_opt_m7
+void KeccakF1600_StatePermute_adomnicai_m4_opt_m7(uint64_t * state);
+#define KeccakF1600_StatePermute KeccakF1600_StatePermute_adomnicai_m4_opt_m7
 
 
 

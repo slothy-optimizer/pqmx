@@ -14,14 +14,13 @@ KYBER_ALL_SOURCES += ntt-acle.c
 KYBER_ALL_SOURCES += fips202.c
 
 # Keccak source
-KYBER_ALL_ASMS +=  ../../asm/manual/keccak/keccakf1600_old_opt_m7.s
+KYBER_ALL_ASMS +=  ../../asm/manual/keccak/keccakf1600_adomnicai_m4_opt_m7.s
 KYBER_ALL_ASMS +=  keccakf1600-misc.s
 
 # Assembly sources required for this test
 KYBER_ALL_ASM_DIR = ../../asm/manual/kyber-all
 KYBER_ALL_ASMS += $(KYBER_ALL_ASM_DIR)/ntt_kyber.s
 KYBER_ALL_ASMS += $(KYBER_ALL_ASM_DIR)/ntt_kyber_opt_m7.s
-KYBER_ALL_ASMS += $(KYBER_ALL_ASM_DIR)/ntt_kyber_symbolic_opt_m7.s
 
 KYBER_ALL_ASMS += $(KYBER_ALL_ASM_DIR)/intt_kyber.s
 KYBER_ALL_ASMS += $(KYBER_ALL_ASM_DIR)/intt_kyber_opt_m7.s

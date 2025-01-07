@@ -749,8 +749,6 @@ int test_ ## var ()                                                         \
 MAKE_TEST_1(ntt_pqm4, ntt_fast_wrap, ntt_fast_wrap)
 MAKE_TEST_1(ntt_pqm4_opt, ntt_fast_opt_m7_wrap, ntt_fast_wrap)
 MAKE_TEST_1(ntt_acle, ntt_acle, ntt_fast_wrap)
-MAKE_TEST_1(ntt_symbolic_opt, ntt_fast_symbolic_opt_m7_wrap, ntt_fast_wrap)
-
 
 MAKE_TEST_1(invntt_pqm4, invntt_fast_wrap, invntt_fast_wrap)
 MAKE_TEST_1(invntt_pqm4_opt, invntt_fast_opt_m7_wrap, invntt_fast_wrap)
@@ -1139,7 +1137,6 @@ static int cmp_uint64_t(const void *a, const void *b)
 MAKE_BENCH_1(kyber_ntt_pqm4,ntt_fast_wrap)
 MAKE_BENCH_1(kyber_ntt_pqm4_opt_m7,ntt_fast_opt_m7_wrap)
 MAKE_BENCH_1(kyber_ntt_acle,ntt_acle)
-MAKE_BENCH_1(kyber_ntt_symbolic_opt_m7,ntt_fast_symbolic_opt_m7_wrap)
 
 MAKE_BENCH_1(kyber_invntt_pqm4,invntt_fast_wrap)
 MAKE_BENCH_1(kyber_invntt_pqm4_opt_m7,invntt_fast_opt_m7_wrap)
@@ -1221,7 +1218,6 @@ int main(void)
     if( test_ntt_pqm4() != 0 ){return( 1 );}
     if( test_ntt_pqm4_opt() != 0 ){return( 1 );}
     if( test_ntt_acle() != 0){return( 1 );}
-    if( test_ntt_symbolic_opt() != 0 ){return( 1 );}
 
     if( test_invntt_pqm4() != 0 ){return( 1 );}
     if( test_invntt_pqm4_opt() != 0 ){return( 1 );}
@@ -1297,7 +1293,6 @@ int main(void)
     bench_kyber_ntt_pqm4();
     bench_kyber_ntt_pqm4_opt_m7();
     bench_kyber_ntt_acle();
-    bench_kyber_ntt_symbolic_opt_m7();
 
     bench_kyber_invntt_pqm4();
     bench_kyber_invntt_pqm4_opt_m7();
