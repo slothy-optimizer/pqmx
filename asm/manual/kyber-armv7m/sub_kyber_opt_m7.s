@@ -1,0 +1,1 @@
+../../../slothy/examples/opt/armv7m/sub_kyber_opt_m7.s
