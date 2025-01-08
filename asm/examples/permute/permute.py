@@ -27,8 +27,6 @@ import mve
 import mve.regs
 import mve.rw
 
-import numpy
-
 class ReadWriteVectorTest():
 
     def __init__(self,src,dst,size,bitwidth=16,base=None,):
