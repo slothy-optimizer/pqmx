@@ -1,1 +1,0 @@
-../../../slothy/examples/naive/armv7m/caddq_dilithium.s

@@ -1,1 +1,0 @@
-../../../slothy/examples/opt/armv7m/dilithium5_ntt_opt_m7.s
