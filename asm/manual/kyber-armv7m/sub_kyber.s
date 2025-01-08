@@ -1,0 +1,1 @@
+../../../slothy/examples/naive/armv7m/sub_kyber.s
