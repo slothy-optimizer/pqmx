@@ -94,98 +94,69 @@ void matacc_asm_opt_32_32_opt_m7(int32_t *r_tmp, const int16_t *b, int16_t c[4],
 void matacc_asm_opt_32_16(int16_t *r, const int16_t *b, int16_t c[4], unsigned char buf[168+2], uint64_t *state, const int16_t *aprimeptr, const int32_t *r_tmp);
 void matacc_asm_opt_32_16_opt_m7(int16_t *r, const int16_t *b, int16_t c[4], unsigned char buf[168+2], uint64_t *state, const int16_t *aprimeptr, const int32_t *r_tmp);
 
+
 // TODO: instruction counting does not work for more than 4 arguments; use a wrapper for now -- need to fix this later
+int32_t yyy[256] = {0};
+uint64_t sss[26] = {0};
+int16_t aaa[256] = {0};
+
 void basemul_asm_acc_opt_32_16_wrap(int16_t * a, const int16_t *b, const int16_t *c, const int16_t *d){
-    int32_t yyy[256]= {0};
     basemul_asm_acc_opt_32_16(a,b,c,d, yyy);
 }
 void basemul_asm_acc_opt_32_16_opt_m7_wrap(int16_t * a, const int16_t *b, const int16_t *c, const int16_t *d){
-    int32_t yyy[256]= {0};
     basemul_asm_acc_opt_32_16_opt_m7(a,b,c,d, yyy);
 }
-void matacc_asm_wrap(int16_t *r, const int16_t *b, int16_t c[4], unsigned char buf[168+2]){
-    uint64_t state[26] = {0};
-    matacc_asm(r,b,c,buf,zetas,state);
+void matacc_asm_wrap(int16_t *r, const int16_t *b, int16_t c[4], unsigned char buf[168+2]){    
+    matacc_asm(r,b,c,buf,zetas,sss);
 }
 void matacc_asm_opt_m7_wrap(int16_t *r, const int16_t *b, int16_t c[4], unsigned char buf[168+2]){
-    uint64_t state[26] = {0};
-    matacc_asm_opt_m7(r,b,c,buf,zetas,state);
+    matacc_asm_opt_m7(r,b,c,buf,zetas,sss);
 }
 void matacc_asm_acc_wrap(int16_t *r, const int16_t *b, int16_t c[4], unsigned char buf[168+2]){
-    uint64_t state[26] = {0};
-    matacc_asm_acc(r,b,c,buf,zetas,state);
+    matacc_asm_acc(r,b,c,buf,zetas,sss);
 }
 void matacc_asm_acc_opt_m7_wrap(int16_t *r, const int16_t *b, int16_t c[4], unsigned char buf[168+2]){
-    uint64_t state[26] = {0};
-    matacc_asm_acc_opt_m7(r,b,c,buf,zetas,state);
+    matacc_asm_acc_opt_m7(r,b,c,buf,zetas,sss);
 }
 void matacc_asm_cache_16_32_wrap(int32_t *r_tmp, const int16_t *b, int16_t c[4], unsigned char buf[168+2]){
-    uint64_t state[26] = {0};
-    int16_t aprime[256] = {0};
-    matacc_asm_cache_16_32(r_tmp,b,c,buf,zetas,state,aprime);
+    matacc_asm_cache_16_32(r_tmp,b,c,buf,zetas,sss,aaa);
 }
 void matacc_asm_cache_16_32_opt_m7_wrap(int32_t *r_tmp, const int16_t *b, int16_t c[4], unsigned char buf[168+2]){
-    uint64_t state[26] = {0};
-    int16_t aprime[256] = {0};
-    matacc_asm_cache_16_32_opt_m7(r_tmp,b,c,buf,zetas,state,aprime);
+    matacc_asm_cache_16_32_opt_m7(r_tmp,b,c,buf,zetas,sss,aaa);
 }
 void matacc_asm_cache_32_32_wrap(int32_t *r_tmp, const int16_t *b, int16_t c[4], unsigned char buf[168+2]){
-    uint64_t state[26] = {0};
-    int16_t aprime[256] = {0};
-    matacc_asm_cache_32_32(r_tmp,b,c,buf,zetas,state,aprime);
+    matacc_asm_cache_32_32(r_tmp,b,c,buf,zetas,sss,aaa);
 }
 void matacc_asm_cache_32_32_opt_m7_wrap(int32_t *r_tmp, const int16_t *b, int16_t c[4], unsigned char buf[168+2]){
-    uint64_t state[26] = {0};
-    int16_t aprime[256] = {0};
-    matacc_asm_cache_32_32_opt_m7(r_tmp,b,c,buf,zetas,state,aprime);
+    matacc_asm_cache_32_32_opt_m7(r_tmp,b,c,buf,zetas,sss,aaa);
 }
 
 void matacc_asm_cache_32_16_wrap(int16_t *r, const int16_t *b, int16_t c[4], unsigned char buf[168+2]){
-    uint64_t state[26] = {0};
-    int16_t aprime[256] = {0};
-    int32_t r_tmp[256] = {0};
-    matacc_asm_cache_32_16(r,b,c,buf,zetas,state,aprime,r_tmp);
+    matacc_asm_cache_32_16(r,b,c,buf,zetas,sss,aaa,yyy);
 }
 void matacc_asm_cache_32_16_opt_m7_wrap(int16_t *r, const int16_t *b, int16_t c[4], unsigned char buf[168+2]){
-    uint64_t state[26] = {0};
-    int16_t aprime[256] = {0};
-    int32_t r_tmp[256] = {0};
-    matacc_asm_cache_32_16_opt_m7(r,b,c,buf,zetas,state,aprime,r_tmp);
+    matacc_asm_cache_32_16_opt_m7(r,b,c,buf,zetas,sss,aaa,yyy);
 }
 
 void matacc_asm_opt_16_32_wrap(int32_t *r_tmp, const int16_t *b, int16_t c[4], unsigned char buf[168+2]){
-    uint64_t state[26] = {0};
-    int16_t aprime[256] = {0};
-    matacc_asm_opt_16_32(r_tmp,b,c,buf,state,aprime);
+    matacc_asm_opt_16_32(r_tmp,b,c,buf,sss,aaa);
 }
 void matacc_asm_opt_16_32_opt_m7_wrap(int32_t *r_tmp, const int16_t *b, int16_t c[4], unsigned char buf[168+2]){
-    uint64_t state[26] = {0};
-    int16_t aprime[256] = {0};
-    matacc_asm_opt_16_32_opt_m7(r_tmp,b,c,buf,state,aprime);
+    matacc_asm_opt_16_32_opt_m7(r_tmp,b,c,buf,sss,aaa);
 }
 
 void matacc_asm_opt_32_32_wrap(int32_t *r_tmp, const int16_t *b, int16_t c[4], unsigned char buf[168+2]){
-    uint64_t state[26] = {0};
-    int16_t aprime[256] = {0};
-    matacc_asm_opt_32_32(r_tmp,b,c,buf,state,aprime);
+    matacc_asm_opt_32_32(r_tmp,b,c,buf,sss,aaa);
 }
 void matacc_asm_opt_32_32_opt_m7_wrap(int32_t *r_tmp, const int16_t *b, int16_t c[4], unsigned char buf[168+2]){
-    uint64_t state[26] = {0};
-    int16_t aprime[256] = {0};
-    matacc_asm_opt_32_32_opt_m7(r_tmp,b,c,buf,state,aprime);
+    matacc_asm_opt_32_32_opt_m7(r_tmp,b,c,buf,sss,aaa);
 }
 
 void matacc_asm_opt_32_16_wrap(int16_t *r, const int16_t *b, int16_t c[4], unsigned char buf[168+2]){
-    uint64_t state[26] = {0};
-    int16_t aprime[256] = {0};
-    int32_t r_tmp[256] = {0};
-    matacc_asm_opt_32_16(r,b,c,buf,state,aprime,r_tmp);
+    matacc_asm_opt_32_16(r,b,c,buf,sss,aaa,yyy);
 }
 void matacc_asm_opt_32_16_opt_m7_wrap(int16_t *r, const int16_t *b, int16_t c[4], unsigned char buf[168+2]){
-    uint64_t state[26] = {0};
-    int16_t aprime[256] = {0};
-    int32_t r_tmp[256] = {0};
-    matacc_asm_opt_32_16_opt_m7(r,b,c,buf,state,aprime,r_tmp);
+    matacc_asm_opt_32_16_opt_m7(r,b,c,buf,sss,aaa,yyy);
 }
 
 
