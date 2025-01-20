@@ -1,0 +1,2 @@
+pyelftools==0.31
+pwn==1.0
