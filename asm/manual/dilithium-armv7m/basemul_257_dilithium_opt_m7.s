@@ -1,1 +1,0 @@
-../../../slothy/examples/opt/armv7m/basemul_257_dilithium_opt_m7.s
