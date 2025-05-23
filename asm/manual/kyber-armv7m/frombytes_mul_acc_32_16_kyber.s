@@ -1,1 +1,0 @@
-../../../slothy/examples/naive/armv7m/frombytes_mul_acc_32_16_kyber.s
