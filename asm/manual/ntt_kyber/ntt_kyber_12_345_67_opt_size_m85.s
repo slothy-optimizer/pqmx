@@ -1,1 +1,0 @@
-../../../slothy/paper/opt/helium/ntt/ntt_kyber_12_345_67_opt_size_m85.s

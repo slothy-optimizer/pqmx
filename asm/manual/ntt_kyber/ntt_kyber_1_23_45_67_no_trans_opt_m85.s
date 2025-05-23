@@ -1,1 +1,0 @@
-../../../slothy/paper/opt/helium/ntt/ntt_kyber_1_23_45_67_no_trans_opt_m85.s
