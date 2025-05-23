@@ -1,1 +1,0 @@
-../../../slothy/examples/naive/armv7m/matacc_asm_cache_32_32_kyber.s
