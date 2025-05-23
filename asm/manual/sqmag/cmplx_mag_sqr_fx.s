@@ -1,1 +1,0 @@
-../../../slothy/examples/naive/cmplx_mag_sqr/cmplx_mag_sqr_fx.s
