@@ -1,1 +1,0 @@
-../../../slothy/examples/naive/armv7m/basemul_acc_32_32_kyber.s

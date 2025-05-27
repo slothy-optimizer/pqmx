@@ -1,1 +1,0 @@
-../../../slothy/examples/opt/armv7m/frombytes_mul_acc_32_16_kyber_opt_m7.s
