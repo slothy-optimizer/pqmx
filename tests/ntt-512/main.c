@@ -28,6 +28,7 @@
 
 #include <string.h>
 
+void ntt_512_u32_33564673_21224105_incomplete(uint32_t *);
 
 #define TEST_NTT                 /* Enable/Disable test for NTT                    */
 //#define TEST_NTT_DOUBLE          /* Enable/Disable test for NTT                    */

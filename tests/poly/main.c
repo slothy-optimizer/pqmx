@@ -35,6 +35,16 @@
 
 #include "montgomery.h"
 
+void twisted_cyclic_mul_acc_deg4_u32_mve_alt(int32_t *, int32_t *, int32_t *, int32_t *);
+void twisted_cyclic_mul_deg4_u32_mve_alt(int32_t *, int32_t *, int32_t *, int32_t *);
+void ntt_u32_33556993_28678040_incomplete_double(int32_t *, int32_t *);
+void montgomery_pt_acc_u32_mve(int32_t *, int32_t *, int32_t *, int32_t *);
+void montgomery_pt_u32_mve(int32_t *, int32_t *, int32_t *, int32_t *);
+void poly_u16_mul_32_anticyclic_acc_karatsuba_mve_simd_handshuffle(uint16_t *, uint16_t *, uint16_t *);
+void poly_u16_mul_32_anticyclic_karatsuba_mve_simd_handshuffle(uint16_t *, uint16_t *, uint16_t *);
+void poly_u16_toom4_inv_dual_packed_limbs_oop_256_mve(uint16_t *, uint16_t *);
+void poly_u16_toom4_fwd_dual_packed_limbs_oop_256_mve(uint16_t *, uint16_t *);
+
 /*
  * Configure which tests to build and run
  *
@@ -193,9 +203,9 @@ void vec_vec_dot_acc_eval_tc_kara( uint16_t v[MAT_DIM][EVAL_DEG],
 }
 
 /* Vector-Vector dot product, inputs in polynomial domain. */
-void vec_vec_dot_u16_tc_kara( int16_t v[MAT_DIM][POLY_DEG],
-                              int16_t w[MAT_DIM][POLY_DEG],
-                              int16_t dst[POLY_DEG] )
+void vec_vec_dot_u16_tc_kara( uint16_t v[MAT_DIM][POLY_DEG],
+                              uint16_t w[MAT_DIM][POLY_DEG],
+                              uint16_t dst[POLY_DEG] )
 {
     uint16_t ev_v[MAT_DIM][EVAL_DEG];
     uint16_t ev_w[MAT_DIM][EVAL_DEG];
@@ -210,9 +220,9 @@ void vec_vec_dot_u16_tc_kara( int16_t v[MAT_DIM][POLY_DEG],
 }
 
 /* Matrix-Vector product, inputs in polynomial domain */
-void mat_vec_mul_u16_tc_kara( int16_t A[MAT_DIM][MAT_DIM][POLY_DEG],
-                              int16_t v[MAT_DIM][POLY_DEG],
-                              int16_t dst[MAT_DIM][POLY_DEG] )
+void mat_vec_mul_u16_tc_kara( uint16_t A[MAT_DIM][MAT_DIM][POLY_DEG],
+                              uint16_t v[MAT_DIM][POLY_DEG],
+                              uint16_t dst[MAT_DIM][POLY_DEG] )
 {
     uint16_t ev_A[MAT_DIM][MAT_DIM][EVAL_DEG];
     uint16_t ev_v[MAT_DIM][EVAL_DEG];
@@ -309,11 +319,11 @@ int test_poly_fwd_tc_kara(void)
  * C Reference implementations
  */
 
-void vec_vec_dot_u16_C( int16_t v[MAT_DIM][POLY_DEG],
-                        int16_t w[MAT_DIM][POLY_DEG],
-                        int16_t dst[POLY_DEG] )
+void vec_vec_dot_u16_C( uint16_t v[MAT_DIM][POLY_DEG],
+                        uint16_t w[MAT_DIM][POLY_DEG],
+                        uint16_t dst[POLY_DEG] )
 {
-    int16_t tmp[POLY_DEG] = { 0 };
+    uint16_t tmp[POLY_DEG] = { 0 };
     for( unsigned i = 0; i < MAT_DIM; i++ )
     {
         poly_u16_mul_anticyclic_256_C( tmp, v[i], w[i] );
@@ -321,11 +331,11 @@ void vec_vec_dot_u16_C( int16_t v[MAT_DIM][POLY_DEG],
     }
 }
 
-void mat_vec_mul_u16_C( int16_t A  [MAT_DIM][MAT_DIM][POLY_DEG],
-                        int16_t w  [MAT_DIM][POLY_DEG],
-                        int16_t dst[MAT_DIM][POLY_DEG] )
+void mat_vec_mul_u16_C( uint16_t A  [MAT_DIM][MAT_DIM][POLY_DEG],
+                        uint16_t w  [MAT_DIM][POLY_DEG],
+                        uint16_t dst[MAT_DIM][POLY_DEG] )
 {
-    int16_t tmp[POLY_DEG] = { 0 };
+    uint16_t tmp[POLY_DEG] = { 0 };
     for( unsigned i = 0; i < MAT_DIM; i++ )
         vec_vec_dot_u16_C( A[i], w, dst[i] );
 }
@@ -345,8 +355,8 @@ int test_mat_vec_mul_tc_kara(void)
     memset( dst_C, 0, sizeof( dst_C ) );
     memset( dst_mve, 0, sizeof( dst_mve ) );
 
-    fill_random_u16( A, MATRIX_ENTRIES );
-    fill_random_u16( v, VECTOR_ENTRIES );
+    fill_random_u16( (uint16_t *)A, MATRIX_ENTRIES );
+    fill_random_u16( (uint16_t *)v, VECTOR_ENTRIES );
 
     /* Reference: C-based anticyclic schoolbook multiplication. */
     mat_vec_mul_u16_C( A, v, dst_C );
@@ -356,14 +366,14 @@ int test_mat_vec_mul_tc_kara(void)
     mat_vec_mul_u16_tc_kara( A, v, dst_mve );
     //measure_end();
 
-    mask_poly( dst_C,   VECTOR_ENTRIES, BIT_PRECISION );
-    mask_poly( dst_mve, VECTOR_ENTRIES, BIT_PRECISION );
+    mask_poly( (uint16_t *)dst_C,   VECTOR_ENTRIES, BIT_PRECISION );
+    mask_poly( (uint16_t *)dst_mve, VECTOR_ENTRIES, BIT_PRECISION );
 
-    if( compare_buf_u16( dst_mve, dst_C, VECTOR_ENTRIES ) != 0 )
+    if( compare_buf_u16( (uint16_t *)dst_mve, (uint16_t *)dst_C, VECTOR_ENTRIES ) != 0 )
     {
         debug_test_fail();
-        debug_print_buf_u16( dst_C,   VECTOR_ENTRIES, "Ref: " );
-        debug_print_buf_u16( dst_mve, VECTOR_ENTRIES, "MVE: " );
+        debug_print_buf_u16( (uint16_t *)dst_C,   VECTOR_ENTRIES, "Ref: " );
+        debug_print_buf_u16( (uint16_t *)dst_mve, VECTOR_ENTRIES, "MVE: " );
         return( 1 );
     }
 
@@ -427,11 +437,10 @@ void mat_vec_mul_u32_C( int32_t A  [MAT_DIM][MAT_DIM][POLY_DEG],
                         int32_t w  [MAT_DIM][POLY_DEG],
                         int32_t dst[MAT_DIM][POLY_DEG] )
 {
-    int32_t tmp[POLY_DEG] = { 0 };
     for( unsigned i = 0; i < MAT_DIM; i++ )
         vec_vec_dot_u32_C( A[i], w, dst[i] );
 
-    mod_reduce_buf_s32_signed( dst, VECTOR_ENTRIES, modulus );
+    mod_reduce_buf_s32_signed( (int32_t *)dst, VECTOR_ENTRIES, modulus );
 }
 
 void rev_4_u32( int32_t *src, unsigned size )
@@ -530,7 +539,7 @@ void vec_vec_dot_u32_full( int32_t v[MAT_DIM][POLY_DEG],
     ntt_full_vec( v );
     ntt_full_vec( w );
     vec_vec_dot_ntt( v, w, dst );
-    inv_ntt_full_vec( dst );
+    inv_ntt_full( dst );
 }
 
 /* Matrix-Vector product */
@@ -635,7 +644,7 @@ void vec_vec_dot_u32_incomplete( int32_t v[MAT_DIM][POLY_DEG],
     ntt_incomplete_expand_vec( w, w_expand );
     ntt_incomplete_vec( v );
     vec_vec_dot_ntt_incomplete( v, w_expand, dst );
-    inv_ntt_incomplete_vec( dst );
+    inv_ntt_incomplete( dst );
 }
 
 /* Matrix-Vector product, inputs in polynomial domain */
@@ -669,10 +678,10 @@ int test_mat_vec_mul_ntt(void)
 
     srand(time(NULL));
 
-    fill_random_u32( A, MATRIX_ENTRIES );
-    fill_random_u32( v, VECTOR_ENTRIES );
-    mod_reduce_buf_s32( A, MATRIX_ENTRIES, modulus );
-    mod_reduce_buf_s32( v, VECTOR_ENTRIES, modulus );
+    fill_random_u32( (uint32_t *)A, MATRIX_ENTRIES );
+    fill_random_u32( (uint32_t *)v, VECTOR_ENTRIES );
+    mod_reduce_buf_s32( (int32_t *)A, MATRIX_ENTRIES, modulus );
+    mod_reduce_buf_s32( (int32_t *)v, VECTOR_ENTRIES, modulus );
 
     /* Reference: C-based anticyclic schoolbook multiplication. */
     mat_vec_mul_u32_C( A, v, dst_C );
@@ -690,11 +699,11 @@ int test_mat_vec_mul_ntt(void)
     mat_vec_mul_u32_full( A, v, dst_mve );
     //measure_end();
 
-    if( compare_buf_s32( dst_mve, dst_C, VECTOR_ENTRIES ) != 0 )
+    if( compare_buf_s32( (int32_t *)dst_mve, (int32_t *)dst_C, VECTOR_ENTRIES ) != 0 )
     {
         debug_test_fail();
-        debug_print_buf_s32( dst_C, VECTOR_ENTRIES, "Ref: " );
-        debug_print_buf_s32( dst_mve, VECTOR_ENTRIES, "MVE: " );
+        debug_print_buf_s32( (int32_t *)dst_C, VECTOR_ENTRIES, "Ref: " );
+        debug_print_buf_s32( (int32_t *)dst_mve, VECTOR_ENTRIES, "MVE: " );
         return( 1 );
     }
 
@@ -731,10 +740,10 @@ int test_mat_vec_mul_ntt_incomplete(void)
     memset( dst_C, 0, sizeof( dst_C ) );
     memset( dst_mve, 0, sizeof( dst_mve ) );
 
-    fill_random_u32( A, MATRIX_ENTRIES );
-    fill_random_u32( v, VECTOR_ENTRIES );
-    mod_reduce_buf_s32_signed( A, MATRIX_ENTRIES, modulus );
-    mod_reduce_buf_s32_signed( v, VECTOR_ENTRIES, modulus );
+    fill_random_u32( (uint32_t *)A, MATRIX_ENTRIES );
+    fill_random_u32( (uint32_t *)v, VECTOR_ENTRIES );
+    mod_reduce_buf_s32_signed( (int32_t *)A, MATRIX_ENTRIES, modulus );
+    mod_reduce_buf_s32_signed( (int32_t *)v, VECTOR_ENTRIES, modulus );
 
     //debug_print_buf_s32( A, VECTOR_ENTRIES, "A: " );
     //debug_print_buf_s32( v, VECTOR_ENTRIES, "v: " );
@@ -742,12 +751,12 @@ int test_mat_vec_mul_ntt_incomplete(void)
     /* Reference: C-based anticyclic schoolbook multiplication. */
     mat_vec_mul_u32_C( A, v, dst_C );
 
-    int32_t one_half = ( modulus + 1 ) / 2;
-    int32_t scale = mod_pow_s32( one_half, 32, modulus );
+    // int32_t one_half = ( modulus + 1 ) / 2;
+    // int32_t scale = mod_pow_s32( one_half, 32, modulus );
     //mod_mul_buf_const_s32( dst_C, scale, dst_C, VECTOR_ENTRIES, modulus );
     //mod_reduce_buf_s32( dst_C, VECTOR_ENTRIES, modulus );
 
-    rev_4_u32( v, VECTOR_ENTRIES );
+    rev_4_u32( (int32_t *)v, VECTOR_ENTRIES );
 
     /* MVE */
     measure_start();
@@ -757,11 +766,11 @@ int test_mat_vec_mul_ntt_incomplete(void)
     //debug_print_buf_s32( dst_C, VECTOR_ENTRIES, "Ref: " );
     //debug_print_buf_s32( dst_mve, VECTOR_ENTRIES, "MVE: " );
 
-    if( compare_buf_s32( dst_mve, dst_C, VECTOR_ENTRIES ) != 0 )
+    if( compare_buf_s32( (int32_t *)dst_mve, (int32_t *)dst_C, VECTOR_ENTRIES ) != 0 )
     {
         debug_test_fail();
-        debug_print_buf_s32( dst_C, VECTOR_ENTRIES, "Ref: " );
-        debug_print_buf_s32( dst_mve, VECTOR_ENTRIES, "MVE: " );
+        debug_print_buf_s32( (int32_t *)dst_C, VECTOR_ENTRIES, "Ref: " );
+        debug_print_buf_s32( (int32_t *)dst_mve, VECTOR_ENTRIES, "MVE: " );
         return( 1 );
     }
 
@@ -793,15 +802,13 @@ int test_poly_mul_ntt()
     int32_t dst_C  [POLY_DEG];
     int32_t dst_mve[POLY_DEG];
 
-    int32_t ref_prod;
-
     memset( in_a, 0, sizeof( in_a ) );
     memset( in_b, 0, sizeof( in_b ) );
     memset( dst_C, 0, sizeof( dst_C ) );
     memset( dst_mve, 0, sizeof( dst_mve ) );
 
-    fill_random_u32( in_a, POLY_DEG );
-    fill_random_u32( in_b, POLY_DEG );
+    fill_random_u32( (uint32_t *)in_a, POLY_DEG );
+    fill_random_u32( (uint32_t *)in_b, POLY_DEG );
     mod_reduce_buf_s32( in_a, POLY_DEG, modulus );
     mod_reduce_buf_s32( in_b, POLY_DEG, modulus );
 
@@ -860,15 +867,13 @@ int test_poly_mul_ntt_incomplete(void)
     int32_t dst_C  [POLY_DEG];
     int32_t dst_mve[POLY_DEG];
 
-    int32_t ref_prod;
-
     memset( in_a, 0, sizeof( in_a ) );
     memset( in_b, 0, sizeof( in_b ) );
     memset( dst_C, 0, sizeof( dst_C ) );
     memset( dst_mve, 0, sizeof( dst_mve ) );
 
-    fill_random_u32( in_a, POLY_DEG );
-    fill_random_u32( in_b, POLY_DEG );
+    fill_random_u32((uint32_t *) in_a, POLY_DEG );
+    fill_random_u32((uint32_t *) in_b, POLY_DEG );
     mod_reduce_buf_s32( in_a, POLY_DEG, modulus );
     mod_reduce_buf_s32( in_b, POLY_DEG, modulus );
 

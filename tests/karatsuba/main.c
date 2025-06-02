@@ -264,7 +264,7 @@ int test_karatsuba_inv_dual_loop(void)
     uint16_t   eval_B[TOTAL_EVAL_COEFFS];
     uint16_t   eval_C[TOTAL_EVAL_COEFFS];
 
-    memset( 0, C_kara, sizeof( C_kara ) );
+    memset( C_kara, 0, sizeof( C_kara ) );
 
     fill_random_u16( input_A, TOTAL_POLY_COEFFS );
     fill_random_u16( input_B, TOTAL_POLY_COEFFS );

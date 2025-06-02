@@ -40,6 +40,7 @@
 #include <stdint.h>
 #include <hal.h>
 #include <misc.h>
+#include <poly.h>
 
 #include <string.h>
 #include <stdlib.h>

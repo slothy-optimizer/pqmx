@@ -59,6 +59,8 @@ void hal_pmu_start_pmu_stats( pmu_stats *s );
 void hal_pmu_finish_pmu_stats( pmu_stats *s );
 void hal_pmu_send_stats( char *s, pmu_stats const *stats );
 
+
+
 #define ALIGN(N) __attribute__((aligned(N)))
 
 #define FUNCNAME(uarch,unroll)  cmplx_mag_sqr_fx_opt_ ## uarch ## _unroll ## unroll

@@ -27,6 +27,11 @@
 #include <hal.h>
 #include <poly.h>
 #include <misc.h>
+#include <string.h>
+
+void poly_u16_toom4_inv_dual_top_oop_256_mve(uint16_t *, uint16_t *);
+void poly_u16_toom4_inv_dual_bottom_oop_256_mve(uint16_t *, uint16_t *);
+void poly_u16_toom4_inv_dual_packed_limbs_oop_256_mve(uint16_t *, uint16_t *);
 
 /* For Toom3/4, DIMENSION must be a multiple of 3/4,
  * and DIMENSION_DIV3 / DIMENSION_DIV4 must be defined
