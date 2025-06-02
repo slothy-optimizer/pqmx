@@ -4,7 +4,7 @@
 , stdenvNoCC
 , fetchFromGitHub
 , python311
-, gcc-arm-embedded-13
+, gcc-arm-embedded
 , targets ? [ ]
 }:
 
@@ -19,7 +19,7 @@ stdenvNoCC.mkDerivation rec {
   };
   buildInputs = [
     python311
-    gcc-arm-embedded-13 # arm-gnu-toolchain-13.2.rel1
+    gcc-arm-embedded
   ];
   postPatch = ''
     patchShebangs --build scripts/irq2nvic_h
