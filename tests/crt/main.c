@@ -49,6 +49,13 @@
 #define INITIAL_SEED   0
 #define NUM_ITERATIONS 1
 
+void crt_s32_chunk_dechunk_reduce_canonical(int32_t *, int32_t *, int32_t *, int32_t);
+void crt_s32_chunk_dechunk_reduce_canonical_v2(int32_t *, int32_t *, int32_t *, int32_t);
+void crt_s32_chunk_dechunk(int32_t *, int32_t *, int32_t *, int32_t);
+void crt_s32_chunk_dechunk_reduce(int32_t *, int32_t *, int32_t *, int32_t);
+void crt_s32_pure_reduce(int64_t *, int32_t *, int32_t *, int32_t);
+void crt_s32_pure(int64_t *, int32_t *, int32_t *, int32_t);
+
 int32_t mod_s32( int32_t a, int32_t modulus )
 {
     int32_t t = a % modulus;
@@ -239,10 +246,10 @@ int test_crt_s32()
         return( 1 );
     }
 
-    if( compare_buf_s32( out_ref, out, 2*CRT_32_SIZE ) != 0 )
+    if( compare_buf_s64( out_ref, out, CRT_32_SIZE ) != 0 )
     {
-        debug_print_buf_s32( out_ref, 2*CRT_32_SIZE, "Reference" );
-        debug_print_buf_s32( out, 2*CRT_32_SIZE, "MVE" );
+        debug_print_buf_s64( out_ref, CRT_32_SIZE, "Reference" );
+        debug_print_buf_s64( out, CRT_32_SIZE, "MVE" );
 
         for( unsigned idx=0; idx < CRT_32_SIZE; idx++ )
         {
@@ -355,10 +362,10 @@ int test_crt_s32_reduce()
         return( 1 );
     }
 
-    if( compare_buf_s32( out_ref, out, 2*CRT_32_SIZE ) != 0 )
+    if( compare_buf_s64( out_ref, out, CRT_32_SIZE ) != 0 )
     {
-        debug_print_buf_s32( out_ref, 2*CRT_32_SIZE, "Reference" );
-        debug_print_buf_s32( out, 2*CRT_32_SIZE, "MVE" );
+        debug_print_buf_s64( out_ref, CRT_32_SIZE, "Reference" );
+        debug_print_buf_s64( out, CRT_32_SIZE, "MVE" );
 
         for( unsigned idx=0; idx < CRT_32_SIZE; idx++ )
         {

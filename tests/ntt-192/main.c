@@ -28,6 +28,12 @@
 
 #include <string.h>
 
+void twisted_cyclic_mul_deg4_u32_mve_alt(int32_t *, int32_t *, int32_t *, int32_t *);
+void twisted_cyclic_mul_deg4_u32_mve_expand_double(int32_t *, int32_t *, int32_t *, int32_t *, int32_t);
+void ntt_192_u32_114826273_107284677_incomplete_good_bitrev(int32_t *);
+void ntt_192_u32_114826273_107284677_incomplete_good(int32_t *);
+
+
 #define TEST_NTT_GOOD
 #define TEST_NTT_GOOD_BITREV
 #define TEST_POLY_MUL
@@ -84,7 +90,7 @@ uint32_t roots_twisted[NTT_ROOT_ORDER / 2] __attribute__((aligned(16))) = { 0 };
 
 void build_roots()
 {
-    static done = 0;
+    static int done = 0;
     if( done == 1 )
         return;
     for( unsigned i=0; i < NTT_ROOT_ORDER / 2; i++ )
@@ -253,6 +259,7 @@ int check_good_permutation()
     }
 
     debug_test_ok();
+    return 0;
 }
 
 #if !defined(TEST_CORE_ONLY)

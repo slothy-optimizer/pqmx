@@ -51,6 +51,18 @@
  */
 
 void ntt_1024_u32_33564673_286215(int32_t *src);
+void twisted_cyclic_mul_deg4_u32_add_sub_rev_mve(uint32_t *, uint32_t *, uint32_t *, uint32_t *);
+void ntt_1024_u32_33564673_286215_incomplete_double_rev4(uint32_t *, uint32_t *);
+void ntt_1024_u32_33564673_286215_incomplete_double(uint32_t *, uint32_t *);
+void ntt_1024_u32_33564673_286215_incomplete_bitrev_skipfirst(uint32_t *);
+void ntt_1024_u32_33564673_286215_incomplete_skipfirst(uint32_t *);
+void ntt_1024_u32_33564673_286215_incomplete_bitrev(uint32_t *);
+void ntt_1024_u32_33564673_286215_incomplete_rev4(uint32_t *);
+void ntt_1024_u32_33564673_286215_incomplete(uint32_t *);
+void ntt_u32_mve_bitrev_skipfirst(uint32_t *);
+void ntt_u32_mve_double_rev4(uint32_t *, uint32_t *);
+void ntt_u32_mve_rev4(uint32_t *);
+
 
 #if !defined(NTT_INCOMPLETE)
 #define ntt_u32_mve ntt_1024_u32_33564673_286215

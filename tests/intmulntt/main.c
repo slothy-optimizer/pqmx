@@ -27,6 +27,7 @@
 #include <poly.h>
 
 #include <string.h>
+#include <time.h>
 
 #define TEST_INTPOLYMUL
 #define TEST_INTCHUNKMUL
@@ -38,6 +39,17 @@
 #define NUM_ITERATIONS 1
 
 #include "crt_const.h"
+
+void twisted_cyclic_mul_deg4_u32_mve_alt(uint32_t *, uint32_t *, uint32_t *, uint32_t *);
+void crt_s32_dechunk_chunk_add_optim(int32_t *, uint32_t *, uint32_t *, uint32_t, uint32_t *, uint32_t *);
+void crt_s32_pure_reduce(int64_t *, int32_t *, int32_t *, int32_t);
+void crt_s32_chunk_dechunk_reduce_canonical(int32_t *, int32_t *, int32_t *, int32_t);
+void crt_s32_chunk_dechunk_sub_reduce_canonical_v3(int32_t *, uint32_t *, uint32_t *, uint32_t, uint32_t *, uint32_t *);
+void twisted_cyclic_mul_deg4_u32_mve_expand_double(uint32_t *, uint32_t *, uint32_t *, uint32_t *, uint32_t);
+void ntt_384_u32_108643009_640922_incomplete_good_bitrev(uint32_t *);
+void ntt_384_u32_88299073_4883425_incomplete_good_bitrev(uint32_t *);
+void ntt_384_u32_88299073_4883425_incomplete_good_oop_half_input(uint32_t *, uint32_t *);
+void ntt_384_u32_108643009_640922_incomplete_good_oop_half_input(uint32_t *, uint32_t *);
 
 #define NTT_MAKE_NAME_P(SUFFIX) CONCAT8(ntt_,NTT_SIZE,_u32_,CRT_32_P,_,CRT_32_P_ROOT,_incomplete_good,SUFFIX)
 #define NTT_MAKE_NAME_Q(SUFFIX) CONCAT8(ntt_,NTT_SIZE,_u32_,CRT_32_Q,_,CRT_32_Q_ROOT,_incomplete_good,SUFFIX)

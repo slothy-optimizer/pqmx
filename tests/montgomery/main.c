@@ -33,6 +33,26 @@
 #include "montgomery_const.h"
 #include "montgomery.h"
 
+void montgomery_pt_u32_odd_mve(int32_t *, int32_t *, int32_t *, int32_t *);
+void montgomery_pt_u32_mve(int32_t *, int32_t *, int32_t *, int32_t *);
+void montgomery_pt_acc_u32_mve(int32_t *, int32_t *, int32_t *, int32_t *);
+void montgomery_pt_round_acc_u32_x2_mve(int32_t *, int32_t *, int32_t *, int32_t *, int32_t *, int32_t *);
+void montgomery_pt_round_acc_u32_x4_mve(int32_t *, int32_t *, int32_t *, int32_t *, int32_t *, int32_t *, int32_t *, int32_t *, int32_t *, int32_t *);
+void montgomery_pt_round_acc_u32_mve(int32_t *, int32_t *, int32_t *, int32_t *);
+void montgomery_pt_u16_odd_mve(int16_t *, int16_t *, int16_t *);
+void montgomery_u16_round_mve(int16_t *, int16_t *, int16_t *);
+void twisted_cyclic_mul_deg4_u32_long_mve_v1(int32_t *, int32_t *, int64_t *);
+void twisted_cyclic_mul_deg4_u32_add_sub_rev_mve(int32_t *, int32_t *, int32_t *, int32_t *);
+void twisted_cyclic_mul_deg4_u32_add_sub_mve(int32_t *, int32_t *, int32_t *, int32_t *);
+void twisted_cyclic_mul_deg4_u32_mve_expand_double(int32_t *, int32_t *, int32_t *, int32_t *, int32_t);
+void twisted_cyclic_mul_deg4_u32_mve_expand(int32_t *, int32_t *, int32_t *, int32_t);
+void twisted_cyclic_mul_deg4_u32_mve_alt(int32_t *, int32_t *, int32_t *, int32_t *);
+void cyclic_mul_deg4_u32_mve(int32_t *, int32_t *, int32_t *);
+void cyclic_mul_deg4_u32_alt_mve(int32_t *, int32_t *, int32_t *);
+void cyclic_mul_u32_mve(int32_t *, int32_t *, int32_t *);
+void cyclic_mul_u16_mve(int16_t *, int16_t *, int16_t *);
+void cyclic_mul_u16_core_mve(int16_t *, int16_t *, int16_t *);
+
 /*
  * Configure which tests to build and run
  *
@@ -498,8 +518,8 @@ static void cyclic_mul_deg4_u32_arith_rev_C( int32_t *dst,
 static void cyclic_mul_deg4_u32_split_halves_C( int32_t *dst )
 {
     int32_t tmp[VECTOR_LENGTH] __attribute__((aligned(16)));
-    int32_t (*tmp_)[4] = tmp;
-    int32_t (*dst_)[4] = dst;
+    int32_t (*tmp_)[4] = (int32_t (*)[4]) tmp;
+    int32_t (*dst_)[4] = (int32_t (*)[4]) dst;
 
     unsigned blocks = VECTOR_LENGTH/4;
     for( unsigned idx = 0; idx < blocks/2; idx++ )
@@ -1185,13 +1205,13 @@ int test_twisted_cyclic_mul_deg4_u32_long()
     twisted_cyclic_mul_deg4_u32_long_mve_v1( src_a, src_b_expanded, dst_mve );
     measure_end();
 
-    if( compare_buf_u32( dst_C, dst_mve, 2 * VECTOR_LENGTH ) != 0 )
+    if( compare_buf_u64( dst_C, dst_mve, VECTOR_LENGTH ) != 0 )
     {
         debug_print_buf_s32( src_a,   VECTOR_LENGTH, "A" );
         debug_print_buf_s32( src_b,   VECTOR_LENGTH, "B" );
         debug_print_buf_s32( src_b_expanded,   2*VECTOR_LENGTH, "B full" );
-        debug_print_buf_s32( dst_C,   2*VECTOR_LENGTH, "Ref" );
-        debug_print_buf_s32( dst_mve, 2*VECTOR_LENGTH, "MVE" );
+        debug_print_buf_s64( dst_C,   2*VECTOR_LENGTH, "Ref" );
+        debug_print_buf_s64( dst_mve, 2*VECTOR_LENGTH, "MVE" );
 
         debug_test_fail();
         return( 1 );

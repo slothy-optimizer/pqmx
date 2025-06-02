@@ -24,9 +24,12 @@
 
 #include <hal.h>
 #include <misc.h>
+#include <poly.h>
 
 #include <string.h>
+#include <stdio.h>
 
+void ntt_incomplete_double_u32_mve(uint32_t *, uint32_t *);
 
 #define TEST_NTT                 /* Enable/Disable test for NTT                    */
 // #define TEST_NTT_DOUBLE         /* Enable/Disable test for NTT                    */

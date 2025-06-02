@@ -42,7 +42,7 @@ static uint64_t _measure_start = 0;
 uint8_t get_random_byte()
 {
     uint32_t data;
-    randombytes(&data,sizeof(data));
+    randombytes((uint8_t *)&data,sizeof(data));
     return (uint8_t) data;
 }
 

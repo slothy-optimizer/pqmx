@@ -24,9 +24,11 @@
 
 #include <hal.h>
 #include <misc.h>
+#include <poly.h>
 
 #include <string.h>
 
+void ntt_256_u32_33556993_26036764_incomplete(int32_t *);
 
 #define TEST_NTT                 /* Enable/Disable test for NTT                    */
 #define NTT_INCOMPLETE           /* Enable to compute 6-layer incomplete NTT.      */
