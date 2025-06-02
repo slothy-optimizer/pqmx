@@ -1,1 +1,0 @@
-../../asm/manual/saber/karatsuba.h

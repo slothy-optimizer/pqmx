@@ -23,9 +23,6 @@ include tests/ntt-kyber/ntt-kyber.mk
 include tests/permute/permute.mk
 include tests/poly/poly.mk
 include tests/profiling/profiling.mk
-include tests/saber/saber_tc.mk
-include tests/saber/saber_ntt_full.mk
-include tests/saber/saber_ntt_partial.mk
 include tests/sqmag/sqmag.mk
 include tests/toom/toom.mk
 include tests/transpose/transpose.mk
