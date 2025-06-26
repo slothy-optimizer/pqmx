@@ -204,22 +204,6 @@ void buf_bitrev_4( int32_t *src )
 #if !defined(TEST_CORE_ONLY)
 uint64_t hal_get_time();
 
-typedef struct
-{
-    uint32_t systick_cycles;
-    uint32_t pmu_cycles;
-
-    uint32_t inst_all;
-
-    uint32_t inst_mve_all;
-    uint32_t inst_mve_lsu;
-    uint32_t inst_mve_int;
-    uint32_t inst_mve_mul;
-
-    uint32_t stall_all;
-    uint32_t stall_mve_all;
-    uint32_t stall_mve_resource;
-} pmu_stats;
 
 void hal_pmu_enable();
 void hal_pmu_disable();
@@ -267,8 +251,10 @@ int run_test_ntt()
     for( size_t cnt=0; cnt<REPEAT; cnt++ )
         ntt_u32_mve( src );
     hal_pmu_finish_pmu_stats(&stats);
-
-    debug_printf( "ntt_u32_mve: %f cycles (avg)\n", (float) stats.pmu_cycles/(REPEAT) );
+    /*Workaround for RA8M1 (cannot print %f)*/ 
+    debug_printf("ntt_u32_mve: %lu.%02lu cycles (avg)\n",
+            (unsigned long)(stats.pmu_cycles / REPEAT),
+            (unsigned long)(((stats.pmu_cycles % REPEAT) * 100) / REPEAT));
     #if defined(ENABLE_PMU_STATS)
     hal_pmu_send_stats("ntt_u32_mve", &stats);
     #endif

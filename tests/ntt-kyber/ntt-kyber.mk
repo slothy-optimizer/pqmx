@@ -6,6 +6,7 @@ TESTS += ntt-kyber
 # Platforms this test should run on (matching the directory name in envs/)
 NTT_KYBER_PLATFORMS += m55-an547
 NTT_KYBER_PLATFORMS += m85-an555
+NTT_KYBER_PLATFORMS += ek-ra8m1
 
 # C sources required for this test
 NTT_KYBER_SOURCES += main.c
