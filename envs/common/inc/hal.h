@@ -29,11 +29,32 @@
 #include <stdlib.h>
 #include <hal_env.h>
 
+
+
+
+#define ALIGNED(N) __attribute__((aligned(N)))
+
+
 enum clock_mode {
     CLOCK_FAST,
     CLOCK_BENCHMARK
 };
 
+typedef struct
+{
+    uint32_t systick_cycles;
+    uint32_t pmu_cycles;
+
+    uint32_t inst_all;
+    uint32_t inst_mve_all;
+    uint32_t inst_mve_lsu;
+    uint32_t inst_mve_int;
+    uint32_t inst_mve_mul;
+
+    uint32_t stall_all;
+    uint32_t stall_mve_all;
+    uint32_t stall_mve_resource;
+} pmu_stats;
 
 /* Request random data. */
 extern uint8_t get_random_byte();

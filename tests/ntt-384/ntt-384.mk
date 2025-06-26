@@ -6,6 +6,7 @@ TESTS += ntt-384
 # Platforms this test should run on (matching the directory name in envs/)
 NTT_384_PLATFORMS += m55-an547
 NTT_384_PLATFORMS += m85-an555
+NTT_384_PLATFORMS += ek-ra8m1
 
 # C sources required for this test
 NTT_384_SOURCES += main.c
