@@ -9,6 +9,7 @@ include tests/helloworld/helloworld.mk
 include tests/intmulntt/intmulntt.mk
 include tests/karatsuba/karatsuba.mk
 include tests/keccak/keccak.mk
+include tests/keccak-mve/keccak-mve.mk
 include tests/kyber-armv7m/kyber-armv7m.mk
 include tests/montgomery/montgomery.mk
 include tests/ntt-192/ntt-192.mk
