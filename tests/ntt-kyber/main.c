@@ -205,23 +205,6 @@ MAKE_TEST_FWD(l232_opt_size_m85,ntt_kyber_12_345_67_opt_size_m85,1)
 
 uint64_t hal_get_time();
 
-typedef struct
-{
-    uint32_t systick_cycles;
-    uint32_t pmu_cycles;
-
-    uint32_t inst_all;
-
-    uint32_t inst_mve_all;
-    uint32_t inst_mve_lsu;
-    uint32_t inst_mve_int;
-    uint32_t inst_mve_mul;
-
-    uint32_t stall_all;
-    uint32_t stall_mve_all;
-    uint32_t stall_mve_resource;
-} pmu_stats;
-
 void hal_pmu_enable();
 void hal_pmu_disable();
 void hal_pmu_start_pmu_stats( pmu_stats *s );
@@ -235,20 +218,22 @@ void hal_pmu_send_stats_wrapper(pmu_stats *stats)
 #endif
 }
 
-#define MAKE_BENCH(var,func)                                  \
-int bench_ ## var ()                                          \
-{                                                             \
-    int16_t src[NTT_SIZE]      __attribute__((aligned(16)));  \
-    pmu_stats stats;                                          \
-    (func)( src );                                            \
-    hal_pmu_start_pmu_stats(&stats);                          \
-    for( size_t cnt=0; cnt<REPEAT; cnt++ )                    \
-        (func)( src );                                        \
-    hal_pmu_finish_pmu_stats(&stats);                         \
-    debug_printf( #func ": %f cycles (avg)\n",                \
-                  (float) stats.pmu_cycles/(REPEAT) );        \
-    hal_pmu_send_stats_wrapper(&stats); \
-    return( 0 );                                              \
+#define MAKE_BENCH(var,func)                                   \
+int bench_ ## var ()                                           \
+{                                                              \
+    int16_t src[NTT_SIZE]      __attribute__((aligned(16)));   \
+    pmu_stats stats;                                           \
+    (func)( src );                                             \
+    hal_pmu_start_pmu_stats(&stats);                           \
+    for( size_t cnt=0; cnt<REPEAT; cnt++ )                     \
+        (func)( src );                                         \
+    hal_pmu_finish_pmu_stats(&stats);                          \
+    /*Workaround for RA8M1 (cannot print %f)*/                 \
+    debug_printf( #func ": %lu.%02lu cycles (avg)\n",          \
+                 stats.pmu_cycles/(REPEAT),                    \
+                 (stats.pmu_cycles % REPEAT) * 100 / REPEAT);  \
+    hal_pmu_send_stats_wrapper(&stats);                        \
+    return( 0 );                                               \
 }
 
 // base
