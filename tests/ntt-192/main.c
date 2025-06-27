@@ -406,7 +406,6 @@ void poly_mul_192( int32_t *dst, int32_t *srcA, int32_t *srcB )
 int run_test_poly_mul()
 {
     int32_t A[NTT_SIZE], B[NTT_SIZE], C[NTT_SIZE], C_ref[NTT_SIZE];
-    int32_t pow_2k_inv;
     debug_test_start( "Polynomial multiplication in F_q[X]/(X^192-1)" );
 
     fill_random_u32( (uint32_t*) A, NTT_SIZE );
