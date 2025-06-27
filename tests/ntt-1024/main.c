@@ -66,6 +66,7 @@ void ntt_u32_mve_rev4(uint32_t *);
 
 #if !defined(NTT_INCOMPLETE)
 #define ntt_u32_mve ntt_1024_u32_33564673_286215
+#define NTT_U32_MVE_CAST(x) (x)  /* Complete version takes int32_t* */
 #else
 #define ntt_u32_mve                  ntt_1024_u32_33564673_286215_incomplete
 #define ntt_u32_mve_rev4             ntt_1024_u32_33564673_286215_incomplete_rev4
@@ -74,6 +75,7 @@ void ntt_u32_mve_rev4(uint32_t *);
 #define ntt_u32_mve_bitrev_skipfirst ntt_1024_u32_33564673_286215_incomplete_bitrev_skipfirst
 #define ntt_u32_mve_double_rev4      ntt_1024_u32_33564673_286215_incomplete_double_rev4
 #define ntt_u32_mve_double           ntt_1024_u32_33564673_286215_incomplete_double
+#define NTT_U32_MVE_CAST(x) ((uint32_t*)(x))  /* Incomplete version takes uint32_t* */
 #endif
 
 /* Cyclic signed schoolbook multiplications */
@@ -344,7 +346,7 @@ int run_test_ntt()
 
     /* Step 2: MVE-based NTT */
     measure_start();
-    ntt_u32_mve( src );
+    ntt_u32_mve( NTT_U32_MVE_CAST(src) );
     measure_end();
 
     mod_reduce_buf_s32( src, NTT_SIZE, modulus );
@@ -391,7 +393,7 @@ int run_test_ntt_rev4()
 
     /* Step 2: MVE-based NTT */
     measure_start();
-    ntt_u32_mve_rev4( src );
+    ntt_u32_mve_rev4( (uint32_t*)src );
     measure_end();
 
     mod_reduce_buf_s32( src, NTT_SIZE, modulus );
@@ -442,7 +444,7 @@ int run_test_ntt_bitrev()
 
     /* Step 2: MVE-based NTT */
     measure_start();
-    ntt_u32_mve_bitrev( src );
+    ntt_u32_mve_bitrev( (uint32_t*)src );
     measure_end();
 
     mod_reduce_buf_s32( src, NTT_SIZE, modulus );
@@ -499,8 +501,8 @@ int run_test_ntt_fwd_inv_bitrev()
 
     /* Step 2: MVE-based NTT */
 
-    ntt_u32_mve( src );
-    ntt_u32_mve_bitrev( src );
+    ntt_u32_mve( NTT_U32_MVE_CAST(src) );
+    ntt_u32_mve_bitrev( (uint32_t*)src );
 
     mod_reduce_buf_s32( src, NTT_SIZE, modulus );
 
@@ -568,7 +570,7 @@ int run_test_ntt_skipfirst()
     // First layer is skipped by MVE implementation
     ntt_u32_first_layer( src );
     measure_start();
-    ntt_u32_mve_skipfirst( src );
+    ntt_u32_mve_skipfirst( (uint32_t*)src );
     measure_end();
 
     mod_reduce_buf_s32( src, NTT_SIZE, modulus );
@@ -610,7 +612,7 @@ int run_test_ntt_bitrev_skipfirst()
     // First layer is skipped by MVE implementation
     ntt_u32_first_layer_bitrev( src );
     measure_start();
-    ntt_u32_mve_bitrev_skipfirst( src );
+    ntt_u32_mve_bitrev_skipfirst( (uint32_t*)src );
     measure_end();
 
     mod_reduce_buf_s32( src, NTT_SIZE, modulus );
@@ -656,6 +658,7 @@ int run_test_ntt_bitrev_skipfirst()
 #if !defined(TEST_CORE_ONLY)
 int32_t ntt_root_for_block( int layer, int block )
 {
+    (void)layer; // Suppress unused parameter warning
     int log;
     int32_t root;
     log = bit_reverse(/*(1 << layer) + */ block, NTT_LAYERS-1);
@@ -719,7 +722,7 @@ int run_test_ntt_incomplete_double()
 
     /* Step 2: MVE-based NTT */
     measure_start();
-    ntt_u32_mve_double( src, dst_mve );
+    ntt_u32_mve_double( (uint32_t*)src, (uint32_t*)dst_mve );
     measure_end();
 
     mod_reduce_buf_s32( dst_C,   2 * NTT_SIZE, modulus );
@@ -805,7 +808,7 @@ int run_test_ntt_incomplete_double_rev4()
 
     /* Step 2: MVE-based NTT */
     measure_start();
-    ntt_u32_mve_double_rev4( src, dst_mve );
+    ntt_u32_mve_double_rev4( (uint32_t*)src, (uint32_t*)dst_mve );
     measure_end();
 
     mod_reduce_buf_s32( dst_C,   2 * NTT_SIZE, modulus );
@@ -878,10 +881,10 @@ void poly_mul_1024( int32_t *dst, int32_t *srcA, int32_t *srcB )
     };
 
     int32_t tmpB[2*NTT_SIZE];
-    ntt_u32_mve_rev4( srcA );
-    ntt_u32_mve_double_rev4( srcB, tmpB );
-    twisted_cyclic_mul_deg4_u32_add_sub_rev_mve( srcA, tmpB, dst, params );
-    ntt_u32_mve_bitrev_skipfirst( dst );
+    ntt_u32_mve_rev4( (uint32_t*)srcA );
+    ntt_u32_mve_double_rev4( (uint32_t*)srcB, (uint32_t*)tmpB );
+    twisted_cyclic_mul_deg4_u32_add_sub_rev_mve( (uint32_t*)srcA, (uint32_t*)tmpB, (uint32_t*)dst, (uint32_t*)params );
+    ntt_u32_mve_bitrev_skipfirst( (uint32_t*)dst );
 }
 
 int run_test_poly_mul()
