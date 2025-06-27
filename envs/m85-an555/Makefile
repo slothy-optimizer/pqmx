@@ -14,7 +14,7 @@ TEST_COMMON=../../tests/common/
 SYSROOT := $(shell $(CC) --print-sysroot)
 CFLAGS += \
 	-O3 \
-	-Wall -Wextra -Wshadow \
+	-Wall -Wextra -Wshadow -Werror \
 	-fno-common \
 	-ffunction-sections \
 	-fdata-sections \
