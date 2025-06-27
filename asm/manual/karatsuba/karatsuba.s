@@ -493,6 +493,7 @@ karatsuba_inv_dual_32_loop:
         f_even_odd  .req q2
         f_sum_odd   .req q3
 
+        #undef SHIFT
         #define SHIFT 0
 
         sum_even  .req q7 // alloc q7
