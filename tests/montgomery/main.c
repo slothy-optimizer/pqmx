@@ -85,7 +85,6 @@ void reduce_q_u16( int16_t *src, size_t size )
 {
     for( unsigned idx = 0; idx < size; idx++ )
     {
-        int32_t tmp;
         src[idx] = src[idx] % mod_q16;
         if( src[idx] < 0 )
             src[idx] += mod_q16;
@@ -341,7 +340,6 @@ static void twisted_mul_deg4_u32_C( int32_t const *src_a,
         int64_t b1  = src_b[ idxb + 2 ];
         int64_t b2  = src_b[ idxb + 1 ];
         int64_t b3  = src_b[ idxb + 0 ];
-        int64_t bt0 = src_b[ idxb + 7 ];
         int64_t bt1 = src_b[ idxb + 6 ];
         int64_t bt2 = src_b[ idxb + 5 ];
         int64_t bt3 = src_b[ idxb + 4 ];
@@ -588,7 +586,6 @@ void reduce_q_u32( int32_t *src, size_t size )
 {
     for( unsigned idx = 0; idx < size; idx++ )
     {
-        int64_t tmp;
         src[idx] = src[idx] % mod_q32;
         if( src[idx] < 0 )
             src[idx] += mod_q32;
