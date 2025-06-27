@@ -263,7 +263,7 @@ int run_test_ntt()
     // First layer is skipped by MVE implementation
     ntt_u32_first_layer( src );
     measure_start();
-    ntt_u32_mve( src );
+    ntt_u32_mve( (uint32_t*)src );
     measure_end();
 
     mod_reduce_buf_s32( src, NTT_SIZE, modulus );
@@ -284,7 +284,7 @@ int run_test_ntt()
 {
     int32_t src[NTT_SIZE]      __attribute__((aligned(16)));
     measure_start();
-    ntt_u32_mve( src );
+    ntt_u32_mve( (uint32_t*)src );
     measure_end();
     return( 0 );
 }

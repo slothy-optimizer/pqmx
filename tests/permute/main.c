@@ -52,7 +52,7 @@ int run_permute_test_u ## bits ()                               \
     unsigned entries = BUFSZ_BYTES / BITS_TO_BYTES(bits);       \
     int fail = 0;                                               \
     int multiples;                                              \
-    int values;                                                 \
+    unsigned values;                                                 \
                                                                 \
     debug_test_start( "Test: " #bits "-bit permutation");       \
                                                                 \
@@ -80,7 +80,7 @@ int run_permute_test_u ## bits ()                               \
     for( i = 0; i < values; i++ )                               \
     {                                                           \
         int num_found = 0;                                      \
-        for( j = 0; j < entries; j++ )                          \
+        for( j = 0; j < (unsigned)entries; j++ )                          \
         {                                                       \
             if( dst[j] == i )                                   \
                 num_found++;                                    \

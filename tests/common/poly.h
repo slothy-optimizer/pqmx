@@ -119,8 +119,8 @@ void mod_mul_buf_s16      ( int16_t *src_a, int16_t *src_b, int16_t *dst,
 #define MAKE_SCHOOLBOOK_(BITWIDTH,DIM)                                   \
 void C_SCHOOLBOOK_SYMBOL_NAME(BITWIDTH,DIM)                              \
         ( uint(BITWIDTH)        *r,                                      \
-          uint(BITWIDTH) const  *a,                                      \
-          uint(BITWIDTH) const  *b )                                     \
+          uint(BITWIDTH) const  *src_a,                                  \
+          uint(BITWIDTH) const  *src_b )                                 \
     {                                                                    \
         unsigned i, j;                                                   \
                                                                          \
@@ -133,8 +133,8 @@ void C_SCHOOLBOOK_SYMBOL_NAME(BITWIDTH,DIM)                              \
             {                                                            \
                 r[SCHOOLBOOK_OFFSET_FROM_INDEX_DST(DIM, i+j)]            \
                     +=   SCHOOLBOOK_FACTOR(DIM, i+j)                     \
-                    * a[SCHOOLBOOK_OFFSET_FROM_INDEX_SRCA(DIM, i)]       \
-                    * b[SCHOOLBOOK_OFFSET_FROM_INDEX_SRCB(DIM, j)];      \
+                    * src_a[SCHOOLBOOK_OFFSET_FROM_INDEX_SRCA(DIM, i)]   \
+                    * src_b[SCHOOLBOOK_OFFSET_FROM_INDEX_SRCB(DIM, j)];  \
             }                                                            \
         }                                                                \
     }
@@ -197,8 +197,7 @@ void C_SCHOOLBOOK_VARSIZE_SYMBOL_NAME(BITWIDTH_IN,BITWIDTH_OUT,DIM)      \
 void C_SCHOOLBOOK_VARSIZE_SYMBOL_NAME(BITWIDTH_IN,BITWIDTH_OUT,DIM)      \
         ( uint(BITWIDTH_OUT)        *r,                                  \
           uint(BITWIDTH_IN)  const  *a,                                  \
-          uint(BITWIDTH_IN)  const  *b,                                  \
-          uint(BITWIDTH_IN) modulus )                                    \
+          uint(BITWIDTH_IN)  const  *b )                                 \
     {                                                                    \
         unsigned i, j;                                                   \
                                                                          \

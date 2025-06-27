@@ -604,7 +604,7 @@ crt_s32_dechunk_chunk_add:
         ldr init_tmp, [addr], #+4
         vdup.u32 qmask, init_tmp
         /* Save size, original destination pointer and mask for later */
-        push {size, dst, init_tmp}
+        push {dst, size, init_tmp}
         ldrd mod_p, mod_q_neg, [addr], #+8
         ldrd p_inv_mod_q, p_inv_mod_q_tw, [addr], #+8
         vdup.u32 mod_p_vect, mod_p
@@ -861,7 +861,7 @@ crt_s32_dechunk_chunk:
         ldr init_tmp, [addr], #+4
         vdup.u32 qmask, init_tmp
         /* Save size, original destination pointer and mask for later */
-        push {size, dst, init_tmp}
+        push {dst, size, init_tmp}
         ldrd mod_p, mod_q_neg, [addr], #+8
         ldrd p_inv_mod_q, p_inv_mod_q_tw, [addr], #+8
         vdup.u32 mod_p_vect, mod_p
@@ -1794,7 +1794,7 @@ crt_s32_chunk_dechunk_reduce_canonical_v2:
         ldr init_tmp, [addr], #+4
         vdup.u32 qmask, init_tmp
         /* Save size, original destination pointer and mask for later */
-        push {size, dst, init_tmp}
+        push {dst, size, init_tmp}
         ldrd mod_p, mod_q_neg, [addr], #+8
         ldrd p_inv_mod_q, p_inv_mod_q_tw, [addr], #+8
         vdup.u32 mod_p_vect, mod_p
@@ -1835,7 +1835,7 @@ crt_s32_chunk_dechunk_reduce_canonical_v2:
          * Iterate over them in scalar for reduction to canonical form. */
 
         /* Restore mask and original destination pointer */
-        pop {size, dst, mask}
+        pop {dst, size, mask}
         mov rcarry, #0
         mov loop_cnt, size, LSR #1
         wls loop_cnt, loop_cnt, 2
@@ -1939,7 +1939,7 @@ crt_s32_chunk_dechunk_sub_reduce_canonical_v2:
         ldr init_tmp, [addr], #+4
         vdup.u32 qmask, init_tmp
         /* Save size, original destination pointer and mask for later */
-        push {size, dst, init_tmp}
+        push {dst, size, init_tmp}
         ldrd mod_p, mod_q_neg, [addr], #+8
         ldrd p_inv_mod_q, p_inv_mod_q_tw, [addr], #+8
         vdup.u32 mod_p_vect, mod_p
@@ -2014,7 +2014,7 @@ crt_s32_chunk_dechunk_sub_reduce_canonical_v2:
          * Iterate over them in scalar for reduction to canonical form. */
 
         /* Restore mask and original destination pointer */
-        pop {size, dst, mask}
+        pop {dst, size, mask}
         mov rcarry, #0
         mov loop_cnt, size, LSR #1
         wls loop_cnt, loop_cnt, 2
@@ -2118,7 +2118,7 @@ crt_s32_chunk_dechunk_sub_reduce_canonical_v3:
         ldr init_tmp, [addr], #+4
         vdup.u32 qmask, init_tmp
         /* Save size, original destination pointer and mask for later */
-        push {size, dst, init_tmp}
+        push {dst, size, init_tmp}
         ldrd mod_p, mod_q_neg, [addr], #+8
         ldrd p_inv_mod_q, p_inv_mod_q_tw, [addr], #+8
         vdup.u32 mod_p_vect, mod_p
@@ -2240,7 +2240,7 @@ crt_s32_chunk_dechunk_sub_reduce_canonical_v3:
         /* At this point, we have non-canonical limbs of 32-bit.
         * Iterate over them in scalar for reduction to canonical form. */
         /* Restore mask and original destination pointer */
-        pop {size, dst, mask}
+        pop {dst, size, mask}
         mov rcarry, #0
         mov loop_cnt, size, LSR #1
         wls loop_cnt, loop_cnt, 2
@@ -2347,7 +2347,7 @@ crt_s32_chunk_dechunk_add_reduce_canonical:
         ldr init_tmp, [addr], #+4
         vdup.u32 qmask, init_tmp
         /* Save size, original destination pointer and mask for later */
-        push {size, dst, init_tmp}
+        push {dst, size, init_tmp}
         ldrd mod_p, mod_q_neg, [addr], #+8
         ldrd p_inv_mod_q, p_inv_mod_q_tw, [addr], #+8
         vdup.u32 mod_p_vect, mod_p
@@ -2469,7 +2469,7 @@ crt_s32_chunk_dechunk_add_reduce_canonical:
         /* At this point, we have non-canonical limbs of 32-bit.
         * Iterate over them in scalar for reduction to canonical form. */
         /* Restore mask and original destination pointer */
-        pop {size, dst, mask}
+        pop {dst, size, mask}
         mov rcarry, #0
         mov loop_cnt, size, LSR #1
         wls loop_cnt, loop_cnt, 2

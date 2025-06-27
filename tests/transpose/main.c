@@ -78,7 +78,6 @@ void generate_sample()
 
 static int test_transpose()
 {
-    int a[4];
     debug_test_start( "Test: Transpose" );
     generate_simple_sample();
 
