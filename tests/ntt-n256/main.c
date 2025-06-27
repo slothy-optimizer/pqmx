@@ -354,7 +354,7 @@ int run_test_ntt_incomplete_double()
 
     /* Step 2: MVE-based NTT */
     measure_start();
-    ntt_incomplete_double_u32_mve( src, dst_mve );
+    ntt_incomplete_double_u32_mve( (uint32_t*)src, (uint32_t*)dst_mve );
     measure_end();
 
     mod_reduce_buf_s32( dst_C,   2 * NTT_SIZE, modulus );
@@ -394,8 +394,6 @@ int run_test_ntt_fwd_inv()
     debug_test_start( "NTT forward-inverse u32" );
     int32_t src[NTT_SIZE]      __attribute__((aligned(16)));
     int32_t src_copy[NTT_SIZE] __attribute__((aligned(16)));
-
-    int32_t pow_2k_inv;
 
     /* Setup input */
     fill_random_u32( (uint32_t*) src, NTT_SIZE );
