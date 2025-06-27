@@ -176,38 +176,38 @@ void hal_pmu_finish_pmu_stats( pmu_stats *s )
 void hal_pmu_send_stats( char *s, pmu_stats const *stats )
 {
     printf( "%s\n", s );
-    printf( "- cycles:               %u\n",                            stats->pmu_cycles );
-    printf( "- systick cycles:       %u\n",                            stats->systick_cycles );
-    printf( "- instructions:         %u (IPC=0.%u)\n",                 stats->inst_all,
-            ( stats->inst_all * 100 ) / stats->pmu_cycles );
-    printf( "- stalls:               %u (%u%% of instructions)\n",     stats->stall_all,
-            ( stats->stall_all * 100 ) / stats->inst_all );
-    printf( "- MVE instructions:     %u (%u%% of instructions)\n",     stats->inst_mve_all,
-            ( stats->inst_mve_all * 100) / stats->inst_all );
-    printf( "- MVE LSU instructions: %u (%u%% of MVE instructions, busy %u%% of cycles)\n", stats->inst_mve_lsu,
-            ( stats->inst_mve_lsu * 100) / stats->inst_mve_all,
-            ( stats->inst_mve_lsu * 2 * 100) / stats->pmu_cycles );
-    printf( "- MVE INT instructions: %u (%u%% of MVE instructions, busy %u%% of cycles)\n", stats->inst_mve_int,
-            ( stats->inst_mve_int * 100) / stats->inst_mve_all,
-            ( stats->inst_mve_int * 2 * 100) / stats->pmu_cycles );
-    printf( "- MVE MUL instructions: %u (%u%% of MVE instructions, busy %u%% of cycles)\n", stats->inst_mve_mul,
-            ( stats->inst_mve_mul * 100) / stats->inst_mve_all,
-            ( stats->inst_mve_mul * 2 * 100) / stats->pmu_cycles );
-    printf( "- MVE stalls:           %u (%u%% of MVE instructions)\n", stats->stall_mve_all,
-            ( stats->stall_mve_all * 100 ) / stats->inst_mve_all );
-    printf( "- MVE resource stalls:  %u (%u%% of MVE stalls)\n",       stats->stall_mve_resource,
-            ( stats->stall_mve_resource * 100 ) / stats->stall_mve_all );
+    printf( "- cycles:               %lu\n",                            (unsigned long)stats->pmu_cycles );
+    printf( "- systick cycles:       %lu\n",                            (unsigned long)stats->systick_cycles );
+    printf( "- instructions:         %lu (IPC=0.%lu)\n",                 (unsigned long)stats->inst_all,
+            (unsigned long)( stats->inst_all * 100 ) / stats->pmu_cycles );
+    printf( "- stalls:               %lu (%lu%% of instructions)\n",     (unsigned long)stats->stall_all,
+            (unsigned long)( stats->stall_all * 100 ) / stats->inst_all );
+    printf( "- MVE instructions:     %lu (%lu%% of instructions)\n",     (unsigned long)stats->inst_mve_all,
+            (unsigned long)( stats->inst_mve_all * 100) / stats->inst_all );
+    printf( "- MVE LSU instructions: %lu (%lu%% of MVE instructions, busy %lu%% of cycles)\n", (unsigned long)stats->inst_mve_lsu,
+            (unsigned long)( stats->inst_mve_lsu * 100) / stats->inst_mve_all,
+            (unsigned long)( stats->inst_mve_lsu * 2 * 100) / stats->pmu_cycles );
+    printf( "- MVE INT instructions: %lu (%lu%% of MVE instructions, busy %lu%% of cycles)\n", (unsigned long)stats->inst_mve_int,
+            (unsigned long)( stats->inst_mve_int * 100) / stats->inst_mve_all,
+            (unsigned long)( stats->inst_mve_int * 2 * 100) / stats->pmu_cycles );
+    printf( "- MVE MUL instructions: %lu (%lu%% of MVE instructions, busy %lu%% of cycles)\n", (unsigned long)stats->inst_mve_mul,
+            (unsigned long)( stats->inst_mve_mul * 100) / stats->inst_mve_all,
+            (unsigned long)( stats->inst_mve_mul * 2 * 100) / stats->pmu_cycles );
+    printf( "- MVE stalls:           %lu (%lu%% of MVE instructions)\n", (unsigned long)stats->stall_mve_all,
+            (unsigned long)( stats->stall_mve_all * 100 ) / stats->inst_mve_all );
+    printf( "- MVE resource stalls:  %lu (%lu%% of MVE stalls)\n",       (unsigned long)stats->stall_mve_resource,
+            (unsigned long)( stats->stall_mve_resource * 100 ) / stats->stall_mve_all );
 
-    printf( "s %u  %u %u  %u %u  %u %u  %u %u %u  %u %u %u  %u %u %u  %u %u  %u %u\n",
+    printf( "s %s  %lu %lu  %lu %lu  %lu %lu  %lu %lu %lu  %lu %lu %lu  %lu %lu %lu  %lu %lu  %lu %lu %lu\n",
             s,
-            stats->pmu_cycles,
-            stats->inst_all,           ( stats->inst_all           * 100 ) / stats->pmu_cycles,
-            stats->stall_all,          ( stats->stall_all          * 100 ) / stats->inst_all,
-            stats->inst_mve_all,       ( stats->inst_mve_all       * 100 ) / stats->inst_all,
-            stats->inst_mve_lsu,       ( stats->inst_mve_lsu       * 100 ) / stats->inst_mve_all,      ( stats->inst_mve_lsu * 2 * 100) / stats->pmu_cycles,
-            stats->inst_mve_int,       ( stats->inst_mve_int       * 100 ) / stats->inst_mve_all,      ( stats->inst_mve_int * 2 * 100) / stats->pmu_cycles,
-            stats->inst_mve_mul,       ( stats->inst_mve_mul       * 100 ) / stats->inst_mve_all,      ( stats->inst_mve_mul * 2 * 100) / stats->pmu_cycles,
-            stats->stall_mve_all,      ( stats->stall_mve_all      * 100 ) / stats->inst_mve_all,
-            stats->stall_mve_resource, ( stats->stall_mve_resource * 100 ) / stats->stall_mve_all );
+            (unsigned long)stats->pmu_cycles,
+            (unsigned long)stats->inst_all,           (unsigned long)( stats->inst_all           * 100 ) / stats->pmu_cycles,
+            (unsigned long)stats->stall_all,          (unsigned long)( stats->stall_all          * 100 ) / stats->inst_all,
+            (unsigned long)stats->inst_mve_all,       (unsigned long)( stats->inst_mve_all       * 100 ) / stats->inst_all,
+            (unsigned long)stats->inst_mve_lsu,       (unsigned long)( stats->inst_mve_lsu       * 100 ) / stats->inst_mve_all,      (unsigned long)( stats->inst_mve_lsu * 2 * 100) / stats->pmu_cycles,
+            (unsigned long)stats->inst_mve_int,       (unsigned long)( stats->inst_mve_int       * 100 ) / stats->inst_mve_all,      (unsigned long)( stats->inst_mve_int * 2 * 100) / stats->pmu_cycles,
+            (unsigned long)stats->inst_mve_mul,       (unsigned long)( stats->inst_mve_mul       * 100 ) / stats->inst_mve_all,      (unsigned long)( stats->inst_mve_mul * 2 * 100) / stats->pmu_cycles,
+            (unsigned long)stats->stall_mve_all,      (unsigned long)( stats->stall_mve_all      * 100 ) / stats->inst_mve_all,
+            (unsigned long)stats->stall_mve_resource, (unsigned long)( stats->stall_mve_resource * 100 ) / stats->stall_mve_all );
 
 }
