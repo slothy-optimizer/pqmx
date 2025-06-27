@@ -197,8 +197,7 @@ void C_SCHOOLBOOK_VARSIZE_SYMBOL_NAME(BITWIDTH_IN,BITWIDTH_OUT,DIM)      \
 void C_SCHOOLBOOK_VARSIZE_SYMBOL_NAME(BITWIDTH_IN,BITWIDTH_OUT,DIM)      \
         ( uint(BITWIDTH_OUT)        *r,                                  \
           uint(BITWIDTH_IN)  const  *a,                                  \
-          uint(BITWIDTH_IN)  const  *b,                                  \
-          uint(BITWIDTH_IN) modulus )                                    \
+          uint(BITWIDTH_IN)  const  *b )                                 \
     {                                                                    \
         unsigned i, j;                                                   \
                                                                          \

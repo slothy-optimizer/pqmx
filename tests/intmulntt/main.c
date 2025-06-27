@@ -111,7 +111,6 @@ void reduce_q_u32( int32_t *src, size_t size, int32_t modulus )
 {
     for( unsigned idx = 0; idx < size; idx++ )
     {
-        int64_t tmp;
         src[idx] = src[idx] % modulus;
         if( src[idx] < 0 )
             src[idx] += modulus;
@@ -369,7 +368,7 @@ int test_intchunkmul()
     }
 
     /* Step 1: Reference product */
-    poly_u22_mul_C( c_tmp, a, b, 0 /* no modulus */ );
+    poly_u22_mul_C( c_tmp, a, b );
     chunk_dechunk_22_64_to_32( c_ref, c_tmp, 2 * NUM_CHUNKS );
 
     /* Step 2: NTT-based multiplication */
@@ -430,9 +429,9 @@ int test_intchunkmulsub()
     }
 
     /* Step 1: Reference product */
-    poly_u22_mul_C( c0_tmp, a0, b0, 0 /* no modulus */ );
+    poly_u22_mul_C( c0_tmp, a0, b0 );
     chunk_dechunk_22_64_to_32( c0_ref, c0_tmp, 2 * NUM_CHUNKS );
-    poly_u22_mul_C( c1_tmp, a1, b1, 0 /* no modulus */ );
+    poly_u22_mul_C( c1_tmp, a1, b1 );
     chunk_dechunk_22_64_to_32( c1_ref, c1_tmp, 2 * NUM_CHUNKS );
 
     sub_s32( c0_ref, c0_ref, c1_ref, 2 * NUM_CHUNKS );
@@ -496,9 +495,9 @@ int test_intchunkmuladd()
     }
 
     /* Step 1: Reference product */
-    poly_u22_mul_C( c0_tmp, a0, b0, 0 /* no modulus */ );
+    poly_u22_mul_C( c0_tmp, a0, b0 );
     chunk_dechunk_22_64_to_32( c0_ref, c0_tmp, 2 * NUM_CHUNKS );
-    poly_u22_mul_C( c1_tmp, a1, b1, 0 /* no modulus */ );
+    poly_u22_mul_C( c1_tmp, a1, b1 );
     chunk_dechunk_22_64_to_32( c1_ref, c1_tmp, 2 * NUM_CHUNKS );
 
     add_s32( c0_ref, c0_ref, c1_ref, 2 * NUM_CHUNKS );
@@ -552,7 +551,7 @@ int test_intpolymul()
     }
 
     /* Step 1: Reference product */
-    poly_u22_mul_C( c_ref, a, b, 0 /* no modulus */ );
+    poly_u22_mul_C( c_ref, a, b );
     /* Step 2: NTT-based multiplication */
     measure_start();
     poly_u22_mul_mve( c, a, b );
