@@ -875,6 +875,7 @@ static void poly_u16_toom4_fwd_dual_bottom_C( uint16_t *poly )
 
 /* Compute the Toom3 evaluation step in-place, evaluating
  * at the points 0, -1, +1, -2, infty in this order. */
+/*
 static void poly_u16_toom3_fwd_C( uint16_t *poly )
 {
     unsigned limb_dim = DIMENSION / 3;
@@ -898,6 +899,7 @@ static void poly_u16_toom3_fwd_C( uint16_t *poly )
         eval[4][idx] = (uint16_t)(               val_c );
     }
 }
+*/
 
 /*
  * Test case generation
@@ -1789,8 +1791,6 @@ static void multiply_by_eval_of_1_toom4_dual_top( uint16_t *poly_a )
 #if defined(TEST_TOOM4_FWD_INV_DUAL_TOP)
 int unfold(test_toom4_fwd_inv_dual_top)()
 {
-    uint16_t * const a_shift = a + 3*DIMENSION_DIV4;
-    uint16_t * const b_shift = b + 3*DIMENSION_DIV4;
     debug_test_start( TEST_STRING_TOOM4_FWD_INV_DUAL_TOP_START );
 
     generate_sample();
