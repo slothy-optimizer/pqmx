@@ -335,7 +335,6 @@ void mat_vec_mul_u16_C( uint16_t A  [MAT_DIM][MAT_DIM][POLY_DEG],
                         uint16_t w  [MAT_DIM][POLY_DEG],
                         uint16_t dst[MAT_DIM][POLY_DEG] )
 {
-    uint16_t tmp[POLY_DEG] = { 0 };
     for( unsigned i = 0; i < MAT_DIM; i++ )
         vec_vec_dot_u16_C( A[i], w, dst[i] );
 }
@@ -400,6 +399,7 @@ int test_mat_vec_mul_tc_kara(void)
     defined(TEST_POLY_MUL_NTT_INCOMPLETE)
 
 #define POLY_DEG     256
+#undef EVAL_DEG
 #define EVAL_DEG     256
 
 void ntt_u32_33556993_28678040(int32_t *src);

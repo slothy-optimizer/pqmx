@@ -108,8 +108,8 @@ int check_crt_s32_single()
 
     int32_t x, y, zp, zq;
     int64_t z;
-    fill_random_u32( &x, 1 );
-    fill_random_u32( &y, 1 );
+    fill_random_u32( (uint32_t*)&x, 1 );
+    fill_random_u32( (uint32_t*)&y, 1 );
 
     x = mod_s32( x, CRT_32_P );
     y = mod_s32( y, CRT_32_Q );
@@ -165,8 +165,8 @@ int test_crt_s32()
     int64_t out    [CRT_32_SIZE];
     int64_t out_ref[CRT_32_SIZE];
 
-    fill_random_u32( inQ, CRT_32_SIZE );
-    fill_random_u32( inP, CRT_32_SIZE );
+    fill_random_u32( (uint32_t*)inQ, CRT_32_SIZE );
+    fill_random_u32( (uint32_t*)inP, CRT_32_SIZE );
     for( unsigned idx=0; idx < CRT_32_SIZE; idx++ )
     {
         inP[idx] >>= 1;
@@ -190,7 +190,6 @@ int test_crt_s32()
         int32_t x, y, zp, zq;
         int64_t z;
         uint64_t z_abs;
-        uint32_t x_abs, y_abs;
 
         x = inP[idx];
         y = inQ[idx];
@@ -200,14 +199,6 @@ int test_crt_s32()
             z_abs = z;
         else
             z_abs = -z;
-        if( x > 0 )
-            x_abs = x;
-        else
-            x_abs = -x;
-        if( y > 0 )
-            y_abs = y;
-        else
-            y_abs = -y;
 
         zp = mod_s64( z, CRT_32_P );
         zq = mod_s64( z, CRT_32_Q );
@@ -280,8 +271,8 @@ int test_crt_s32_reduce()
     int64_t out    [CRT_32_SIZE];
     int64_t out_ref[CRT_32_SIZE];
 
-    fill_random_u32( inQ, CRT_32_SIZE );
-    fill_random_u32( inP, CRT_32_SIZE );
+    fill_random_u32( (uint32_t*)inQ, CRT_32_SIZE );
+    fill_random_u32( (uint32_t*)inP, CRT_32_SIZE );
     for( unsigned idx=0; idx < CRT_32_SIZE; idx++ )
     {
         inQ[idx] >>= 1;
@@ -306,7 +297,6 @@ int test_crt_s32_reduce()
         int32_t x, y, zp, zq;
         int64_t z;
         uint64_t z_abs;
-        uint32_t x_abs, y_abs;
 
         x = inP[idx];
         y = inQ[idx];
@@ -316,14 +306,6 @@ int test_crt_s32_reduce()
             z_abs = z;
         else
             z_abs = -z;
-        if( x > 0 )
-            x_abs = x;
-        else
-            x_abs = -x;
-        if( y > 0 )
-            y_abs = y;
-        else
-            y_abs = -y;
 
         zp = mod_s64( z, CRT_32_P );
         zq = mod_s64( z, CRT_32_Q );
@@ -422,12 +404,10 @@ int test_crt_s32_chunk_dechunk_reduce()
     int32_t inQ    [CRT_32_SIZE];
     int32_t out    [CRT_32_SIZE];
     int32_t out_ref [CRT_32_SIZE];
-    int32_t out_ref2[CRT_32_SIZE];
-    int64_t out_tmp_mve[CRT_32_SIZE];
     int64_t out_tmp_C  [CRT_32_SIZE];
 
-    fill_random_u32( inQ, CRT_32_SIZE );
-    fill_random_u32( inP, CRT_32_SIZE );
+    fill_random_u32( (uint32_t*)inQ, CRT_32_SIZE );
+    fill_random_u32( (uint32_t*)inP, CRT_32_SIZE );
     for( unsigned i=0; i < CRT_32_SIZE; i++ )
     {
         inP[i] >>= 1;
@@ -440,12 +420,12 @@ int test_crt_s32_chunk_dechunk_reduce()
     measure_start();
     crt_s32_chunk_dechunk_reduce( out, inP, inQ, CRT_32_SIZE );
     measure_end();
-    chunk_dechunk_22_s32_to_32( out, out, CRT_32_SIZE );
+    chunk_dechunk_22_s32_to_32( (uint32_t*)out, out, CRT_32_SIZE );
 
     mod_buf_s32( inP, CRT_32_SIZE, CRT_32_P );
     mod_buf_s32( inQ, CRT_32_SIZE, CRT_32_Q );
     crt_s32_C( out_tmp_C, inP, inQ, CRT_32_P, CRT_32_Q, CRT_32_P_INV_MOD_Q, CRT_32_SIZE );
-    chunk_dechunk_22_s64_to_32( out_ref, out_tmp_C, CRT_32_SIZE );
+    chunk_dechunk_22_s64_to_32( (uint32_t*)out_ref, out_tmp_C, CRT_32_SIZE );
 
     if( compare_buf_s32( out_ref, out, CRT_32_SIZE ) != 0 )
     {
@@ -477,12 +457,10 @@ int test_crt_s32_chunk_dechunk()
     int32_t inQ    [CRT_32_SIZE];
     int32_t out    [CRT_32_SIZE];
     int32_t out_ref [CRT_32_SIZE];
-    int32_t out_ref2[CRT_32_SIZE];
-    int64_t out_tmp_mve[CRT_32_SIZE];
     int64_t out_tmp_C  [CRT_32_SIZE];
 
-    fill_random_u32( inQ, CRT_32_SIZE );
-    fill_random_u32( inP, CRT_32_SIZE );
+    fill_random_u32( (uint32_t*)inQ, CRT_32_SIZE );
+    fill_random_u32( (uint32_t*)inP, CRT_32_SIZE );
     for( unsigned i=0; i < CRT_32_SIZE; i++ )
     {
         inP[i] >>= 1;
@@ -498,10 +476,10 @@ int test_crt_s32_chunk_dechunk()
     measure_start();
     crt_s32_chunk_dechunk( out, inP, inQ, CRT_32_SIZE );
     measure_end();
-    chunk_dechunk_22_s32_to_32( out, out, CRT_32_SIZE );
+    chunk_dechunk_22_s32_to_32( (uint32_t*)out, out, CRT_32_SIZE );
 
     crt_s32_C( out_tmp_C, inP, inQ, CRT_32_P, CRT_32_Q, CRT_32_P_INV_MOD_Q, CRT_32_SIZE );
-    chunk_dechunk_22_s64_to_32( out_ref, out_tmp_C, CRT_32_SIZE );
+    chunk_dechunk_22_s64_to_32( (uint32_t*)out_ref, out_tmp_C, CRT_32_SIZE );
 
     if( compare_buf_s32( out_ref, out, CRT_32_SIZE ) != 0 )
     {
@@ -533,12 +511,10 @@ int test_crt_s32_chunk_dechunk_reduce_canonical()
     int32_t inQ    [CRT_32_SIZE];
     int32_t out    [CRT_32_SIZE];
     int32_t out_ref [CRT_32_SIZE];
-    int32_t out_ref2[CRT_32_SIZE];
-    int64_t out_tmp_mve[CRT_32_SIZE];
     int64_t out_tmp_C  [CRT_32_SIZE];
 
-    fill_random_u32( inQ, CRT_32_SIZE );
-    fill_random_u32( inP, CRT_32_SIZE );
+    fill_random_u32( (uint32_t*)inQ, CRT_32_SIZE );
+    fill_random_u32( (uint32_t*)inP, CRT_32_SIZE );
     for( unsigned i=0; i < CRT_32_SIZE; i++ )
     {
         inP[i] >>= 1;
@@ -555,7 +531,7 @@ int test_crt_s32_chunk_dechunk_reduce_canonical()
     mod_buf_s32( inP, CRT_32_SIZE, CRT_32_P );
     mod_buf_s32( inQ, CRT_32_SIZE, CRT_32_Q );
     crt_s32_C( out_tmp_C, inP, inQ, CRT_32_P, CRT_32_Q, CRT_32_P_INV_MOD_Q, CRT_32_SIZE );
-    chunk_dechunk_22_s64_to_32( out_ref, out_tmp_C, CRT_32_SIZE );
+    chunk_dechunk_22_s64_to_32( (uint32_t*)out_ref, out_tmp_C, CRT_32_SIZE );
 
     if( compare_buf_s32( out_ref, out, CRT_32_SIZE ) != 0 )
     {
@@ -585,12 +561,10 @@ int test_crt_s32_chunk_dechunk_reduce_canonical_v2()
     int32_t inQ    [CRT_32_SIZE];
     int32_t out    [CRT_32_SIZE];
     int32_t out_ref [CRT_32_SIZE];
-    int32_t out_ref2[CRT_32_SIZE];
-    int64_t out_tmp_mve[CRT_32_SIZE];
     int64_t out_tmp_C  [CRT_32_SIZE];
 
-    fill_random_u32( inQ, CRT_32_SIZE );
-    fill_random_u32( inP, CRT_32_SIZE );
+    fill_random_u32( (uint32_t*)inQ, CRT_32_SIZE );
+    fill_random_u32( (uint32_t*)inP, CRT_32_SIZE );
     for( unsigned i=0; i < CRT_32_SIZE; i++ )
     {
         inP[i] >>= 1;
@@ -607,7 +581,7 @@ int test_crt_s32_chunk_dechunk_reduce_canonical_v2()
     mod_buf_s32( inP, CRT_32_SIZE, CRT_32_P );
     mod_buf_s32( inQ, CRT_32_SIZE, CRT_32_Q );
     crt_s32_C( out_tmp_C, inP, inQ, CRT_32_P, CRT_32_Q, CRT_32_P_INV_MOD_Q, CRT_32_SIZE );
-    chunk_dechunk_22_s64_to_32( out_ref, out_tmp_C, CRT_32_SIZE );
+    chunk_dechunk_22_s64_to_32( (uint32_t*)out_ref, out_tmp_C, CRT_32_SIZE );
 
     if( compare_buf_s32( out_ref, out, CRT_32_SIZE ) != 0 )
     {

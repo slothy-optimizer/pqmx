@@ -331,6 +331,7 @@ int check_good_permutation()
     }
 
     debug_test_ok();
+    return( 0 );
 }
 
 int check_ntt_involutive()
@@ -396,7 +397,7 @@ int run_test_ntt_fwd_inv_bitrev()
     /* Step 2: MVE-based NTT */
 
     ntt_u32_mve( src );
-    ntt_u32_mve_bitrev( src );
+    ntt_u32_mve_bitrev( (uint32_t*)src );
 
     ntt_u32_permute_bitrev_inv( src );
     ntt_u32_permute_bitrev_inv( src );
@@ -501,7 +502,7 @@ int run_test_ntt_good()
     /* Step 2: MVE-based NTT */
 
     measure_start();
-    ntt_u32_mve_good( src );
+    ntt_u32_mve_good( (uint32_t*)src );
     measure_end();
 
     mod_reduce_buf_s32( src, NTT_SIZE, modulus );
@@ -546,9 +547,9 @@ int run_test_ntt_good_bitrev()
 
     /* Step 2: MVE-based NTT */
 
-    ntt_u32_mve_good( src );
+    ntt_u32_mve_good( (uint32_t*)src );
     mod_reduce_buf_s32( src, NTT_SIZE, modulus );
-    ntt_u32_mve_good_bitrev( src );
+    ntt_u32_mve_good_bitrev( (uint32_t*)src );
     mod_reduce_buf_s32( src, NTT_SIZE, modulus );
 
     pow_2k_inv = mod_pow_s32( (modulus+1)/2, 6, modulus );
@@ -634,7 +635,7 @@ int run_test_ntt_bitrev()
 
     /* Step 2: MVE-based NTT */
     measure_start();
-    ntt_u32_mve_bitrev( src );
+    ntt_u32_mve_bitrev( (uint32_t*)src );
     measure_end();
 
     mod_reduce_buf_s32( src, NTT_SIZE, modulus );
@@ -681,7 +682,7 @@ int run_test_ntt_rev4()
 
     /* Step 2: MVE-based NTT */
     measure_start();
-    ntt_u32_mve_rev4( src );
+    ntt_u32_mve_rev4( (uint32_t*)src );
     measure_end();
 
     mod_reduce_buf_s32( src, NTT_SIZE, modulus );
@@ -726,20 +727,19 @@ void poly_mul_768( int32_t *dst, int32_t *srcA, int32_t *srcB )
     };
 
     int32_t tmpB[2*NTT_SIZE];
-    ntt_u32_mve_good( srcA );
-    ntt_u32_mve_good( srcB );
-    twisted_cyclic_mul_deg4_u32_mve_expand_double( tmpB, srcB,
-                                                   ntt_u32_mve_good_twiddles,
-                                                   ntt_u32_mve_good_scale,
+    ntt_u32_mve_good( (uint32_t*)srcA );
+    ntt_u32_mve_good( (uint32_t*)srcB );
+    twisted_cyclic_mul_deg4_u32_mve_expand_double( (uint32_t*)tmpB, (uint32_t*)srcB,
+                                                   (uint32_t*)ntt_u32_mve_good_twiddles,
+                                                   (uint32_t*)ntt_u32_mve_good_scale,
                                                    modulus );
-    twisted_cyclic_mul_deg4_u32_mve_alt( srcA, tmpB, dst, params );
-    ntt_u32_mve_good_bitrev( dst );
+    twisted_cyclic_mul_deg4_u32_mve_alt( (uint32_t*)srcA, (uint32_t*)tmpB, (uint32_t*)dst, (uint32_t*)params );
+    ntt_u32_mve_good_bitrev( (uint32_t*)dst );
 }
 
 int run_test_poly_mul()
 {
     int32_t A[NTT_SIZE], B[NTT_SIZE], C[NTT_SIZE], C_ref[NTT_SIZE];
-    int32_t pow_2k_inv;
     debug_test_start( "Polynomial multiplication in F_q[X]/(X^768-1)" );
 
     fill_random_u32( (uint32_t*) A, NTT_SIZE );

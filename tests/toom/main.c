@@ -515,19 +515,19 @@ static void poly_u16_toom4_fwd_C( uint16_t *poly )
 
     for( idx = 0; idx < limb_dim; idx++ )
     {
-        uint16_t a,b,c,d;
-        a = limb[0][idx];
-        b = limb[1][idx];
-        c = limb[2][idx];
-        d = limb[3][idx];
+        uint16_t val_a,val_b,val_c,val_d;
+        val_a = limb[0][idx];
+        val_b = limb[1][idx];
+        val_c = limb[2][idx];
+        val_d = limb[3][idx];
 
-        eval[0][idx] = (uint16_t)(   a );
-        eval[1][idx] = (uint16_t)( 8*a - 4*b + 2*c -   d );
-        eval[2][idx] = (uint16_t)( 8*a + 4*b + 2*c +   d );
-        eval[3][idx] = (uint16_t)(   a -   b +   c -   d );
-        eval[4][idx] = (uint16_t)(   a +   b +   c +   d );
-        eval[5][idx] = (uint16_t)(   a + 2*b + 4*c + 8*d );
-        eval[6][idx] = (uint16_t)(                     d );
+        eval[0][idx] = (uint16_t)(   val_a );
+        eval[1][idx] = (uint16_t)( 8*val_a - 4*val_b + 2*val_c -   val_d );
+        eval[2][idx] = (uint16_t)( 8*val_a + 4*val_b + 2*val_c +   val_d );
+        eval[3][idx] = (uint16_t)(   val_a -   val_b +   val_c -   val_d );
+        eval[4][idx] = (uint16_t)(   val_a +   val_b +   val_c +   val_d );
+        eval[5][idx] = (uint16_t)(   val_a + 2*val_b + 4*val_c + 8*val_d );
+        eval[6][idx] = (uint16_t)(                     val_d );
     }
 }
 
@@ -543,19 +543,19 @@ static void poly_u16_toom4_fwd_oop_C( uint16_t *src, uint16_t *dst )
 
     for( idx = 0; idx < limb_dim; idx++ )
     {
-        uint16_t a,b,c,d;
-        a = limb[0][idx];
-        b = limb[1][idx];
-        c = limb[2][idx];
-        d = limb[3][idx];
+        uint16_t val_a,val_b,val_c,val_d;
+        val_a = limb[0][idx];
+        val_b = limb[1][idx];
+        val_c = limb[2][idx];
+        val_d = limb[3][idx];
 
-        eval[0][idx] = (uint16_t)(   a );
-        eval[1][idx] = (uint16_t)( 8*a - 4*b + 2*c -   d );
-        eval[2][idx] = (uint16_t)( 8*a + 4*b + 2*c +   d );
-        eval[3][idx] = (uint16_t)(   a -   b +   c -   d );
-        eval[4][idx] = (uint16_t)(   a +   b +   c +   d );
-        eval[5][idx] = (uint16_t)(   a + 2*b + 4*c + 8*d );
-        eval[6][idx] = (uint16_t)(                     d );
+        eval[0][idx] = (uint16_t)(   val_a );
+        eval[1][idx] = (uint16_t)( 8*val_a - 4*val_b + 2*val_c -   val_d );
+        eval[2][idx] = (uint16_t)( 8*val_a + 4*val_b + 2*val_c +   val_d );
+        eval[3][idx] = (uint16_t)(   val_a -   val_b +   val_c -   val_d );
+        eval[4][idx] = (uint16_t)(   val_a +   val_b +   val_c +   val_d );
+        eval[5][idx] = (uint16_t)(   val_a + 2*val_b + 4*val_c + 8*val_d );
+        eval[6][idx] = (uint16_t)(                     val_d );
     }
 }
 
@@ -571,19 +571,19 @@ static void poly_u16_toom4_fwd_karatsuba_x1_oop_C( uint16_t *src, uint16_t *dst 
 
     for( idx = 0; idx < limb_dim; idx++ )
     {
-        uint16_t a,b,c,d;
-        a = limb[0][idx];
-        b = limb[1][idx];
-        c = limb[2][idx];
-        d = limb[3][idx];
+        uint16_t val_a,val_b,val_c,val_d;
+        val_a = limb[0][idx];
+        val_b = limb[1][idx];
+        val_c = limb[2][idx];
+        val_d = limb[3][idx];
 
-        dst[0 * padded_limb_dim + idx] = (uint16_t)(   a                   );   /* 0     */
-        dst[1 * padded_limb_dim + idx] = (uint16_t)( 8*a - 4*b + 2*c -   d );   /* -1/2  */
-        dst[2 * padded_limb_dim + idx] = (uint16_t)( 8*a + 4*b + 2*c +   d );   /* +1/2  */
-        dst[3 * padded_limb_dim + idx] = (uint16_t)(   a -   b +   c -   d );   /* -1    */
-        dst[4 * padded_limb_dim + idx] = (uint16_t)(   a +   b +   c +   d );   /* +1    */
-        dst[5 * padded_limb_dim + idx] = (uint16_t)(   a + 2*b + 4*c + 8*d );   /* +2    */
-        dst[6 * padded_limb_dim + idx] = (uint16_t)(                     d );   /* infty */
+        dst[0 * padded_limb_dim + idx] = (uint16_t)(   val_a                   );   /* 0     */
+        dst[1 * padded_limb_dim + idx] = (uint16_t)( 8*val_a - 4*val_b + 2*val_c -   val_d );   /* -1/2  */
+        dst[2 * padded_limb_dim + idx] = (uint16_t)( 8*val_a + 4*val_b + 2*val_c +   val_d );   /* +1/2  */
+        dst[3 * padded_limb_dim + idx] = (uint16_t)(   val_a -   val_b +   val_c -   val_d );   /* -1    */
+        dst[4 * padded_limb_dim + idx] = (uint16_t)(   val_a +   val_b +   val_c +   val_d );   /* +1    */
+        dst[5 * padded_limb_dim + idx] = (uint16_t)(   val_a + 2*val_b + 4*val_c + 8*val_d );   /* +2    */
+        dst[6 * padded_limb_dim + idx] = (uint16_t)(                     val_d );   /* infty */
     }
 }
 
@@ -600,36 +600,36 @@ static void poly_u16_toom4_fwd_karatsuba_x2_oop_C( uint16_t *src, uint16_t *dst 
 
     for( idx = 0; idx < limb_dim / 2; idx++ )
     {
-        uint16_t a,b,c,d;
-        a = limb[0][idx];
-        b = limb[1][idx];
-        c = limb[2][idx];
-        d = limb[3][idx];
+        uint16_t val_a,val_b,val_c,val_d;
+        val_a = limb[0][idx];
+        val_b = limb[1][idx];
+        val_c = limb[2][idx];
+        val_d = limb[3][idx];
 
-        dst[0 * padded_limb_dim + idx] = (uint16_t)(   a                   );   /* 0     */
-        dst[1 * padded_limb_dim + idx] = (uint16_t)( 8*a - 4*b + 2*c -   d );   /* -1/2  */
-        dst[2 * padded_limb_dim + idx] = (uint16_t)( 8*a + 4*b + 2*c +   d );   /* +1/2  */
-        dst[3 * padded_limb_dim + idx] = (uint16_t)(   a -   b +   c -   d );   /* -1    */
-        dst[4 * padded_limb_dim + idx] = (uint16_t)(   a +   b +   c +   d );   /* +1    */
-        dst[5 * padded_limb_dim + idx] = (uint16_t)(   a + 2*b + 4*c + 8*d );   /* +2    */
-        dst[6 * padded_limb_dim + idx] = (uint16_t)(                     d );   /* infty */
+        dst[0 * padded_limb_dim + idx] = (uint16_t)(   val_a                   );   /* 0     */
+        dst[1 * padded_limb_dim + idx] = (uint16_t)( 8*val_a - 4*val_b + 2*val_c -   val_d );   /* -1/2  */
+        dst[2 * padded_limb_dim + idx] = (uint16_t)( 8*val_a + 4*val_b + 2*val_c +   val_d );   /* +1/2  */
+        dst[3 * padded_limb_dim + idx] = (uint16_t)(   val_a -   val_b +   val_c -   val_d );   /* -1    */
+        dst[4 * padded_limb_dim + idx] = (uint16_t)(   val_a +   val_b +   val_c +   val_d );   /* +1    */
+        dst[5 * padded_limb_dim + idx] = (uint16_t)(   val_a + 2*val_b + 4*val_c + 8*val_d );   /* +2    */
+        dst[6 * padded_limb_dim + idx] = (uint16_t)(                     val_d );   /* infty */
     }
 
     for( idx = limb_dim/2; idx < limb_dim; idx++ )
     {
-        uint16_t a,b,c,d;
-        a = limb[0][idx];
-        b = limb[1][idx];
-        c = limb[2][idx];
-        d = limb[3][idx];
+        uint16_t val_a,val_b,val_c,val_d;
+        val_a = limb[0][idx];
+        val_b = limb[1][idx];
+        val_c = limb[2][idx];
+        val_d = limb[3][idx];
 
-        dst[0 * padded_limb_dim + idx + limb_shift] = (uint16_t)(   a                   );   /* 0     */
-        dst[1 * padded_limb_dim + idx + limb_shift] = (uint16_t)( 8*a - 4*b + 2*c -   d );   /* -1/2  */
-        dst[2 * padded_limb_dim + idx + limb_shift] = (uint16_t)( 8*a + 4*b + 2*c +   d );   /* +1/2  */
-        dst[3 * padded_limb_dim + idx + limb_shift] = (uint16_t)(   a -   b +   c -   d );   /* -1    */
-        dst[4 * padded_limb_dim + idx + limb_shift] = (uint16_t)(   a +   b +   c +   d );   /* +1    */
-        dst[5 * padded_limb_dim + idx + limb_shift] = (uint16_t)(   a + 2*b + 4*c + 8*d );   /* +2    */
-        dst[6 * padded_limb_dim + idx + limb_shift] = (uint16_t)(                     d );   /* infty */
+        dst[0 * padded_limb_dim + idx + limb_shift] = (uint16_t)(   val_a                   );   /* 0     */
+        dst[1 * padded_limb_dim + idx + limb_shift] = (uint16_t)( 8*val_a - 4*val_b + 2*val_c -   val_d );   /* -1/2  */
+        dst[2 * padded_limb_dim + idx + limb_shift] = (uint16_t)( 8*val_a + 4*val_b + 2*val_c +   val_d );   /* +1/2  */
+        dst[3 * padded_limb_dim + idx + limb_shift] = (uint16_t)(   val_a -   val_b +   val_c -   val_d );   /* -1    */
+        dst[4 * padded_limb_dim + idx + limb_shift] = (uint16_t)(   val_a +   val_b +   val_c +   val_d );   /* +1    */
+        dst[5 * padded_limb_dim + idx + limb_shift] = (uint16_t)(   val_a + 2*val_b + 4*val_c + 8*val_d );   /* +2    */
+        dst[6 * padded_limb_dim + idx + limb_shift] = (uint16_t)(                     val_d );   /* infty */
     }
 }
 
@@ -652,19 +652,19 @@ static void poly_u16_toom4_fwd_dual_top_C( uint16_t *src, uint16_t *dst )
         for( k=0; k<8; k++ )
         {
             uint16_t tmp_eval[7];
-            uint16_t a,b,c,d;
-            a = tmp[ 4*(8*idx + k) + 0 ];
-            b = tmp[ 4*(8*idx + k) + 1 ];
-            c = tmp[ 4*(8*idx + k) + 2 ];
-            d = tmp[ 4*(8*idx + k) + 3 ];
+            uint16_t val_a,val_b,val_c,val_d;
+            val_a = tmp[ 4*(8*idx + k) + 0 ];
+            val_b = tmp[ 4*(8*idx + k) + 1 ];
+            val_c = tmp[ 4*(8*idx + k) + 2 ];
+            val_d = tmp[ 4*(8*idx + k) + 3 ];
 
-            tmp_eval[0] = (uint16_t)(   a                   );   /* 0     */
-            tmp_eval[1] = (uint16_t)( 8*a - 4*b + 2*c -   d );   /* -1/2  */
-            tmp_eval[2] = (uint16_t)( 8*a + 4*b + 2*c +   d );   /* +1/2  */
-            tmp_eval[3] = (uint16_t)(   a -   b +   c -   d );   /* -1    */
-            tmp_eval[4] = (uint16_t)(   a +   b +   c +   d );   /* +1    */
-            tmp_eval[5] = (uint16_t)(   a + 2*b + 4*c + 8*d );   /* +2    */
-            tmp_eval[6] = (uint16_t)(                     d );   /* infty */
+            tmp_eval[0] = (uint16_t)(   val_a                   );   /* 0     */
+            tmp_eval[1] = (uint16_t)( 8*val_a - 4*val_b + 2*val_c -   val_d );   /* -1/2  */
+            tmp_eval[2] = (uint16_t)( 8*val_a + 4*val_b + 2*val_c +   val_d );   /* +1/2  */
+            tmp_eval[3] = (uint16_t)(   val_a -   val_b +   val_c -   val_d );   /* -1    */
+            tmp_eval[4] = (uint16_t)(   val_a +   val_b +   val_c +   val_d );   /* +1    */
+            tmp_eval[5] = (uint16_t)(   val_a + 2*val_b + 4*val_c + 8*val_d );   /* +2    */
+            tmp_eval[6] = (uint16_t)(                     val_d );   /* infty */
 
             dst[idx * 4 * 8 + 8*0 + k] = tmp_eval[0];
             dst[idx * 4 * 8 + 8*1 + k] = tmp_eval[1];
@@ -693,19 +693,19 @@ static void poly_u16_toom4_fwd_dual_packed_limbs_oop_C( uint16_t *src, uint16_t 
     for( idx = 0; idx < limb_dim; idx++ )
     {
         uint16_t tmp_eval[7];
-        uint16_t a,b,c,d;
-        a = tmp[ 4*idx + 0 ];
-        b = tmp[ 4*idx + 1 ];
-        c = tmp[ 4*idx + 2 ];
-        d = tmp[ 4*idx + 3 ];
+        uint16_t val_a,val_b,val_c,val_d;
+        val_a = tmp[ 4*idx + 0 ];
+        val_b = tmp[ 4*idx + 1 ];
+        val_c = tmp[ 4*idx + 2 ];
+        val_d = tmp[ 4*idx + 3 ];
 
-        tmp_eval[0] = (uint16_t)(   a                   );   /* 0     */
-        tmp_eval[1] = (uint16_t)( 8*a - 4*b + 2*c -   d );   /* -1/2  */
-        tmp_eval[2] = (uint16_t)( 8*a + 4*b + 2*c +   d );   /* +1/2  */
-        tmp_eval[3] = (uint16_t)(   a -   b +   c -   d );   /* -1    */
-        tmp_eval[4] = (uint16_t)(   a +   b +   c +   d );   /* +1    */
-        tmp_eval[5] = (uint16_t)(   a + 2*b + 4*c + 8*d );   /* +2    */
-        tmp_eval[6] = (uint16_t)(                     d );   /* infty */
+        tmp_eval[0] = (uint16_t)(   val_a                   );   /* 0     */
+        tmp_eval[1] = (uint16_t)( 8*val_a - 4*val_b + 2*val_c -   val_d );   /* -1/2  */
+        tmp_eval[2] = (uint16_t)( 8*val_a + 4*val_b + 2*val_c +   val_d );   /* +1/2  */
+        tmp_eval[3] = (uint16_t)(   val_a -   val_b +   val_c -   val_d );   /* -1    */
+        tmp_eval[4] = (uint16_t)(   val_a +   val_b +   val_c +   val_d );   /* +1    */
+        tmp_eval[5] = (uint16_t)(   val_a + 2*val_b + 4*val_c + 8*val_d );   /* +2    */
+        tmp_eval[6] = (uint16_t)(                     val_d );   /* infty */
 
         dst[0 * limb_dim + idx] = tmp_eval[0];
         dst[1 * limb_dim + idx] = tmp_eval[1];
@@ -733,19 +733,19 @@ static void poly_u16_toom4_fwd_dual_packed_limbs_karatsuba_x1_oop_C( uint16_t *s
     for( idx = 0; idx < limb_dim; idx++ )
     {
         uint16_t tmp_eval[7];
-        uint16_t a,b,c,d;
-        a = tmp[ 4*idx + 0 ];
-        b = tmp[ 4*idx + 1 ];
-        c = tmp[ 4*idx + 2 ];
-        d = tmp[ 4*idx + 3 ];
+        uint16_t val_a,val_b,val_c,val_d;
+        val_a = tmp[ 4*idx + 0 ];
+        val_b = tmp[ 4*idx + 1 ];
+        val_c = tmp[ 4*idx + 2 ];
+        val_d = tmp[ 4*idx + 3 ];
 
-        tmp_eval[0] = (uint16_t)(   a                   );   /* 0     */
-        tmp_eval[1] = (uint16_t)( 8*a - 4*b + 2*c -   d );   /* -1/2  */
-        tmp_eval[2] = (uint16_t)( 8*a + 4*b + 2*c +   d );   /* +1/2  */
-        tmp_eval[3] = (uint16_t)(   a -   b +   c -   d );   /* -1    */
-        tmp_eval[4] = (uint16_t)(   a +   b +   c +   d );   /* +1    */
-        tmp_eval[5] = (uint16_t)(   a + 2*b + 4*c + 8*d );   /* +2    */
-        tmp_eval[6] = (uint16_t)(                     d );   /* infty */
+        tmp_eval[0] = (uint16_t)(   val_a                   );   /* 0     */
+        tmp_eval[1] = (uint16_t)( 8*val_a - 4*val_b + 2*val_c -   val_d );   /* -1/2  */
+        tmp_eval[2] = (uint16_t)( 8*val_a + 4*val_b + 2*val_c +   val_d );   /* +1/2  */
+        tmp_eval[3] = (uint16_t)(   val_a -   val_b +   val_c -   val_d );   /* -1    */
+        tmp_eval[4] = (uint16_t)(   val_a +   val_b +   val_c +   val_d );   /* +1    */
+        tmp_eval[5] = (uint16_t)(   val_a + 2*val_b + 4*val_c + 8*val_d );   /* +2    */
+        tmp_eval[6] = (uint16_t)(                     val_d );   /* infty */
 
         dst[0 * padded_limb_dim + idx] = tmp_eval[0];
         dst[1 * padded_limb_dim + idx] = tmp_eval[1];
@@ -774,19 +774,19 @@ static void poly_u16_toom4_fwd_dual_packed_limbs_karatsuba_x2_oop_C( uint16_t *s
     for( idx = 0; idx < limb_dim / 2; idx++ )
     {
         uint16_t tmp_eval[7];
-        uint16_t a,b,c,d;
-        a = tmp[ 4*idx + 0 ];
-        b = tmp[ 4*idx + 1 ];
-        c = tmp[ 4*idx + 2 ];
-        d = tmp[ 4*idx + 3 ];
+        uint16_t val_a,val_b,val_c,val_d;
+        val_a = tmp[ 4*idx + 0 ];
+        val_b = tmp[ 4*idx + 1 ];
+        val_c = tmp[ 4*idx + 2 ];
+        val_d = tmp[ 4*idx + 3 ];
 
-        tmp_eval[0] = (uint16_t)(   a                   );   /* 0     */
-        tmp_eval[1] = (uint16_t)( 8*a - 4*b + 2*c -   d );   /* -1/2  */
-        tmp_eval[2] = (uint16_t)( 8*a + 4*b + 2*c +   d );   /* +1/2  */
-        tmp_eval[3] = (uint16_t)(   a -   b +   c -   d );   /* -1    */
-        tmp_eval[4] = (uint16_t)(   a +   b +   c +   d );   /* +1    */
-        tmp_eval[5] = (uint16_t)(   a + 2*b + 4*c + 8*d );   /* +2    */
-        tmp_eval[6] = (uint16_t)(                     d );   /* infty */
+        tmp_eval[0] = (uint16_t)(   val_a                   );   /* 0     */
+        tmp_eval[1] = (uint16_t)( 8*val_a - 4*val_b + 2*val_c -   val_d );   /* -1/2  */
+        tmp_eval[2] = (uint16_t)( 8*val_a + 4*val_b + 2*val_c +   val_d );   /* +1/2  */
+        tmp_eval[3] = (uint16_t)(   val_a -   val_b +   val_c -   val_d );   /* -1    */
+        tmp_eval[4] = (uint16_t)(   val_a +   val_b +   val_c +   val_d );   /* +1    */
+        tmp_eval[5] = (uint16_t)(   val_a + 2*val_b + 4*val_c + 8*val_d );   /* +2    */
+        tmp_eval[6] = (uint16_t)(                     val_d );   /* infty */
 
         dst[0 * padded_limb_dim + idx] = tmp_eval[0];
         dst[1 * padded_limb_dim + idx] = tmp_eval[1];
@@ -800,19 +800,19 @@ static void poly_u16_toom4_fwd_dual_packed_limbs_karatsuba_x2_oop_C( uint16_t *s
     for( idx = limb_dim / 2; idx < limb_dim; idx++ )
     {
         uint16_t tmp_eval[7];
-        uint16_t a,b,c,d;
-        a = tmp[ 4*idx + 0 ];
-        b = tmp[ 4*idx + 1 ];
-        c = tmp[ 4*idx + 2 ];
-        d = tmp[ 4*idx + 3 ];
+        uint16_t val_a,val_b,val_c,val_d;
+        val_a = tmp[ 4*idx + 0 ];
+        val_b = tmp[ 4*idx + 1 ];
+        val_c = tmp[ 4*idx + 2 ];
+        val_d = tmp[ 4*idx + 3 ];
 
-        tmp_eval[0] = (uint16_t)(   a                   );   /* 0     */
-        tmp_eval[1] = (uint16_t)( 8*a - 4*b + 2*c -   d );   /* -1/2  */
-        tmp_eval[2] = (uint16_t)( 8*a + 4*b + 2*c +   d );   /* +1/2  */
-        tmp_eval[3] = (uint16_t)(   a -   b +   c -   d );   /* -1    */
-        tmp_eval[4] = (uint16_t)(   a +   b +   c +   d );   /* +1    */
-        tmp_eval[5] = (uint16_t)(   a + 2*b + 4*c + 8*d );   /* +2    */
-        tmp_eval[6] = (uint16_t)(                     d );   /* infty */
+        tmp_eval[0] = (uint16_t)(   val_a                   );   /* 0     */
+        tmp_eval[1] = (uint16_t)( 8*val_a - 4*val_b + 2*val_c -   val_d );   /* -1/2  */
+        tmp_eval[2] = (uint16_t)( 8*val_a + 4*val_b + 2*val_c +   val_d );   /* +1/2  */
+        tmp_eval[3] = (uint16_t)(   val_a -   val_b +   val_c -   val_d );   /* -1    */
+        tmp_eval[4] = (uint16_t)(   val_a +   val_b +   val_c +   val_d );   /* +1    */
+        tmp_eval[5] = (uint16_t)(   val_a + 2*val_b + 4*val_c + 8*val_d );   /* +2    */
+        tmp_eval[6] = (uint16_t)(                     val_d );   /* infty */
 
         dst[0 * padded_limb_dim + idx + limb_shift] = tmp_eval[0];
         dst[1 * padded_limb_dim + idx + limb_shift] = tmp_eval[1];
@@ -846,19 +846,19 @@ static void poly_u16_toom4_fwd_dual_bottom_C( uint16_t *poly )
         for( k=0; k<8; k++ )
         {
             uint16_t tmp_eval[7];
-            uint16_t a,b,c,d;
-            a = tmp[ 4*(8*idx + k) + 0 ];
-            b = tmp[ 4*(8*idx + k) + 1 ];
-            c = tmp[ 4*(8*idx + k) + 2 ];
-            d = tmp[ 4*(8*idx + k) + 3 ];
+            uint16_t val_a,val_b,val_c,val_d;
+            val_a = tmp[ 4*(8*idx + k) + 0 ];
+            val_b = tmp[ 4*(8*idx + k) + 1 ];
+            val_c = tmp[ 4*(8*idx + k) + 2 ];
+            val_d = tmp[ 4*(8*idx + k) + 3 ];
 
-            tmp_eval[0] = (uint16_t)(   a                   );   /* 0     */
-            tmp_eval[1] = (uint16_t)( 8*a - 4*b + 2*c -   d );   /* -1/2  */
-            tmp_eval[2] = (uint16_t)( 8*a + 4*b + 2*c +   d );   /* +1/2  */
-            tmp_eval[3] = (uint16_t)(   a -   b +   c -   d );   /* -1    */
-            tmp_eval[4] = (uint16_t)(   a +   b +   c +   d );   /* +1    */
-            tmp_eval[5] = (uint16_t)(   a + 2*b + 4*c + 8*d );   /* +2    */
-            tmp_eval[6] = (uint16_t)(                     d );   /* infty */
+            tmp_eval[0] = (uint16_t)(   val_a                   );   /* 0     */
+            tmp_eval[1] = (uint16_t)( 8*val_a - 4*val_b + 2*val_c -   val_d );   /* -1/2  */
+            tmp_eval[2] = (uint16_t)( 8*val_a + 4*val_b + 2*val_c +   val_d );   /* +1/2  */
+            tmp_eval[3] = (uint16_t)(   val_a -   val_b +   val_c -   val_d );   /* -1    */
+            tmp_eval[4] = (uint16_t)(   val_a +   val_b +   val_c +   val_d );   /* +1    */
+            tmp_eval[5] = (uint16_t)(   val_a + 2*val_b + 4*val_c + 8*val_d );   /* +2    */
+            tmp_eval[6] = (uint16_t)(                     val_d );   /* infty */
 
             poly[idx * 4 * 8 + 8*0 + k] = tmp_eval[0];
             poly[idx * 4 * 8 + 8*1 + k] = tmp_eval[1];
@@ -875,6 +875,7 @@ static void poly_u16_toom4_fwd_dual_bottom_C( uint16_t *poly )
 
 /* Compute the Toom3 evaluation step in-place, evaluating
  * at the points 0, -1, +1, -2, infty in this order. */
+/*
 static void poly_u16_toom3_fwd_C( uint16_t *poly )
 {
     unsigned limb_dim = DIMENSION / 3;
@@ -886,18 +887,19 @@ static void poly_u16_toom3_fwd_C( uint16_t *poly )
 
     for( idx = 0; idx < limb_dim; idx++ )
     {
-        uint16_t a,b,c;
-        a = limb[0][idx];
-        b = limb[1][idx];
-        c = limb[2][idx];
+        uint16_t val_a,val_b,val_c;
+        val_a = limb[0][idx];
+        val_b = limb[1][idx];
+        val_c = limb[2][idx];
 
-        eval[0][idx] = (uint16_t)(   a             );
-        eval[1][idx] = (uint16_t)(   a +   b +   c );
-        eval[2][idx] = (uint16_t)(   a -   b +   c );
-        eval[3][idx] = (uint16_t)(   a - 2*b + 4*c );
-        eval[4][idx] = (uint16_t)(               c );
+        eval[0][idx] = (uint16_t)(   val_a             );
+        eval[1][idx] = (uint16_t)(   val_a +   val_b +   val_c );
+        eval[2][idx] = (uint16_t)(   val_a -   val_b +   val_c );
+        eval[3][idx] = (uint16_t)(   val_a - 2*val_b + 4*val_c );
+        eval[4][idx] = (uint16_t)(               val_c );
     }
 }
+*/
 
 /*
  * Test case generation
@@ -1466,13 +1468,13 @@ int unfold(test_toom4_fwd_dual_bottom)()
  */
 
 #if defined(TEST_TOOM4_FWD_INV)
-static void multiply_by_eval_of_1_toom4( uint16_t *a )
+static void multiply_by_eval_of_1_toom4( uint16_t *poly_a )
 {
     unsigned limb_dim = DIMENSION / 4;
     unsigned idx, pt_idx;
     MAKE_BUFFER(tmp,16,BUFFER_SIZE,8);
-    make_eval_offsets_toom4( a,   eval_a,   1 );
-    make_prod_offsets_toom4( a,   prod_a,   1 );
+    make_eval_offsets_toom4( poly_a,   eval_a,   1 );
+    make_prod_offsets_toom4( poly_a,   prod_a,   1 );
     make_prod_offsets_toom4( tmp, prod_tmp, 1 );
 
     uint16_t eval_of_one[] = { 1, 8, 8, 1, 1, 1, 0 };
@@ -1537,13 +1539,13 @@ int unfold(test_toom4_fwd_inv)()
 #endif /* TEST_TOOM4_FWD_INV */
 
 #if defined(TEST_TOOM4_FWD_INV_DUAL_PACKED_LIMBS_OOP)
-static void multiply_by_eval_of_1_toom4_dual_packed_limbs_oop( uint16_t *a )
+static void multiply_by_eval_of_1_toom4_dual_packed_limbs_oop( uint16_t *poly_a )
 {
     unsigned limb_dim = DIMENSION / 4;
     unsigned idx, pt_idx;
     MAKE_BUFFER(tmp,16,BUFFER_SIZE,8);
-    make_eval_offsets_toom4_oop( a,   eval_a,   1 );
-    make_prod_offsets_toom4( a,   prod_a,   1 );
+    make_eval_offsets_toom4_oop( poly_a,   eval_a,   1 );
+    make_prod_offsets_toom4( poly_a,   prod_a,   1 );
     make_prod_offsets_toom4( tmp, prod_tmp, 1 );
 
     uint16_t eval_of_one[] = { 1, 8, 8, 1, 1, 1, 0 };
@@ -1609,13 +1611,13 @@ int unfold(test_toom4_fwd_inv_dual_packed_limbs_oop)()
 
 #if defined(TEST_TOOM4_FWD_INV_DUAL_BOTTOM) || \
     defined(TEST_TOOM4_FWD_INV_DUAL_BOTTOM_OOP)
-static void multiply_by_eval_of_1_toom4_dual_bottom( uint16_t *a )
+static void multiply_by_eval_of_1_toom4_dual_bottom( uint16_t *poly_a )
 {
     unsigned limb_dim = DIMENSION_DIV4;
     unsigned idx, pt_idx, k;
     MAKE_BUFFER(tmp,16,BUFFER_SIZE,8);
-    make_eval_offsets_toom4_dual_bottom( a,   eval_a,   1 );
-    make_eval_offsets_toom4_dual_bottom( a,   prod_a,   1 );
+    make_eval_offsets_toom4_dual_bottom( poly_a,   eval_a,   1 );
+    make_eval_offsets_toom4_dual_bottom( poly_a,   prod_a,   1 );
     make_eval_offsets_toom4_dual_bottom( tmp + 3 * DIMENSION_DIV4, prod_tmp, 1 );
 
     uint16_t eval_of_one[] = { 1, 8, 8, 1, 1, 1, 0 };
@@ -1751,13 +1753,13 @@ int unfold(test_toom4_fwd_inv_dual_bottom_oop)()
 
 #if defined(TEST_TOOM4_FWD_INV_DUAL_TOP) || \
     defined(TEST_TOOM4_FWD_INV_DUAL_TOP_OOP)
-static void multiply_by_eval_of_1_toom4_dual_top( uint16_t *a )
+static void multiply_by_eval_of_1_toom4_dual_top( uint16_t *poly_a )
 {
     unsigned limb_dim = DIMENSION_DIV4;
     unsigned idx, pt_idx, k;
     MAKE_BUFFER(tmp,16,BUFFER_SIZE,8);
-    make_eval_offsets_toom4_dual_top( a,   eval_a,   1 );
-    make_eval_offsets_toom4_dual_top( a,   prod_a,   1 );
+    make_eval_offsets_toom4_dual_top( poly_a,   eval_a,   1 );
+    make_eval_offsets_toom4_dual_top( poly_a,   prod_a,   1 );
     make_eval_offsets_toom4_dual_top( tmp, prod_tmp, 1 );
 
     uint16_t eval_of_one[] = { 1, 8, 8, 1, 1, 1, 0 };
@@ -1789,8 +1791,6 @@ static void multiply_by_eval_of_1_toom4_dual_top( uint16_t *a )
 #if defined(TEST_TOOM4_FWD_INV_DUAL_TOP)
 int unfold(test_toom4_fwd_inv_dual_top)()
 {
-    uint16_t * const a_shift = a + 3*DIMENSION_DIV4;
-    uint16_t * const b_shift = b + 3*DIMENSION_DIV4;
     debug_test_start( TEST_STRING_TOOM4_FWD_INV_DUAL_TOP_START );
 
     generate_sample();
@@ -1964,14 +1964,14 @@ int unfold(test_toom3_fwd_inv)()
 
 #if defined(TEST_TOOM4_FWD_MUL_INV)
 
-static void multiply_evals_toom4( uint16_t *c, uint16_t *a, uint16_t *b )
+static void multiply_evals_toom4( uint16_t *poly_c, uint16_t *poly_a, uint16_t *poly_b )
 {
     unsigned limb_dim = DIMENSION / 4;
     unsigned pt_idx;
 
-    make_eval_offsets_toom4( a, eval_a, 1 );
-    make_eval_offsets_toom4( b, eval_b, 1 );
-    make_prod_offsets_toom4( c, prod_c, 2 );
+    make_eval_offsets_toom4( poly_a, eval_a, 1 );
+    make_eval_offsets_toom4( poly_b, eval_b, 1 );
+    make_prod_offsets_toom4( poly_c, prod_c, 2 );
 
     for( pt_idx = 0; pt_idx < 7; pt_idx++ )
     {
@@ -1982,13 +1982,13 @@ static void multiply_evals_toom4( uint16_t *c, uint16_t *a, uint16_t *b )
     }
 }
 
-static void narrow_limbs_toom4( uint16_t *a )
+static void narrow_limbs_toom4( uint16_t *poly_a )
 {
     unsigned limb_dim = DIMENSION / 4;
     unsigned idx, pt_idx;
 
-    make_prod_offsets_toom4( a, a_wide,   2);
-    make_prod_offsets_toom4( a, a_narrow, 1);
+    make_prod_offsets_toom4( poly_a, a_wide,   2);
+    make_prod_offsets_toom4( poly_a, a_narrow, 1);
 
     for( pt_idx = 0; pt_idx < 7; pt_idx++ )
     {
@@ -2045,14 +2045,14 @@ int unfold(test_toom4_fwd_mul_inv)()
 #endif /* TEST_TOOM4_FWD_MUL_INV */
 
 #if defined(TEST_TOOM4_FWD_MUL_INV_DUAL_PACKED_LIMBS_OOP)
-static void multiply_evals_toom4_dual_packed_limbs_oop( uint16_t *c, uint16_t *a, uint16_t *b )
+static void multiply_evals_toom4_dual_packed_limbs_oop( uint16_t *poly_c, uint16_t *poly_a, uint16_t *poly_b )
 {
     unsigned limb_dim = DIMENSION / 4;
     unsigned pt_idx;
 
-    make_eval_offsets_toom4_oop( a, eval_a, 1 );
-    make_eval_offsets_toom4_oop( b, eval_b, 1 );
-    make_prod_offsets_toom4( c, prod_c, 1 );
+    make_eval_offsets_toom4_oop( poly_a, eval_a, 1 );
+    make_eval_offsets_toom4_oop( poly_b, eval_b, 1 );
+    make_prod_offsets_toom4( poly_c, prod_c, 1 );
 
     for( pt_idx = 0; pt_idx < 7; pt_idx++ )
     {
@@ -2104,14 +2104,14 @@ int unfold(test_toom4_fwd_mul_inv_dual_packed_limbs_oop)()
 
 
 #if defined(TEST_TOOM4_FWD_MUL_INV_DUAL_BOTTOM)
-static void multiply_evals_toom4_dual_bottom( uint16_t *c, uint16_t *a, uint16_t *b )
+static void multiply_evals_toom4_dual_bottom( uint16_t *poly_c, uint16_t *poly_a, uint16_t *poly_b )
 {
     unsigned limb_dim = DIMENSION_DIV4;
     unsigned pt_idx;
 
-    make_eval_offsets_toom4_dual_bottom( a, eval_a, 1 );
-    make_eval_offsets_toom4_dual_bottom( b, eval_b, 1 );
-    make_eval_offsets_toom4_dual_bottom( c, prod_c, 1 );
+    make_eval_offsets_toom4_dual_bottom( poly_a, eval_a, 1 );
+    make_eval_offsets_toom4_dual_bottom( poly_b, eval_b, 1 );
+    make_eval_offsets_toom4_dual_bottom( poly_c, prod_c, 1 );
 
     for( pt_idx = 0; pt_idx < 4; pt_idx++ )
     {
@@ -2176,14 +2176,14 @@ int unfold(test_toom4_fwd_mul_inv_dual_bottom)()
 
 #if defined(TEST_TOOM4_FWD_MUL_INV_DUAL_TOP)
 
-static void multiply_evals_toom4_dual_top( uint16_t *c, uint16_t *a, uint16_t *b )
+static void multiply_evals_toom4_dual_top( uint16_t *poly_c, uint16_t *poly_a, uint16_t *poly_b )
 {
     unsigned limb_dim = DIMENSION_DIV4;
     unsigned pt_idx;
 
-    make_eval_offsets_toom4_dual_top( a, eval_a, 1 );
-    make_eval_offsets_toom4_dual_top( b, eval_b, 1 );
-    make_eval_offsets_toom4_dual_top( c, prod_c, 1 );
+    make_eval_offsets_toom4_dual_top( poly_a, eval_a, 1 );
+    make_eval_offsets_toom4_dual_top( poly_b, eval_b, 1 );
+    make_eval_offsets_toom4_dual_top( poly_c, prod_c, 1 );
 
     for( pt_idx = 0; pt_idx < 4; pt_idx++ )
     {

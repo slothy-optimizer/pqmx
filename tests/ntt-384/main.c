@@ -266,6 +266,7 @@ int check_good_permutation()
     }
 
     debug_test_ok();
+    return( 0 );
 }
 
 #if !defined(TEST_CORE_ONLY)
@@ -290,7 +291,7 @@ int run_test_ntt_good()
     /* Step 2: MVE-based NTT */
 
     measure_start();
-    ntt_u32_mve_good( src );
+    ntt_u32_mve_good( (uint32_t*)src );
     measure_end();
 
     mod_reduce_buf_s32( src, NTT_SIZE, modulus );
@@ -373,7 +374,7 @@ int run_test_ntt_good_oop()
     /* Step 2: MVE-based NTT */
 
     measure_start();
-    ntt_u32_mve_good_oop( src, dst );
+    ntt_u32_mve_good_oop( (uint32_t*)src, (uint32_t*)dst );
     measure_end();
 
     mod_reduce_buf_s32( dst, NTT_SIZE, modulus );
@@ -414,7 +415,7 @@ int run_test_ntt_good_oop_half_input()
     /* Step 2: MVE-based NTT */
 
     measure_start();
-    ntt_u32_mve_good_oop_half_input( src, dst );
+    ntt_u32_mve_good_oop_half_input( (uint32_t*)src, (uint32_t*)dst );
     measure_end();
 
     mod_reduce_buf_s32( dst, NTT_SIZE, modulus );
@@ -447,9 +448,9 @@ int run_test_ntt_good_bitrev()
 
     /* Step 2: MVE-based NTT */
 
-    ntt_u32_mve_good( src );
+    ntt_u32_mve_good( (uint32_t*)src );
     mod_reduce_buf_s32( src, NTT_SIZE, modulus );
-    ntt_u32_mve_good_bitrev( src );
+    ntt_u32_mve_good_bitrev( (uint32_t*)src );
     mod_reduce_buf_s32( src, NTT_SIZE, modulus );
 
     pow_2k_inv = mod_pow_s32( (modulus+1)/2, 5, modulus );
@@ -510,21 +511,20 @@ void poly_mul_384( int32_t *dst, int32_t *srcA, int32_t *srcB )
     };
 
     int32_t tmpB[2*NTT_SIZE];
-    ntt_u32_mve_good( srcA );
-    ntt_u32_mve_good( srcB );
+    ntt_u32_mve_good( (uint32_t*)srcA );
+    ntt_u32_mve_good( (uint32_t*)srcB );
     twisted_cyclic_mul_deg4_u32_mve_expand_double( tmpB, srcB,
                                                    ntt_u32_mve_good_twiddles,
                                                    ntt_u32_mve_good_scale,
                                                    NTT_PRIME );
     twisted_cyclic_mul_deg4_u32_mve_alt( srcA, tmpB, dst, params );
-    ntt_u32_mve_good_bitrev( dst );
+    ntt_u32_mve_good_bitrev( (uint32_t*)dst );
 }
 
 int run_test_poly_mul()
 {
     srand(time(NULL));
     int32_t A[NTT_SIZE], B[NTT_SIZE], C[NTT_SIZE], C_ref[NTT_SIZE];
-    int32_t pow_2k_inv;
     debug_test_start( "Polynomial multiplication in F_q[X]/(X^384-1)" );
 
     fill_random_u32( (uint32_t*) A, NTT_SIZE );
