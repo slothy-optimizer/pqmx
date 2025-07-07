@@ -27,6 +27,7 @@ include tests/sqmag/sqmag.mk
 include tests/toom/toom.mk
 include tests/transpose/transpose.mk
 include tests/unpack/unpack.mk
+include tests/ekra8m1-helloworld/ekra8m1-helloworld.mk
 
 testname = $(shell echo $(1) | tr '[a-z]' '[A-Z]' | tr '-' '_' | tr '/' '_')
 testdir = $(addprefix $(2),tests/$(firstword $(subst /, ,$1))/)
