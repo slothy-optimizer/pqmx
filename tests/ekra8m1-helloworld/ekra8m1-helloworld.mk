@@ -8,7 +8,7 @@ EKRA8M1_HELLOWORLD_PLATFORMS += ek-ra8m1
 
 # C sources required for this test
 EKRA8M1_HELLOWORLD_SOURCES += main.c
-EKRA8M1_HELLOWORLD_SOURCES += example.c
+
 
 
 
