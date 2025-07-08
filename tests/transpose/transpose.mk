@@ -6,6 +6,7 @@ TESTS += transpose
 # Platforms this test should run on (matching the directory name in envs/)
 TRANSPOSE_PLATFORMS += m55-an547
 TRANSPOSE_PLATFORMS += m85-an555
+TRANSPOSE_PLATFORMS += ek-ra8m1
 
 # C sources required for this test
 TRANSPOSE_SOURCES += main.c

@@ -10,6 +10,7 @@ KECCAK_PLATFORMS += m4-an386
 KECCAK_PLATFORMS += m7-an500
 KECCAK_PLATFORMS += nucleo-f767zi
 KECCAK_PLATFORMS += stm32f4discovery
+KECCAK_PLATFORMS += ek-ra8m1
 
 # C sources required for this test
 KECCAK_SOURCES += main.c
