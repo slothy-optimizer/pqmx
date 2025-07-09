@@ -42,8 +42,15 @@ void hal_pmu_send_stats( char *s, pmu_stats const *stats );
     for( size_t cnt=0; cnt<REPEAT; cnt++ )                              \
         fun( src, tw, SIZE);                                            \
     hal_pmu_finish_pmu_stats(&stats);                                   \
+    debug_printf( "PMU cycles: %lu\n", (unsigned long)stats.pmu_cycles); \
+    debug_printf( "Divisor: %lu\n", (unsigned long)(REPEAT * (SIZE/16))); \
+    debug_printf( #fun ": %lu.%03lu cycles (avg)\n",                    \
+                  (unsigned long)(stats.pmu_cycles / (REPEAT * (SIZE/16))), \
+                  (unsigned long)((stats.pmu_cycles * 1000) / (REPEAT * (SIZE/16))) % 1000 ); \
+    debug_printf( "Debug point1\n" );                                    \
     debug_printf( #fun ": %f cycles (avg)\n",                           \
-                  (float) stats.pmu_cycles/(REPEAT * (SIZE/16)) );      \
+                   (float) stats.pmu_cycles/(REPEAT * (SIZE/16)) );      \
+    debug_printf( "Debug point2\n" );                                    \
 } while( 0 )
 
 #define CHECK(fun)   do {                                               \

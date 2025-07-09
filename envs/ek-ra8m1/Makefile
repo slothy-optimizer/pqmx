@@ -34,28 +34,19 @@ CFLAGS += \
 	-I$(TESTDIR)                                               \
 	-I$(TEST_COMMON)                                           \
 	-I$(COMMON_INC)                                            \
-	# -I$(SRC_DIR)/platform                                      \
 
 
 ARCH_FLAGS += \
 	-march=armv8.1-m.main+mve.fp \
 	-mthumb \
-	-mfloat-abi=softfp  \
+	-mfloat-abi=hard \
+	-mfpu=auto  \
 
 CFLAGS += \
 	$(ARCH_FLAGS) \
 	--specs=nosys.specs
 
 CFLAGS += $(CFLAGS_EXTRA)
-
-
-
-# # Linker Script Selection (based on compiler)
-# ifeq ($(findstring gcc,$(CC)),gcc)
-# 	LDSCRIPT = -Tfsp.ld --specs=nano.specs
-# else ifeq ($(findstring clang,$(CC)),clang)
-# 	CFLAGS += -Tfsp.lld
-# endif
 
 
 LDSCRIPT = $(SRC_DIR)/RA8M1/script/fsp.ld
@@ -74,7 +65,6 @@ LDFLAGS += \
 all: $(TARGET)
 
 
-# HAL_SOURCES = $(wildcard $(SRC_DIR)/*.c) $(wildcard $(SRC_DIR)/*/*.c)
 HAL_SOURCES = $(shell find $(SRC_DIR) -name "*.c")
 
 
@@ -86,12 +76,10 @@ OBJECTS_TEST_COMMON = $(patsubst %.c, $(BUILD_DIR)/%.c.o, $(abspath $(TEST_COMMO
 OBJECTS_SOURCES=$(patsubst %.c, $(BUILD_DIR)/%.c.o, $(abspath $(SOURCES)))
 
 OBJECTS_C = $(OBJECTS_SOURCES) $(OBJECTS_HAL) $(OBJECTS_TEST_COMMON)
-# OBJECTS_C = $(OBJECTS_SOURCES) $(OBJECTS_HAL)
 
 OBJECTS_ASM = $(patsubst %.s, $(BUILD_DIR)/%.s.o, $(abspath $(ASMS)))
 
 OBJECTS = $(OBJECTS_C) $(OBJECTS_ASM)
-# OBJECTS = $(OBJECTS_C)
 
 $(OBJECTS_C): $(BUILD_DIR)/%.o: %
 	mkdir -p $(@D)
@@ -101,9 +89,6 @@ $(OBJECTS_ASM): $(BUILD_DIR)/%.o: %
 	mkdir -p $(@D)
 	$(CC) -x assembler-with-cpp $(CFLAGS) -c -o $@ $<
 
-# $(TARGET): $(OBJECTS) $(LDSCRIPT)
-# 	$(LD) $(LDFLAGS) -o $@ $(OBJECTS)
-# 	$(OBJCOPY) -S -Obinary $@ $@.bin
 $(TARGET): $(OBJECTS) $(LDSCRIPT)
 	cd $(dir $(LDSCRIPT)) && \
 	$(LD) $(LDFLAGS) -T$(notdir $(LDSCRIPT)) -o $(abspath $@) $(abspath $(OBJECTS))
