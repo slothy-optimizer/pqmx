@@ -43,8 +43,9 @@ ARCH_FLAGS += \
 	-mfpu=auto  \
 
 CFLAGS += \
+	--specs=nosys.specs \
 	$(ARCH_FLAGS) \
-	--specs=nosys.specs
+	-DSEGGER_RTT_MODE_DEFAULT=SEGGER_RTT_MODE_BLOCK_IF_FIFO_FULL
 
 CFLAGS += $(CFLAGS_EXTRA)
 
@@ -53,8 +54,8 @@ LDSCRIPT = $(SRC_DIR)/RA8M1/script/fsp.ld
 
 LDFLAGS += \
 	-Wl,--gc-sections \
-	-L. \
-    -Wl,-I$(SRC_DIR)/RA8M1/script/
+	-L$(SRC_DIR)/RA8M1/script \
+    -Wl,-I$(SRC_DIR)/RA8M1/script/ \
 
 LDFLAGS += \
 	--specs=nosys.specs \
@@ -90,8 +91,7 @@ $(OBJECTS_ASM): $(BUILD_DIR)/%.o: %
 	$(CC) -x assembler-with-cpp $(CFLAGS) -c -o $@ $<
 
 $(TARGET): $(OBJECTS) $(LDSCRIPT)
-	cd $(dir $(LDSCRIPT)) && \
-	$(LD) $(LDFLAGS) -T$(notdir $(LDSCRIPT)) -o $(abspath $@) $(abspath $(OBJECTS))
+	$(LD) $(LDFLAGS) -T$(LDSCRIPT) -o $@ $(OBJECTS)
 	$(OBJCOPY) -S -Obinary $@ $@.bin
 
 .PHONY: build
