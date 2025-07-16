@@ -5,6 +5,7 @@ TESTS += intmulntt
 
 # Platforms this test should run on (matching the directory name in envs/)
 INTMULNTT_PLATFORMS += m55-an547
+INTMULNTT_PLATFORMS += ek-ra8m1
 # TODO: look into why this test is failing on m85-an555
 #INTMULNTT_PLATFORMS += m85-an555
 

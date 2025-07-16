@@ -6,6 +6,7 @@ TESTS += unpack
 # Platforms this test should run on (matching the directory name in envs/)
 UNPACK_PLATFORMS += m55-an547
 UNPACK_PLATFORMS += m85-an555
+UNPACK_PLATFORMS += ek-ra8m1
 
 # C sources required for this test
 UNPACK_SOURCES += main.c
