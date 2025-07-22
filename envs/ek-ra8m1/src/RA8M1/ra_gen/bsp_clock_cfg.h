@@ -53,4 +53,5 @@
 #define BSP_CFG_UCK_DIV (BSP_CLOCKS_USB_CLOCK_DIV_5) /* UCK Div /5 */
 #define BSP_CFG_U60CK_DIV (BSP_CLOCKS_USB_CLOCK_DIV_5) /* U60CK Div /5 */
 #define BSP_CFG_OCTA_DIV (BSP_CLOCKS_OCTA_CLOCK_DIV_4) /* OCTASPICLK Div /4 */
+#define BSP_CFG_DCACHE_ENABLED (1) /* Enable the DCACHE, see section 4.5 of Renesas application note*/
 #endif /* BSP_CLOCK_CFG_H_ */
