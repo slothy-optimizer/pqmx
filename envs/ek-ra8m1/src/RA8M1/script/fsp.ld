@@ -329,6 +329,13 @@ SECTIONS
         *(.fsp_dtc_vector_table)
     } > RAM
 
+
+    /* Place RTT data in a special section */
+    .seggerrtt (NOLOAD) : ALIGN(4)
+    {
+        KEEP(*(.seggerrtt))
+    } > RAM
+
     /* Initialized data section. */
     .data :
     {

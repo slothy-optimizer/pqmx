@@ -20,6 +20,7 @@ CFLAGS += \
 	--sysroot=$(SYSROOT) \
 	-DDEVICE=\"ra8m1\" \
 	-DARMCM85 \
+	-DSEGGER_RTT_SECTION="\".seggerrtt\"" \
 	-I$(ENV_INC)                                               \
 	-I$(SRC_DIR)                                               \
     -I$(SRC_DIR)/RA8M1                                         \
@@ -103,7 +104,7 @@ build: $(TARGET)
 
 
 flash: build
-	printf "Sleep 2000\nLoadFile $(TARGET)\ngo\nSleep 3600000" | JLinkExe -if SWD -device R7FA8M1AH -speed auto
+	printf "Sleep 2000\nLoadFile $(TARGET)\nexec SetRTTAddr 0x22000410\ngo\nSleep 3600000" | JLinkExe -if SWD -device R7FA8M1AH -speed auto
 
 run:
 	@echo "WARNING: Target platform does not support the run-target. Use the flash- target instead to flash to the board. Skipping"
