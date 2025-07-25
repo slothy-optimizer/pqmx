@@ -20,9 +20,9 @@ SQMAG_SLOTHY_ASM_OPT = $(SQMAG_SLOTHY_DIR)/examples/opt/armv8m/cmplx_mag_sqr/
 SQMAG_ASMS += $(SQMAG_SLOTHY_ASM_NAIVE)/cmplx_mag_sqr_fx.s
 
 
-SQMAG_ASMS += $(SQMAG_SLOTHY_ASM_OPT)/cmplx_mag_sqr_fx_opt_M55_unroll1.s 
-SQMAG_ASMS += $(SQMAG_SLOTHY_ASM_OPT)/cmplx_mag_sqr_fx_opt_M55_unroll2.s 
-SQMAG_ASMS += $(SQMAG_SLOTHY_ASM_OPT)/cmplx_mag_sqr_fx_opt_M55_unroll4.s 
-SQMAG_ASMS += $(SQMAG_SLOTHY_ASM_OPT)/cmplx_mag_sqr_fx_opt_M85_unroll1.s 
-SQMAG_ASMS += $(SQMAG_SLOTHY_ASM_OPT)/cmplx_mag_sqr_fx_opt_M85_unroll2.s
-SQMAG_ASMS += $(SQMAG_SLOTHY_ASM_OPT)/cmplx_mag_sqr_fx_opt_M85_unroll4.s
+SQMAG_ASMS += $(SQMAG_SLOTHY_ASM_OPT)/cmplx_mag_sqr_fx_unroll1_opt_m55.s
+SQMAG_ASMS += $(SQMAG_SLOTHY_ASM_OPT)/cmplx_mag_sqr_fx_unroll2_opt_m55.s
+SQMAG_ASMS += $(SQMAG_SLOTHY_ASM_OPT)/cmplx_mag_sqr_fx_unroll4_opt_m55.s 
+SQMAG_ASMS += $(SQMAG_SLOTHY_ASM_OPT)/cmplx_mag_sqr_fx_unroll1_opt_m85.s 
+SQMAG_ASMS += $(SQMAG_SLOTHY_ASM_OPT)/cmplx_mag_sqr_fx_unroll2_opt_m85.s
+SQMAG_ASMS += $(SQMAG_SLOTHY_ASM_OPT)/cmplx_mag_sqr_fx_unroll4_opt_m85.s
