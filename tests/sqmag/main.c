@@ -63,7 +63,7 @@ void hal_pmu_send_stats( char *s, pmu_stats const *stats );
 
 #define ALIGN(N) __attribute__((aligned(N)))
 
-#define FUNCNAME(uarch,unroll)  cmplx_mag_sqr_fx_opt_ ## uarch ## _unroll ## unroll
+#define FUNCNAME(uarch, unroll)  cmplx_mag_sqr_fx_unroll ## unroll ## _opt_ ## uarch
 
 #define MEASURE(uarch,unroll)   do {                                    \
     hal_pmu_start_pmu_stats(&stats);                                    \
