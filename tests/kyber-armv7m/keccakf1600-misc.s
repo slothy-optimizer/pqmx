@@ -131,6 +131,7 @@
 @
 .align 8
 .global   KeccakF1600_Initialize
+.type KeccakF1600_Initialize, %function
 KeccakF1600_Initialize:
 	bx		lr
 
@@ -142,6 +143,7 @@ KeccakF1600_Initialize:
 @
 .align 8
 .global   KeccakF1600_StateXORBytes
+.type KeccakF1600_StateXORBytes, %function
 KeccakF1600_StateXORBytes:
 	cbz		r3, KeccakF1600_StateXORBytes_Exit1
 	push	{r4 - r8, lr}							@ then
@@ -245,6 +247,7 @@ __KeccakF1600_StateXORBytesInLane_Loop:
 @
 .align 8
 .global   KeccakF1600_StateExtractBytes
+.type KeccakF1600_StateExtractBytes, %function
 KeccakF1600_StateExtractBytes:
 	cbz		r3, KeccakF1600_StateExtractBytes_Exit1	@ .if length != 0
 	push	{r4 - r8, lr}							@ then

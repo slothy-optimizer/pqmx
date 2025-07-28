@@ -4,7 +4,7 @@
   description = "pqmx";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/57abc9a";
 
     flake-parts = {
       url = "github:hercules-ci/flake-parts";
