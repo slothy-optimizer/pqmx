@@ -6,6 +6,7 @@ TESTS += toom
 # Platforms this test should run on (matching the directory name in envs/)
 TOOM_PLATFORMS += m55-an547
 TOOM_PLATFORMS += m85-an555
+TOOM_PLATFORMS += ek-ra8m1
 
 # C sources required for this test
 TOOM_SOURCES += main.c
