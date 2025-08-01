@@ -82,8 +82,10 @@ build: $(TARGET)
 run: $(TARGET)
 	qemu-system-arm -M mps3-an547  -nographic -semihosting -kernel $(TARGET)
 
+# Run test in QEMU and check for success
 check: $(TARGET)
-	qemu-system-arm -M mps3-an547  -nographic -semihosting -kernel $(TARGET) | tail -n 1 | grep "ALL GOOD!" || exit 1
+	@qemu-system-arm -M mps3-an547 -nographic -semihosting -kernel $(TARGET) | tail -n 1 | grep "ALL GOOD!" >/dev/null || \
+	(echo "Test failed, re-running with output:"; qemu-system-arm -M mps3-an547 -nographic -semihosting -kernel $(TARGET); exit 1)
 
 flash:
 	@echo "WARNING: Target platform does not support the flash- targets. Skipping"
