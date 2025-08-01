@@ -79,8 +79,10 @@ build: $(TARGET)
 run: $(TARGET)
 	qemu-system-arm -M $(QEMU_PLATFORM) -nographic -semihosting -kernel $(TARGET)
 
+# Run test in QEMU and check for success
 check: $(TARGET)
-	qemu-system-arm -M $(QEMU_PLATFORM) -nographic -semihosting -kernel $(TARGET) | tail -n 2 | grep "ALL GOOD!" || exit 1
+	@qemu-system-arm -M $(QEMU_PLATFORM) -nographic -semihosting -kernel $(TARGET) | tail -n 2 | grep "ALL GOOD!" >/dev/null || \
+	(echo "Test failed, re-running with output:"; qemu-system-arm -M $(QEMU_PLATFORM) -nographic -semihosting -kernel $(TARGET); exit 1)
 
 $(LDSCRIPT): $(MBED_OS_TARGET_DIR)/TOOLCHAIN_GCC_ARM/MPS2.ld
 	[ -d $(@D) ] || $(Q)mkdir -p $(@D); \
