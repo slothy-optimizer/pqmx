@@ -1,4 +1,11 @@
 /*
+ * Copyright (c) Marco Palumbi (Technology Innovation Institute, UAE)
+ * Copyright (c) Décio Luiz Gazzoni Filho (State University of Londrina, Brazil)
+ * Copyright (c) The SLOTHY authors
+ * SPDX-License-Identifier: MIT
+ */
+
+/*
                   Linker File for Renesas FSP
 */
 
