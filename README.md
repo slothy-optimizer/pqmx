@@ -1,17 +1,22 @@
-# pqmx: Post-Quantum Cryptography on Arm v8.1-M + MVE
+# pqmx: Post-Quantum Cryptography on Arm Cortex-M
 This repository is a fork of the [pqmx](https://gitlab.com/arm-research/security/pqmx) repository, adding further
 examples from public-key cryptography (both classical and post-quantum). Along with
 [pqax](https://github.com/slothy-optimizer/pqax) and [SLOTHY](https://github.com/slothy-optimizer/slothy), it
-accompanies the paper [Fast and Clean: Auditable high-performance assembly via
-constraint-solving](https://eprint.iacr.org/2022/1303) by Abdulrahman, Becker, Kannwischer and Klein.
+accompanies the following papers:
+
+* [Fast and Clean: Auditable high-performance assembly via constraint-solving](https://eprint.iacr.org/2022/1303) by Amin Abdulrahman, Hanno Becker, Matthias J. Kannwischer and Fabien Klein (TCHES 2024)
+* [Enabling Microarchitectural Agility: Taking ML-KEM & ML-DSA from Cortex-M4 to M7 with SLOTHY](https://eprint.iacr.org/2025/366) by Amin Abdulrahman, Matthias J. Kannwischer and Thing-Han Lim (AsiaCCS 2025)
+
 ## Overview
 ### Scope
 
 It is intended as a complement to the well-known [`pqm4`](https://github.com/mupq/pqm4/), which collects implementations
-of post-quantum cryptography targeting Cortex-M4, with a focus on CPUs implementing the [M-Profile Vector Extension
+of post-quantum cryptography targeting Cortex-M4. This repository extends support to multiple Arm Cortex-M processors,
+with particular focus on CPUs implementing the [M-Profile Vector Extension
 (MVE)](https://www.arm.com/why-arm/technologies/helium) to the Armv8.1-M architecture (also known as Arm<sup>&reg;</sup>
 Helium&trade; Technology), such as the [Arm<sup>&reg;</sup>
-Cortex&trade;-M55](https://www.arm.com/products/silicon-ip-cpu/cortex-m/cortex-m55) processor.
+Cortex&trade;-M55](https://www.arm.com/products/silicon-ip-cpu/cortex-m/cortex-m55) and [Arm<sup>&reg;</sup>
+Cortex&trade;-M85](https://www.arm.com/products/silicon-ip-cpu/cortex-m/cortex-m85) processors.
 
 ### SLOTHY
 
@@ -63,9 +68,8 @@ Each code generation example is accompanied by an example C-program contained in
 multiplication code generators from [`asm/scripts/toom4`](asm/scripts/toom4/) are tested in
 [`tests/toom/`](tests/toom/).
 
-The test files platform-independent and only rely on a small hardware abstraction layer
-[`tests/inc/hal.h`](tests/inc/hal.h) which declares stubs for debugging, measuring, and random sources. As long as the tests get ported into an environment which defines this
-hardware
+The test files are platform-independent and only rely on a small hardware abstraction layer
+[`tests/inc/hal.h`](tests/inc/hal.h) which declares stubs for debugging, measuring, and random sources. As long as the tests get ported into an environment which defines this hardware abstraction
 through a separate translation unit in the test environment, or via `hal_env.h` in case some or all of the HAL
 functionality shall be implemented through macros. Note `hal_env.h` must currently always be present in the test environment, even
 if the entire HAL is implemented in a separate translation unit.
@@ -75,15 +79,23 @@ For convenience, there is also a [HelloWorld test](tests/helloworld/) with a min
 ### Test environments
 
 As mentioned above, the tests from [`tests/`](tests/) can be run in any environment defining the hardware abstraction layer
-interface [`tests/inc/hal.h`](tests/inc/hal.h). This flexibility is useful in order to test the MVE assembly in different models or
-simulators of MVE-implementations.
+interface [`tests/inc/hal.h`](tests/inc/hal.h). This flexibility is useful in order to test the assembly in different models or
+simulators of processor implementations.
 
 The supported test environments are located in [`envs`](envs/).
-As of now, we are supporting two platforms:
- - [Arm® Corstone™ SSE-300 with Cortex®-M55 and Ethos™-U55 (AN547)](https://developer.arm.com/downloads/view/AN547)
- - [Arm® Corstone™ SSE-310 with Cortex®-M85 and Ethos™-U55 (AN555)](https://developer.arm.com/downloads/view/AN555)
+The repository supports multiple test environments for different Arm Cortex-M processors:
 
-The former can be emulated using qemu (>=6.0).
+**Primary platforms:**
+- [Arm® Corstone™ SSE-300 with Cortex®-M55 and Ethos™-U55 (AN547)](https://developer.arm.com/downloads/view/AN547) - emulatable with qemu (>=6.0)
+- [Arm® Corstone™ SSE-310 with Cortex®-M85 and Ethos™-U55 (AN555)](https://developer.arm.com/downloads/view/AN555)
+- [Renesas EK-RA8M1 (Cortex-M85) development board](envs/ek-ra8m1/) - physical hardware platform
+
+**Additional supported platforms:**
+- [Arm® MPS2 with Cortex®-M4 (AN386)](https://developer.arm.com/documentation/dai0386/latest/)
+- [Arm® MPS2 with Cortex®-M7 (AN500)](https://developer.arm.com/documentation/dai0500/latest/)
+- STM32 Nucleo-F767ZI (Cortex-M7) development board
+- STM32F4-Discovery (Cortex-M4) development board
+
 Previously, the freely available FVPs for the Arm<sup>&reg;</sup> Corstone&trade;-300 MPS2 and Arm<sup>&reg;</sup> Corstone&trade;-300 MPS3 were also supported.
 However, these are currently no longer maintained (see https://github.com/slothy-optimizer/pqmx/issues/7).
 
@@ -93,6 +105,8 @@ If you have added a new test
 environment, you can test that it works against the HelloWorld test in [`tests/helloworld`](tests/helloworld/).
 
 To run the tests in qemu, the target `run-m55-an547_{test_name}` can be used. It will build the executable from the sources and run it using `qemu-system-arm -M mps3-an547  -nographic -semihosting -kernel`.
+
+For the EK-RA8M1 hardware board, use `flash-ek-ra8m1-{test_name}` to flash the test and then connect via telnet to view output (see [envs/ek-ra8m1/README.md](envs/ek-ra8m1/README.md) for detailed setup instructions).
 
 ## License
 
@@ -120,8 +134,11 @@ experimental-features = nix-command flakes
 
 
 The code in this repository can then be generated, compiled and run via `make`:
-* `make {build,run}-{m55-an547,m85-an555}-{helloworld,ntt-kyber,ntt-dilithium}` builds/runs the chosen
-  test in the chosen test environment.
+* `make {build,run,flash}-{platform}-{test_name}` builds/runs/flashes the chosen test in the chosen test environment.
+
+**Available platforms:** `m55-an547`, `m85-an555`, `ek-ra8m1`, `m4-an386`, `m7-an500`, `nucleo-f767zi`, `stm32f4discovery`
+
+**Example tests:** `helloworld`, `ntt-kyber`, `ntt-dilithium`, `sqmag`, `karatsuba`, `montgomery`, `keccak`
 
 We recommend trying
 
