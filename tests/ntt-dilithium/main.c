@@ -46,6 +46,8 @@
 #include <stdlib.h>
 #include <time.h>
 
+#include "ntt_ref.h"
+
 // base
 void ntt_dilithium_12_34_56_78(int32_t *src);
 void ntt_dilithium_12_34_56_78_no_trans_vld4(int32_t *src);
@@ -73,71 +75,7 @@ void ntt_dilithium_123_456_78_opt_size_m85(int32_t *src);
  * Test cases
  */
 
-int32_t base_root       = 1753;
 int32_t modulus         = 8380417;
-int32_t modulus_inv_u32 = 58728449;
-
-int32_t  roots        [NTT_ROOT_ORDER / 2] __attribute__((aligned(16))) = { 0 };
-
-void build_roots()
-{
-    for( unsigned i=0; i < NTT_ROOT_ORDER / 2; i++ )
-    {
-        roots[i]         = mod_pow_s32( base_root, i, modulus );
-    }
-}
-
-unsigned bit_reverse( unsigned in, unsigned width )
-{
-    unsigned out = 0;
-    while( width-- )
-    {
-        out <<= 1;
-        out |= ( in % 2 );
-        in >>= 1;
-    }
-    return( out );
-}
-
-void ntt_s32_C( int32_t *src )
-{
-    int32_t res[NTT_SIZE];
-    build_roots();
-
-    for( unsigned t=0; t<NTT_LAYER_STRIDE; t++ )
-    {
-        for( unsigned i=0; i<NTT_INCOMPLETE_SIZE; i++ )
-        {
-            int32_t tmp = 0;
-            /* A negacyclic FFT is half of a full FFT, where we've 'chosen -1'
-             * in the first layer. That explains the corrections by NTT_INCOMPLETE_SIZE
-             * and +1 here. In a normal FFT, this would just be bit_rev( i, layers ) * stride. */
-            unsigned const multiplier =
-                bit_reverse( i + NTT_INCOMPLETE_SIZE, NTT_INCOMPLETE_LAYERS + 1 ) * NTT_LAYER_STRIDE;
-
-            for( unsigned j=0; j<NTT_INCOMPLETE_SIZE; j++ )
-            {
-                int32_t cur;
-                unsigned exp = ( multiplier * j ) % NTT_ROOT_ORDER;
-                unsigned sub = ( exp >= ( NTT_ROOT_ORDER / 2 ) );
-                exp = exp % ( NTT_ROOT_ORDER / 2 );
-
-                cur = mod_mul_s32( src[NTT_LAYER_STRIDE*j+t],
-                                   roots[exp],
-                                   modulus );
-
-                if( !sub )
-                    tmp = mod_add_s32( tmp, cur, modulus );
-                else
-                    tmp = mod_sub_s32( tmp, cur, modulus );
-            }
-            res[NTT_LAYER_STRIDE*i+t] = tmp;
-        }
-    }
-
-    memcpy( src, res, sizeof( res ) );
-}
-
 void buf_bitrev_4( int32_t *src )
 {
     int32_t *src_ = (int32_t*) src;
@@ -154,7 +92,7 @@ void buf_bitrev_4( int32_t *src )
 }
 
 #define MAKE_TEST_FWD(var,func,rev4)                                    \
-int test_ntt_ ## var ()                                             \
+int test_ntt_ ## var ()                                                 \
 {                                                                       \
     debug_test_start( "NTT s32 for " #func );                           \
     int32_t src[NTT_SIZE]      __attribute__((aligned(16)));            \
@@ -166,11 +104,9 @@ int test_ntt_ ## var ()                                             \
                                                                         \
     /* Step 1: Reference NTT */                                         \
     memcpy( src_copy, src, sizeof( src ) );                             \
-    ntt_s32_C( src_copy );                                              \
+    ntt_ref( src_copy );                                                \
     mod_reduce_buf_s32( src_copy, NTT_SIZE, modulus );                  \
-                                                                        \
-    if( rev4 )                                                          \
-        buf_bitrev_4( src_copy );                                       \
+    if(rev4) buf_bitrev_4( src_copy );                                  \
                                                                         \
     /* Step 2: MVE-based NTT */                                         \
     measure_start();                                                    \
