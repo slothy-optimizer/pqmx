@@ -174,14 +174,6 @@ int test_intt_ ## var ()                                                \
                                                                         \
     mod_reduce_buf_s32( src, NTT_SIZE, modulus );                       \
                                                                         \
-    /* TODO: Add scaling to inv NTT asm                                 \
-     * The assembly iNTT should scale by 2^(-8) * 2^32 like the ref     \
-     */                                                                 \
-    const int32_t correction_factor = 16382; /* pow(4186116, Q-2, Q) */ \
-    for (unsigned i = 0; i < NTT_SIZE; i++) {                           \
-        src[i] = mod_mul_s32(src[i], correction_factor, modulus);       \
-    }                                                                   \
-                                                                        \
     if( compare_buf_u32( (uint32_t const*) src, (uint32_t const*) src_copy, \
                          NTT_SIZE ) != 0 )                              \
     {                                                                   \
