@@ -10,6 +10,7 @@ NTT_DILITHIUM_PLATFORMS += ek-ra8m1
 
 # C sources required for this test
 NTT_DILITHIUM_SOURCES += main.c
+NTT_DILITHIUM_SOURCES += ntt_ref.c
 
 # Assembly sources required for this test
 
