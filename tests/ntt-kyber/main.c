@@ -46,6 +46,8 @@
 #include <stdlib.h>
 #include <time.h>
 
+#include "ntt_ref.h"
+
 // base
 void ntt_kyber_1_23_45_67_no_trans(int16_t *src);
 void ntt_kyber_1_23_45_67_no_trans_vld4(int16_t *src);
@@ -72,70 +74,8 @@ void ntt_kyber_12_345_67_opt_size_m85(int16_t *src);
  * Test cases
  */
 
-int16_t base_root       = 17;
 int16_t modulus         = 3329;
-int16_t modulus_inv_u16 = 62209;
 
-uint16_t roots[NTT_ROOT_ORDER / 2] __attribute__((aligned(16))) = { 0 };
-
-void build_roots()
-{
-    for( unsigned i=0; i < NTT_ROOT_ORDER / 2; i++ )
-    {
-        roots[i]         = mod_pow_s16( base_root, i, modulus );
-    }
-}
-
-unsigned bit_reverse( unsigned in, unsigned width )
-{
-    unsigned out = 0;
-    while( width-- )
-    {
-        out <<= 1;
-        out |= ( in % 2 );
-        in >>= 1;
-    }
-    return( out );
-}
-
-void ntt_s16_C( int16_t *src )
-{
-    int16_t res[NTT_SIZE];
-    build_roots();
-
-    for( unsigned t=0; t<NTT_LAYER_STRIDE; t++ )
-    {
-        for( unsigned i=0; i<NTT_INCOMPLETE_SIZE; i++ )
-        {
-            int16_t tmp = 0;
-            /* A negacyclic FFT is half of a full FFT, where we've 'chosen -1'
-             * in the first layer. That explains the corrections by NTT_INCOMPLETE_SIZE
-             * and +1 here. In a normal FFT, this would just be bit_rev( i, layers ) * stride. */
-            unsigned const multiplier =
-                bit_reverse( i + NTT_INCOMPLETE_SIZE, NTT_INCOMPLETE_LAYERS + 1 ) * NTT_LAYER_STRIDE;
-
-            for( unsigned j=0; j<NTT_INCOMPLETE_SIZE; j++ )
-            {
-                int16_t cur;
-                unsigned exp = ( ( multiplier * j ) % NTT_ROOT_ORDER ) / 2;
-                unsigned sub = ( exp >= ( NTT_ROOT_ORDER / 2 ) );
-                exp = exp % ( NTT_ROOT_ORDER / 2 );
-
-                cur = mod_mul_s16( src[NTT_LAYER_STRIDE*j+t],
-                                   roots[exp],
-                                   modulus );
-
-                if( !sub )
-                    tmp = mod_add_s16( tmp, cur, modulus );
-                else
-                    tmp = mod_sub_s16( tmp, cur, modulus );
-            }
-            res[NTT_LAYER_STRIDE*i+t] = tmp;
-        }
-    }
-
-    memcpy( src, res, sizeof( res ) );
-}
 
 void buf_bitrev_4( int16_t *src )
 {
@@ -165,7 +105,7 @@ int test_ntt_ ## var ()                                                 \
                                                                         \
     /* Step 1: Reference NTT */                                         \
     memcpy( src_copy, src, sizeof( src ) );                             \
-    ntt_s16_C( src_copy );                                              \
+    ntt_ref( src_copy );                                                \
     mod_reduce_buf_s16( src_copy, NTT_SIZE, modulus );                  \
                                                                         \
     if( rev4 )                                                          \

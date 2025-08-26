@@ -10,6 +10,7 @@ NTT_KYBER_PLATFORMS += ek-ra8m1
 
 # C sources required for this test
 NTT_KYBER_SOURCES += main.c
+NTT_KYBER_SOURCES += ntt_ref.c
 
 # Assembly sources required for this test
 
