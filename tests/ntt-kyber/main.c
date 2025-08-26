@@ -157,11 +157,7 @@ int test_intt_ ## var ()                                                \
     (func)( src );                                                      \
     measure_end();                                                      \
                                                                         \
-    /* Apply correction factor - assembly iNTT has different scaling */ \
-    const int16_t correction_factor = 512; /* inverse of 1658 mod 3329 */ \
-    for(unsigned i = 0; i < NTT_SIZE; i++)                              \
-        src[i] = (((int32_t)src[i] * correction_factor)) % modulus;     \
-    mod_reduce_buf_s16(src, NTT_SIZE, modulus);                         \
+    mod_reduce_buf_s16( src, NTT_SIZE, modulus );                       \
                                                                         \
     if( compare_buf_u16( (uint16_t const*) src, (uint16_t const*) src_copy, \
                          NTT_SIZE ) != 0 )                              \
