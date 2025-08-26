@@ -10,6 +10,7 @@ NTT_KYBER_PLATFORMS += ek-ra8m1
 
 # C sources required for this test
 NTT_KYBER_SOURCES += main.c
+NTT_KYBER_SOURCES += ntt_ref.c
 
 # Assembly sources required for this test
 
@@ -33,3 +34,8 @@ NTT_KYBER_ASMS += $(NTT_KYBER_SLOTHY_ASM_OPT)/ntt_kyber_1_23_45_67_no_trans_opt_
 NTT_KYBER_ASMS += $(NTT_KYBER_SLOTHY_ASM_OPT)/ntt_kyber_1_23_45_67_no_trans_opt_m85.s
 NTT_KYBER_ASMS += $(NTT_KYBER_SLOTHY_ASM_OPT)/ntt_kyber_1_23_45_67_no_trans_vld4_opt_m55.s
 NTT_KYBER_ASMS += $(NTT_KYBER_SLOTHY_ASM_OPT)/ntt_kyber_1_23_45_67_no_trans_vld4_opt_m85.s
+
+# iNTT assembly
+NTT_KYBER_ASMS += $(NTT_KYBER_SLOTHY_ASM_NAIVE)/intt_kyber_1_23_45_67.s
+NTT_KYBER_ASMS += $(NTT_KYBER_SLOTHY_ASM_OPT)/intt_kyber_1_23_45_67_opt_m55.s
+NTT_KYBER_ASMS += $(NTT_KYBER_SLOTHY_ASM_OPT)/intt_kyber_1_23_45_67_opt_m85.s
