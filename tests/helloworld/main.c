@@ -59,7 +59,7 @@ int main (void)
 
     measure_start();
     for(int i=0;i<1000;i++){
-        asm("nop");
+        __asm__("nop");
     }
     measure_end();
 
