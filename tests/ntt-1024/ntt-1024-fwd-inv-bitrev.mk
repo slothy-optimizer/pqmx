@@ -6,6 +6,7 @@ TESTS += ntt-1024/fwd-inv-bitrev
 # Platforms this test should run on (matching the directory name in envs/)
 NTT_1024_FWD_INV_BITREV_PLATFORMS += m55-an547
 NTT_1024_FWD_INV_BITREV_PLATFORMS += m85-an555
+NTT_1024_FWD_INV_BITREV_PLATFORMS += ek-ra8m1
 
 # C sources required for this test
 NTT_1024_FWD_INV_BITREV_SOURCES += main.c

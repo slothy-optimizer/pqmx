@@ -6,6 +6,7 @@ TESTS += poly
 # Platforms this test should run on (matching the directory name in envs/)
 POLY_PLATFORMS += m55-an547
 POLY_PLATFORMS += m85-an555
+POLY_PLATFORMS += ek-ra8m1
 
 # C sources required for this test
 POLY_SOURCES += main.c

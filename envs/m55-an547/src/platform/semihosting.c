@@ -13,6 +13,8 @@
 static const uint32_t REPORT_EXCEPTION = 0x18;
 static const uint32_t ApplicationExit = 0x20026;
 
+uint32_t semihosting_syscall(uint32_t nr, const uint32_t arg);
+
 // Do a system call towards QEMU or the debugger.
 uint32_t semihosting_syscall(uint32_t nr, const uint32_t arg) {
 	__asm__ volatile (
@@ -29,6 +31,16 @@ uint32_t semihosting_syscall(uint32_t nr, const uint32_t arg) {
 static void __attribute__ ((destructor)) semihosting_exit(void) {
 	semihosting_syscall(REPORT_EXCEPTION, ApplicationExit);
 }
+
+void NMI_Handler(void);
+void HardFault_Handler(void);
+void MemManage_Handler(void);
+void BusFault_Handler(void);
+void UsageFault_Handler(void);
+void SecureFault_Handler(void);
+void SVC_Handler(void);
+void DebugMon_Handler(void);
+void PendSV_Handler(void);
 
 void NMI_Handler(void) {
   puts("NMI_Handler");

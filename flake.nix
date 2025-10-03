@@ -4,7 +4,7 @@
   description = "pqmx";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
 
     flake-parts = {
       url = "github:hercules-ci/flake-parts";
@@ -24,12 +24,14 @@
           mbed-os = pkgs.callPackage ./mbed-os.nix {
             targets = [ "mps2_m4" "mps2_m7" ];
           };
+          cmsis_5 = pkgs.callPackage ./cmsis_5.nix { };
         in
         {
           devShells.default = pkgs.mkShellNoCC {
             packages = builtins.attrValues {
               libopencm3 = libopencm3;
               mbed-os = mbed-os;
+              cmsis_5 = cmsis_5;
 
               inherit (pkgs.python311Packages)
                 pyserial;
@@ -45,6 +47,7 @@
             };
             OPENCM3_DIR = ''${libopencm3}'';
             MBED_OS_DIR = ''${mbed-os}'';
+            CMSIS_5_DIR = ''${cmsis_5}'';
           };
         };
       flake = {

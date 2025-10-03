@@ -14,6 +14,7 @@ TEST_COMMON=../../tests/common/
 SYSROOT := $(shell $(CC) --print-sysroot)
 CFLAGS += \
 	-O3 \
+	-std=c99 \
 	-Wall -Wextra -Wshadow -Werror \
 	-fno-common \
 	-ffunction-sections \
@@ -85,8 +86,9 @@ build: $(TARGET)
 run:
 	@echo "WARNING: AN555 is not supported by qemu. Skipping"
 
+# Platform not supported by QEMU
 check:
-	@echo "WARNING: AN555 is not supported by qemu. Skipping"
+	@echo "SKIP"; exit 2
 
 flash:
 	@echo "WARNING: Target platform does not support the flash- targets. Skipping"

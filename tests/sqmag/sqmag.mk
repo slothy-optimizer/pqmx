@@ -6,6 +6,7 @@ TESTS += sqmag
 # Platforms this test should run on (matching the directory name in envs/)
 SQMAG_PLATFORMS += m55-an547
 SQMAG_PLATFORMS += m85-an555
+SQMAG_PLATFORMS += ek-ra8m1
 
 # C sources required for this test
 SQMAG_SOURCES += main.c
@@ -20,9 +21,9 @@ SQMAG_SLOTHY_ASM_OPT = $(SQMAG_SLOTHY_DIR)/examples/opt/armv8m/cmplx_mag_sqr/
 SQMAG_ASMS += $(SQMAG_SLOTHY_ASM_NAIVE)/cmplx_mag_sqr_fx.s
 
 
-SQMAG_ASMS += $(SQMAG_SLOTHY_ASM_OPT)/cmplx_mag_sqr_fx_opt_M55_unroll1.s 
-SQMAG_ASMS += $(SQMAG_SLOTHY_ASM_OPT)/cmplx_mag_sqr_fx_opt_M55_unroll2.s 
-SQMAG_ASMS += $(SQMAG_SLOTHY_ASM_OPT)/cmplx_mag_sqr_fx_opt_M55_unroll4.s 
-SQMAG_ASMS += $(SQMAG_SLOTHY_ASM_OPT)/cmplx_mag_sqr_fx_opt_M85_unroll1.s 
-SQMAG_ASMS += $(SQMAG_SLOTHY_ASM_OPT)/cmplx_mag_sqr_fx_opt_M85_unroll2.s
-SQMAG_ASMS += $(SQMAG_SLOTHY_ASM_OPT)/cmplx_mag_sqr_fx_opt_M85_unroll4.s
+SQMAG_ASMS += $(SQMAG_SLOTHY_ASM_OPT)/cmplx_mag_sqr_fx_unroll1_opt_m55.s
+SQMAG_ASMS += $(SQMAG_SLOTHY_ASM_OPT)/cmplx_mag_sqr_fx_unroll2_opt_m55.s
+SQMAG_ASMS += $(SQMAG_SLOTHY_ASM_OPT)/cmplx_mag_sqr_fx_unroll4_opt_m55.s 
+SQMAG_ASMS += $(SQMAG_SLOTHY_ASM_OPT)/cmplx_mag_sqr_fx_unroll1_opt_m85.s 
+SQMAG_ASMS += $(SQMAG_SLOTHY_ASM_OPT)/cmplx_mag_sqr_fx_unroll2_opt_m85.s
+SQMAG_ASMS += $(SQMAG_SLOTHY_ASM_OPT)/cmplx_mag_sqr_fx_unroll4_opt_m85.s

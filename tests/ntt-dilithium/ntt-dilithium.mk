@@ -6,6 +6,7 @@ TESTS += ntt-dilithium
 # Platforms this test should run on (matching the directory name in envs/)
 NTT_DILITHIUM_PLATFORMS += m55-an547
 NTT_DILITHIUM_PLATFORMS += m85-an555
+NTT_DILITHIUM_PLATFORMS += ek-ra8m1
 
 # C sources required for this test
 NTT_DILITHIUM_SOURCES += main.c

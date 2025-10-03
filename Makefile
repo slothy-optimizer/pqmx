@@ -64,7 +64,22 @@ run: ${runs}
 
 .PHONY: ${checks}
 ${checks}: check-%:
-	make -C envs/$(platform) check CFLAGS_EXTRA='$(call testcflags,$(test))' SOURCES='$(call testsources,$(test),../../)' ASMS='$(call testasms,$(test),../../)' TARGET=$(call elfname,$(test)) TESTDIR=$(call testdir,$(test),../../)
+	@tmpfile=$$(mktemp); ( \
+		printf "%-48s" "$(platform)_$(test)"; \
+		make -C envs/$(platform) check \
+			CFLAGS_EXTRA='$(call testcflags,$(test))' \
+			SOURCES='$(call testsources,$(test),../../)' \
+			ASMS='$(call testasms,$(test),../../)' \
+			TARGET=$(call elfname,$(test)) \
+			TESTDIR=$(call testdir,$(test),../../) \
+			>$$tmpfile.out 2>&1; \
+		case $$? in \
+			0) printf " [PASS]\n" ;; \
+			2) printf " [SKIP]\n" ;; \
+			*) printf " [FAIL]\n"; cat $$tmpfile.out; rm -f $$tmpfile*; exit 1 ;; \
+		esac; \
+		rm -f $$tmpfile.out; \
+	) > $$tmpfile; cat $$tmpfile; rm -f $$tmpfile
 
 .PHONY: check
 check: ${checks}
