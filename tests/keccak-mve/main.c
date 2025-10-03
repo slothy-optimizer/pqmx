@@ -158,23 +158,6 @@ static void deinterleave_4fold(void *state_4x, uint64_t *state0, uint64_t *state
 extern void mve_keccak_state_permute_4fold_opt_m55(void*, void*);
 extern void mve_keccak_state_permute_4fold_opt_m85(void*, void*);
 
-typedef struct
-{
-    uint32_t systick_cycles;
-    uint32_t pmu_cycles;
-
-    uint32_t inst_all;
-
-    uint32_t inst_mve_all;
-    uint32_t inst_mve_lsu;
-    uint32_t inst_mve_int;
-    uint32_t inst_mve_mul;
-
-    uint32_t stall_all;
-    uint32_t stall_mve_all;
-    uint32_t stall_mve_resource;
-} pmu_stats;
-
 void hal_pmu_enable();
 void hal_pmu_disable();
 void hal_pmu_start_pmu_stats( pmu_stats *s );
