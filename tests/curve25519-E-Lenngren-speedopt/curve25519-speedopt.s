@@ -30,6 +30,8 @@ name: ;\
 
 #if defined(__ARM_FP) && defined(__ARM_ARCH_7EM__)
 #define has_fpu
+#else
+#error "NO FPU"
 #endif
 
 	.syntax unified
@@ -118,6 +120,7 @@ START_FUNC(fe25519_mul)
 	.cfi_def_cfa_offset 4
 	.cfi_offset lr,-4
 	
+start_label:
 	vmov s6,r1
 	ldm r1!,{r9}
 	vldm r2,{s8-s15}
@@ -276,7 +279,8 @@ START_FUNC(fe25519_mul)
 	vmov r10,s6
 	umaal r10,r0,r11,lr
 	add r11,r0,r3, lsr #1
-	
+end_label:
+
 	pop {pc}
 END_FUNC(fe25519_mul)
 
