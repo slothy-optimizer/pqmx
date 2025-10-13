@@ -77,7 +77,7 @@ void SVC_Handler(void) {
   semihosting_syscall(REPORT_EXCEPTION, ApplicationExit);
 }
 
-void DebugMon_Handler(void) {
+void DebugMon_Handler(void) __attribute__ ((weak)) {
   puts("DebugMon_Handler");
   semihosting_syscall(REPORT_EXCEPTION, ApplicationExit);
 }
