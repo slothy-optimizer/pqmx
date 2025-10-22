@@ -12,10 +12,10 @@ target = Target_CortexM7
 slothy = Slothy(arch, target)
 
 slothy.load_source_from_file("curve25519-speedopt.s")
-slothy.config.variable_size=False
+slothy.config.variable_size=True
 slothy.config.inputs_are_outputs=True
 slothy.config.constraints.stalls_first_attempt = 64
-slothy.config.outputs = ["r11"]
+slothy.config.outputs = ["r11", 's6', 'r5', 'r6', 'r10']
 slothy.optimize(start="start_label", end="end_label")
 
 slothy.rename_function("fe25519_mul", "fe25519_mul_m7_opt")
