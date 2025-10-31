@@ -119,16 +119,16 @@ START_FUNC(fe25519_mul)
 	push {lr}
 	.cfi_def_cfa_offset 4
 	.cfi_offset lr,-4
-	
+
 start_label:
 	vmov s6,r1
 	ldm r1!,{r9}
 	vldm r2,{s8-s15}
 	ldm r1,{r0,r1,r2,r3,r4} // kill r1
+
 	vmov r5,r6,s8,s9
 	vmov r10,s10
-	
-
+end_label:
 	umull lr,r8,r5,r9 // A=lr done
 	umull r7,r11,r5,r0
 	// 11 8+7 lr
@@ -170,6 +170,7 @@ start_label:
 	umaal r11,r12,r6,r2
 	umaal r12,lr,r6,r3
 
+
 	// lr 12 11 10 8+7 . . . .
 
 	vmov r6,s12
@@ -194,7 +195,6 @@ start_label:
 	umaal r12,lr,r6,r3
 
 	// lr 12 11 10 8+5
-
 	vmov s5,r7
 
 	vmov r7,r6,s14,s15
@@ -214,6 +214,7 @@ start_label:
 
 	// lr 12 11 10 9 8+7 5
 
+
 	vmov r0,s6
 	vmov r1,r3,s8,s9
 	ldr r4,[r0,#4*6]
@@ -223,6 +224,7 @@ start_label:
 	umull r6,r1,r1,r4
 
 	// lr 12 11 10 9+8 7+4 6+5
+
 
 	umaal r6,r5,r3,r0
 	vmov s6,r6
@@ -255,17 +257,19 @@ start_label:
 	umaal r10,r11,r6,r0
 	umaal r12,r11,r6,r4
 	umaal lr,r11,r6,r2
-	
+
 	// 11 lr 12 10 9 8 7 1 5 fpu*7
 
+
 	//now reduce
+
 
 	movs r0,#38<<1
 	mov r3,r5
 	umaal r3,r5,r0,r11
 	movs r0,#19
 	mov r11,#38
-	muls r0,r5,r0
+	mul r0,r5,r0
 	
 	vmov r4,r5,s0,s1
 	umaal r4,r0,r11,r1
@@ -279,7 +283,7 @@ start_label:
 	vmov r10,s6
 	umaal r10,r0,r11,lr
 	add r11,r0,r3, lsr #1
-end_label:
+
 
 	pop {pc}
 END_FUNC(fe25519_mul)
