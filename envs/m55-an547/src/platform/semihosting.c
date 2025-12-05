@@ -1,7 +1,7 @@
 #if !defined(NO_SEMIHOSTING_EXIT)
 
-#include <stdio.h>
 #include <stdint.h>
+#include <stdio.h>
 
 // TODO(dsprenkels) Currently, we only exit the QEMU host when a the program
 // exists sucessfully.  We should also populate some interrupts handlers that
@@ -17,19 +17,21 @@ uint32_t semihosting_syscall(uint32_t nr, const uint32_t arg);
 
 // Do a system call towards QEMU or the debugger.
 uint32_t semihosting_syscall(uint32_t nr, const uint32_t arg) {
-	__asm__ volatile (
-		"mov r0, %[nr]\n"
-		"mov r1, %[arg]\n"
-		"bkpt 0xAB\n"
-		"mov %[nr], r0\n"
-	: [nr] "+r" (nr) : [arg] "r" (arg) : "0", "1");
-	return nr;
+  __asm__ volatile(
+      "mov r0, %[nr]\n"
+      "mov r1, %[arg]\n"
+      "bkpt 0xAB\n"
+      "mov %[nr], r0\n"
+      : [nr] "+r"(nr)
+      : [arg] "r"(arg)
+      : "0", "1");
+  return nr;
 }
 
 // Register a destructor that will call qemu telling them that the program
 // has exited successfully.
-static void __attribute__ ((destructor)) semihosting_exit(void) {
-	semihosting_syscall(REPORT_EXCEPTION, ApplicationExit);
+static void __attribute__((destructor)) semihosting_exit(void) {
+  semihosting_syscall(REPORT_EXCEPTION, ApplicationExit);
 }
 
 void NMI_Handler(void);
@@ -77,7 +79,7 @@ void SVC_Handler(void) {
   semihosting_syscall(REPORT_EXCEPTION, ApplicationExit);
 }
 
-void __attribute__ ((weak)) DebugMon_Handler(void) {
+void __attribute__((weak)) DebugMon_Handler(void) {
   puts("DebugMon_Handler");
   semihosting_syscall(REPORT_EXCEPTION, ApplicationExit);
 }

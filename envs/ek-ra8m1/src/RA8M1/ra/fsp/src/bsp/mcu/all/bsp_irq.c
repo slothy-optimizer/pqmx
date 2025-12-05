@@ -1,8 +1,9 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
-*
-* SPDX-License-Identifier: BSD-3-Clause
-*/
+ * Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its
+ * affiliates
+ *
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
 
 /***********************************************************************************************************************
  * Includes   <System Includes> , "Project Includes"
@@ -14,8 +15,8 @@
 /***********************************************************************************************************************
  * Macro definitions
  **********************************************************************************************************************/
-#define BSP_IRQ_UINT32_MAX       (0xFFFFFFFFU)
-#define BSP_PRV_BITS_PER_WORD    (32)
+#define BSP_IRQ_UINT32_MAX (0xFFFFFFFFU)
+#define BSP_PRV_BITS_PER_WORD (32)
 
 /***********************************************************************************************************************
  * Typedef definitions
@@ -26,23 +27,22 @@
  **********************************************************************************************************************/
 
 /* This table is used to store the context in the ISR. */
-void * gp_renesas_isr_context[BSP_ICU_VECTOR_MAX_ENTRIES];
+void *gp_renesas_isr_context[BSP_ICU_VECTOR_MAX_ENTRIES];
 
 /***********************************************************************************************************************
  * Private global variables and functions
  **********************************************************************************************************************/
-const bsp_interrupt_event_t g_interrupt_event_link_select[BSP_ICU_VECTOR_MAX_ENTRIES] BSP_WEAK_REFERENCE =
-{
-    (bsp_interrupt_event_t) 0
-};
+const bsp_interrupt_event_t g_interrupt_event_link_select
+    [BSP_ICU_VECTOR_MAX_ENTRIES] BSP_WEAK_REFERENCE = {
+        (bsp_interrupt_event_t)0};
 
-/*******************************************************************************************************************//**
- * @addtogroup BSP_MCU
- *
- * @{
- **********************************************************************************************************************/
+/*******************************************************************************************************************/ /**
+                                                                                                                       * @addtogroup BSP_MCU
+                                                                                                                       *
+                                                                                                                       * @{
+                                                                                                                       **********************************************************************************************************************/
 #if 0 == BSP_CFG_INLINE_IRQ_FUNCTIONS
- #if BSP_FEATURE_ICU_HAS_IELSR
+#if BSP_FEATURE_ICU_HAS_IELSR
 
 /*******************************************************************************************************************//**
  * Clear the interrupt status flag (IR) for a given interrupt. When an interrupt is triggered the IR bit
@@ -63,7 +63,7 @@ void R_BSP_IrqStatusClear (IRQn_Type irq)
     FSP_REGISTER_READ(R_ICU->IELSR[irq]);
 }
 
- #endif
+#endif
 
 /*******************************************************************************************************************//**
  * Clear the interrupt status flag (IR) for a given interrupt and clear the NVIC pending interrupt.
@@ -75,14 +75,14 @@ void R_BSP_IrqStatusClear (IRQn_Type irq)
  **********************************************************************************************************************/
 BSP_SECTION_FLASH_GAP void R_BSP_IrqClearPending (IRQn_Type irq)
 {
- #if BSP_FEATURE_ICU_HAS_IELSR
+#if BSP_FEATURE_ICU_HAS_IELSR
 
     /* Clear the IR bit in the selected IELSR register. */
     R_BSP_IrqStatusClear(irq);
 
     /* Flush memory transactions to ensure that the IR bit is cleared before clearing the pending bit in the NVIC. */
     __DMB();
- #endif
+#endif
 
     /* The following statement is used in place of NVIC_ClearPendingIRQ to avoid including a branch for system
      * exceptions every time an interrupt is cleared in the NVIC. */
@@ -103,16 +103,16 @@ BSP_SECTION_FLASH_GAP void R_BSP_IrqCfg (IRQn_Type const irq, uint32_t priority,
 {
     /* The following statement is used in place of NVIC_SetPriority to avoid including a branch for system exceptions
      * every time a priority is configured in the NVIC. */
- #if (4U == __CORTEX_M)
+#if (4U == __CORTEX_M)
     NVIC->IP[((uint32_t) irq)] = (uint8_t) ((priority << (8U - __NVIC_PRIO_BITS)) & (uint32_t) UINT8_MAX);
- #elif (33 == __CORTEX_M)
+#elif (33 == __CORTEX_M)
     NVIC->IPR[((uint32_t) irq)] = (uint8_t) ((priority << (8U - __NVIC_PRIO_BITS)) & (uint32_t) UINT8_MAX);
- #elif (23 == __CORTEX_M)
+#elif (23 == __CORTEX_M)
     NVIC->IPR[_IP_IDX(irq)] = ((uint32_t) (NVIC->IPR[_IP_IDX(irq)] & ~((uint32_t) UINT8_MAX << _BIT_SHIFT(irq))) |
                                (((priority << (8U - __NVIC_PRIO_BITS)) & (uint32_t) UINT8_MAX) << _BIT_SHIFT(irq)));
- #else
+#else
     NVIC_SetPriority(irq, priority);
- #endif
+#endif
 
     /* Store the context. The context is recovered in the ISR. */
     R_FSP_IsrContextSet(irq, p_context);
@@ -188,72 +188,74 @@ BSP_SECTION_FLASH_GAP void R_BSP_IrqCfgEnable (IRQn_Type const irq, uint32_t pri
     R_BSP_IrqEnable(irq);
 }
 
-#endif                                 // 0 == BSP_CFG_INLINE_IRQ_FUNCTIONS
+#endif  // 0 == BSP_CFG_INLINE_IRQ_FUNCTIONS
 
 /** @} (end addtogroup BSP_MCU) */
 
-/*******************************************************************************************************************//**
- *        Using the vector table information section that has been built by the linker and placed into ROM in the
- * .vector_info. section, this function will initialize the ICU so that configured ELC events will trigger interrupts
- * in the NVIC.
- *
- **********************************************************************************************************************/
-BSP_SECTION_FLASH_GAP void bsp_irq_cfg (void)
-{
+/*******************************************************************************************************************/ /**
+                                                                                                                       *        Using the vector table information section that has been built by the linker and placed into ROM in the
+                                                                                                                       * .vector_info. section, this function will initialize the ICU so that configured ELC events will trigger interrupts
+                                                                                                                       * in the NVIC.
+                                                                                                                       *
+                                                                                                                       **********************************************************************************************************************/
+BSP_SECTION_FLASH_GAP void bsp_irq_cfg(void) {
 #if FSP_PRIV_TZ_USE_SECURE_REGS
- #if (BSP_FEATURE_TZ_VERSION == 2 && BSP_TZ_SECURE_BUILD == 0)
+#if (BSP_FEATURE_TZ_VERSION == 2 && BSP_TZ_SECURE_BUILD == 0)
 
-    /* On MCUs with this implementation of TrustZone, IRQ security attribution is set to secure by default.
-     * This means that flat projects do not need to set security attribution to secure. */
- #else
+  /* On MCUs with this implementation of TrustZone, IRQ security attribution is
+   * set to secure by default. This means that flat projects do not need to set
+   * security attribution to secure. */
+#else
 
-    /* Unprotect security registers. */
-    R_BSP_RegisterProtectDisable(BSP_REG_PROTECT_SAR);
+  /* Unprotect security registers. */
+  R_BSP_RegisterProtectDisable(BSP_REG_PROTECT_SAR);
 
-  #if !BSP_TZ_SECURE_BUILD
+#if !BSP_TZ_SECURE_BUILD
 
-    /* Set the DMAC channels to secure access. */
-   #ifdef BSP_TZ_CFG_ICUSARC
-    R_CPSCU->ICUSARC = ~R_CPSCU_ICUSARC_SADMACn_Msk;
-   #endif
-  #endif
+  /* Set the DMAC channels to secure access. */
+#ifdef BSP_TZ_CFG_ICUSARC
+  R_CPSCU->ICUSARC = ~R_CPSCU_ICUSARC_SADMACn_Msk;
+#endif
+#endif
 
-    /* Place all vectors in non-secure state unless they are used in the secure project. */
-    uint32_t interrupt_security_state[BSP_ICU_VECTOR_MAX_ENTRIES / BSP_PRV_BITS_PER_WORD];
-    memset(&interrupt_security_state, UINT8_MAX, sizeof(interrupt_security_state));
+  /* Place all vectors in non-secure state unless they are used in the secure
+   * project. */
+  uint32_t interrupt_security_state[BSP_ICU_VECTOR_MAX_ENTRIES /
+                                    BSP_PRV_BITS_PER_WORD];
+  memset(&interrupt_security_state, UINT8_MAX,
+         sizeof(interrupt_security_state));
 
-    for (uint32_t i = 0U; i < BSP_ICU_VECTOR_MAX_ENTRIES; i++)
-    {
-        if (0U != g_interrupt_event_link_select[i])
-        {
-            /* This is a secure vector. Clear the associated bit. */
-            uint32_t index = i / BSP_PRV_BITS_PER_WORD;
-            uint32_t bit   = i % BSP_PRV_BITS_PER_WORD;
-            interrupt_security_state[index] &= ~(1U << bit);
-        }
+  for (uint32_t i = 0U; i < BSP_ICU_VECTOR_MAX_ENTRIES; i++) {
+    if (0U != g_interrupt_event_link_select[i]) {
+      /* This is a secure vector. Clear the associated bit. */
+      uint32_t index = i / BSP_PRV_BITS_PER_WORD;
+      uint32_t bit = i % BSP_PRV_BITS_PER_WORD;
+      interrupt_security_state[index] &= ~(1U << bit);
     }
+  }
 
-    /* The Secure Attribute managed within the ARM CPU NVIC must match the security attribution of IELSEn
-     * (Reference section 13.2.9 in the RA6M4 manual R01UH0890EJ0050). */
-    uint32_t volatile * p_icusarg = &R_CPSCU->ICUSARG;
-    for (uint32_t i = 0U; i < BSP_ICU_VECTOR_MAX_ENTRIES / BSP_PRV_BITS_PER_WORD; i++)
-    {
-        p_icusarg[i]  = interrupt_security_state[i];
-        NVIC->ITNS[i] = interrupt_security_state[i];
-    }
+  /* The Secure Attribute managed within the ARM CPU NVIC must match the
+   * security attribution of IELSEn (Reference section 13.2.9 in the RA6M4
+   * manual R01UH0890EJ0050). */
+  uint32_t volatile *p_icusarg = &R_CPSCU->ICUSARG;
+  for (uint32_t i = 0U; i < BSP_ICU_VECTOR_MAX_ENTRIES / BSP_PRV_BITS_PER_WORD;
+       i++) {
+    p_icusarg[i] = interrupt_security_state[i];
+    NVIC->ITNS[i] = interrupt_security_state[i];
+  }
 
-    /* Protect security registers. */
-    R_BSP_RegisterProtectEnable(BSP_REG_PROTECT_SAR);
- #endif
+  /* Protect security registers. */
+  R_BSP_RegisterProtectEnable(BSP_REG_PROTECT_SAR);
+#endif
 #endif
 
 #if BSP_FEATURE_ICU_HAS_IELSR
-    for (uint32_t i = 0U; i < (BSP_ICU_VECTOR_MAX_ENTRIES - BSP_FEATURE_ICU_FIXED_IELSR_COUNT); i++)
-    {
-        if (0U != g_interrupt_event_link_select[i])
-        {
-            R_ICU->IELSR[i] = (uint32_t) g_interrupt_event_link_select[i];
-        }
+  for (uint32_t i = 0U;
+       i < (BSP_ICU_VECTOR_MAX_ENTRIES - BSP_FEATURE_ICU_FIXED_IELSR_COUNT);
+       i++) {
+    if (0U != g_interrupt_event_link_select[i]) {
+      R_ICU->IELSR[i] = (uint32_t)g_interrupt_event_link_select[i];
     }
+  }
 #endif
 }

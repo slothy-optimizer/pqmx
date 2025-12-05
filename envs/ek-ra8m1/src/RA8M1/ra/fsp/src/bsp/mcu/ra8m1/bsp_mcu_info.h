@@ -1,15 +1,16 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
-*
-* SPDX-License-Identifier: BSD-3-Clause
-*/
+ * Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its
+ * affiliates
+ *
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
 
-/*******************************************************************************************************************//**
- * @ingroup BSP_MCU
- * @defgroup BSP_MCU_RA8M1 RA8M1
- * @includedoc config_bsp_ra8m1_fsp.html
- * @{
- **********************************************************************************************************************/
+/*******************************************************************************************************************/ /**
+                                                                                                                       * @ingroup BSP_MCU
+                                                                                                                       * @defgroup BSP_MCU_RA8M1 RA8M1
+                                                                                                                       * @includedoc config_bsp_ra8m1_fsp.html
+                                                                                                                       * @{
+                                                                                                                       **********************************************************************************************************************/
 
 /** @} (end defgroup BSP_MCU_RA8M1) */
 

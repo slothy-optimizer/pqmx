@@ -9,8 +9,8 @@
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -26,45 +26,42 @@
 #include <misc.h>
 
 /* Adds 8 consecutive 16-bit values from memory. */
-void mve_test( void *src, uint16_t *dst );
+void mve_test(void *src, uint16_t *dst);
 
-int main (void)
-{
-
-    #if defined(__ARM_FEATURE_MVE)
-    uint16_t test_vector[] = { 1, 2, 3, 4, 5, 6, 7, 8 };
-    uint16_t sum;
-    #endif
+int main(void) {
+#if defined(__ARM_FEATURE_MVE)
+  uint16_t test_vector[] = {1, 2, 3, 4, 5, 6, 7, 8};
+  uint16_t sum;
+#endif
 
 #if defined(EXEC_TB) && defined(__ARM_FEATURE_MVE)
-    EXECTB_Init();
-    enableCde();
-    initTick();
+  EXECTB_Init();
+  enableCde();
+  initTick();
 #endif /* EXEC_TB */
 
-    /* Test preamble */
-    debug_test_start( "Hello World!" );
+  /* Test preamble */
+  debug_test_start("Hello World!");
 
-    #if defined(__ARM_FEATURE_MVE)
-    measure_start();
-    mve_test( test_vector, &sum );
-    measure_end();
+#if defined(__ARM_FEATURE_MVE)
+  measure_start();
+  mve_test(test_vector, &sum);
+  measure_end();
 
-    if( sum != 1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 )
-    {
-        debug_test_fail();
-        return( 1 );
-    }
-    #endif
+  if (sum != 1 + 2 + 3 + 4 + 5 + 6 + 7 + 8) {
+    debug_test_fail();
+    return (1);
+  }
+#endif
 
-    measure_start();
-    for(int i=0;i<1000;i++){
-        __asm__("nop");
-    }
-    measure_end();
+  measure_start();
+  for (int i = 0; i < 1000; i++) {
+    __asm__("nop");
+  }
+  measure_end();
 
 
-    debug_test_ok();
-    debug_printf( "ALL GOOD!\n" );
-    return( 0 );
+  debug_test_ok();
+  debug_printf("ALL GOOD!\n");
+  return (0);
 }

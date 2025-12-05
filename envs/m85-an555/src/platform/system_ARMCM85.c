@@ -1,9 +1,9 @@
-/**************************************************************************//**
- * @file     system_ARMCM85.c
- * @brief    CMSIS Device System Source File for ARMCM85 Device
- * @version  V1.0.0
- * @date     30. March 2022
- ******************************************************************************/
+/**************************************************************************/ /**
+                                                                              * @file     system_ARMCM85.c
+                                                                              * @brief    CMSIS Device System Source File for ARMCM85 Device
+                                                                              * @version  V1.0.0
+                                                                              * @date     30. March 2022
+                                                                              ******************************************************************************/
 /*
  * Copyright (c) 2022 Arm Limited. All rights reserved.
  *
@@ -22,23 +22,23 @@
  * limitations under the License.
  */
 
-#if defined (ARMCM85)
-  #include "ARMCM85.h"
+#if defined(ARMCM85)
+#include "ARMCM85.h"
 
-  #if defined (__ARM_FEATURE_CMSE) &&  (__ARM_FEATURE_CMSE == 3U)
-    #include "partition_ARMCM85.h"
-  #endif
+#if defined(__ARM_FEATURE_CMSE) && (__ARM_FEATURE_CMSE == 3U)
+#include "partition_ARMCM85.h"
+#endif
 #else
-  #error device not specified!
+#error device not specified!
 #endif
 #include "uart.h"
 
 /*----------------------------------------------------------------------------
   Define clocks
  *----------------------------------------------------------------------------*/
-#define  XTAL            (50000000UL)     /* Oscillator frequency */
+#define XTAL (50000000UL) /* Oscillator frequency */
 
-#define  SYSTEM_CLOCK    (XTAL / 2U)
+#define SYSTEM_CLOCK (XTAL / 2U)
 
 /*----------------------------------------------------------------------------
   Exception / Interrupt Vector table
@@ -48,37 +48,33 @@ extern const VECTOR_TABLE_Type __VECTOR_TABLE[496];
 /*----------------------------------------------------------------------------
   System Core Clock Variable
  *----------------------------------------------------------------------------*/
-uint32_t SystemCoreClock = SYSTEM_CLOCK;  /* System Core Clock Frequency */
+uint32_t SystemCoreClock = SYSTEM_CLOCK; /* System Core Clock Frequency */
 
 /*----------------------------------------------------------------------------
   System Core Clock update function
  *----------------------------------------------------------------------------*/
-void SystemCoreClockUpdate (void)
-{
-  SystemCoreClock = SYSTEM_CLOCK;
-}
+void SystemCoreClockUpdate(void) { SystemCoreClock = SYSTEM_CLOCK; }
 
 /*----------------------------------------------------------------------------
   System initialization function
  *----------------------------------------------------------------------------*/
-void SystemInit (void)
-{
-
-#if defined (__VTOR_PRESENT) && (__VTOR_PRESENT == 1U)
+void SystemInit(void) {
+#if defined(__VTOR_PRESENT) && (__VTOR_PRESENT == 1U)
   SCB->VTOR = (uint32_t)(&__VECTOR_TABLE[0]);
 #endif
 
   /* Set CPDLPSTATE.RLPSTATE to 0
-     Set CPDLPSTATE.ELPSTATE to 0, to stop the processor from trying to switch the EPU into retention state.
-     Set CPDLPSTATE.CLPSTATE to 0, so PDCORE will not enter low-power state. */
-  PWRMODCTL->CPDLPSTATE &= ~(PWRMODCTL_CPDLPSTATE_RLPSTATE_Msk |
-                             PWRMODCTL_CPDLPSTATE_ELPSTATE_Msk |
-                             PWRMODCTL_CPDLPSTATE_CLPSTATE_Msk  );
+     Set CPDLPSTATE.ELPSTATE to 0, to stop the processor from trying to switch
+     the EPU into retention state. Set CPDLPSTATE.CLPSTATE to 0, so PDCORE will
+     not enter low-power state. */
+  PWRMODCTL->CPDLPSTATE &=
+      ~(PWRMODCTL_CPDLPSTATE_RLPSTATE_Msk | PWRMODCTL_CPDLPSTATE_ELPSTATE_Msk |
+        PWRMODCTL_CPDLPSTATE_CLPSTATE_Msk);
 
-#if (defined (__FPU_USED) && (__FPU_USED == 1U)) || \
-    (defined (__ARM_FEATURE_MVE) && (__ARM_FEATURE_MVE > 0U))
-  SCB->CPACR |= ((3U << 10U*2U) |           /* enable CP10 Full Access */
-                 (3U << 11U*2U)  );         /* enable CP11 Full Access */
+#if (defined(__FPU_USED) && (__FPU_USED == 1U)) || \
+    (defined(__ARM_FEATURE_MVE) && (__ARM_FEATURE_MVE > 0U))
+  SCB->CPACR |= ((3U << 10U * 2U) | /* enable CP10 Full Access */
+                 (3U << 11U * 2U)); /* enable CP11 Full Access */
 
   /* Favor best FP/MVE performance by default, avoid EPU switch-ON delays */
   /* PDEPU ON, Clock OFF */
@@ -98,7 +94,7 @@ void SystemInit (void)
   __DSB();
   __ISB();
 
-#if defined (__ARM_FEATURE_CMSE) && (__ARM_FEATURE_CMSE == 3U)
+#if defined(__ARM_FEATURE_CMSE) && (__ARM_FEATURE_CMSE == 3U)
   TZ_SAU_Setup();
 #endif
 
@@ -111,8 +107,7 @@ void SystemInit (void)
 #undef errno
 extern int errno;
 
-int __wrap__read(int file, char* ptr, int len)
-{
+int __wrap__read(int file, char *ptr, int len) {
   if (file == 0) {
     int i;
     for (i = 0; i < len; ++i) {
@@ -133,8 +128,7 @@ int __wrap__read(int file, char* ptr, int len)
   return -1;
 }
 
-int __wrap__write(int file, char* ptr, int len)
-{
+int __wrap__write(int file, char *ptr, int len) {
   if (file == 1 || file == 2) {
     for (int i = 0; i < len; ++i) {
       uart_putc(ptr[i]);
