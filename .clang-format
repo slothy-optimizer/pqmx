@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: Apache-2.0 OR ISC OR MIT
+#
+# clang-format style file for pqmx
+#
+BasedOnStyle: Google
+MaxEmptyLinesToKeep: 3
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+DerivePointerAlignment: false
+PointerAlignment: Right
+SortIncludes: false
+# TODO(davidben): The default for Google style is now Regroup, but the default
+# IncludeCategories does not recognize <openssl/header.h>. We should
+# reconfigure IncludeCategories to match. For now, keep it at Preserve.
+IncludeBlocks: Preserve
