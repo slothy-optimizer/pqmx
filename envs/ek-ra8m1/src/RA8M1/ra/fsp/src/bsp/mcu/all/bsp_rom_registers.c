@@ -1,6 +1,7 @@
-// We don't want to set the option-setting memory at all. Due to an incompatibility between GNU ld and clang lld,
-// this is probably what bricked the board while we were working on this in Abu Dhabi in May 2024. The bug is this:
-// https://github.com/llvm/llvm-project/issues/63919
+// We don't want to set the option-setting memory at all. Due to an
+// incompatibility between GNU ld and clang lld, this is probably what bricked
+// the board while we were working on this in Abu Dhabi in May 2024. The bug is
+// this: https://github.com/llvm/llvm-project/issues/63919
 #if 0
 /*
 * Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
@@ -16,22 +17,21 @@
 /***********************************************************************************************************************
  * Macro definitions
  **********************************************************************************************************************/
-#define RA_NOT_DEFINED    (0)
+#define RA_NOT_DEFINED (0)
 
 /** OR in the HOCO frequency setting from bsp_clock_cfg.h with the OFS1 setting from bsp_cfg.h. */
-#define BSP_ROM_REG_OFS1_SETTING                                             \
-    (((uint32_t) BSP_CFG_ROM_REG_OFS1 & BSP_FEATURE_BSP_OFS1_HOCOFRQ_MASK) | \
-     ((uint32_t) BSP_CFG_HOCO_FREQUENCY << BSP_FEATURE_BSP_OFS1_HOCOFRQ_OFFSET))
+#define BSP_ROM_REG_OFS1_SETTING                                          \
+  (((uint32_t)BSP_CFG_ROM_REG_OFS1 & BSP_FEATURE_BSP_OFS1_HOCOFRQ_MASK) | \
+   ((uint32_t)BSP_CFG_HOCO_FREQUENCY << BSP_FEATURE_BSP_OFS1_HOCOFRQ_OFFSET))
 
 /** Build up SECMPUAC register based on MPU settings. */
-#define BSP_ROM_REG_MPU_CONTROL_SETTING                     \
-    ((0xFFFFFCF0U) |                                        \
-     ((uint32_t) BSP_CFG_ROM_REG_MPU_PC0_ENABLE << 8) |     \
-     ((uint32_t) BSP_CFG_ROM_REG_MPU_PC1_ENABLE << 9) |     \
-     ((uint32_t) BSP_CFG_ROM_REG_MPU_REGION0_ENABLE) |      \
-     ((uint32_t) BSP_CFG_ROM_REG_MPU_REGION1_ENABLE << 1) | \
-     ((uint32_t) BSP_CFG_ROM_REG_MPU_REGION2_ENABLE << 2) | \
-     ((uint32_t) BSP_CFG_ROM_REG_MPU_REGION3_ENABLE << 3))
+#define BSP_ROM_REG_MPU_CONTROL_SETTING                              \
+  ((0xFFFFFCF0U) | ((uint32_t)BSP_CFG_ROM_REG_MPU_PC0_ENABLE << 8) | \
+   ((uint32_t)BSP_CFG_ROM_REG_MPU_PC1_ENABLE << 9) |                 \
+   ((uint32_t)BSP_CFG_ROM_REG_MPU_REGION0_ENABLE) |                  \
+   ((uint32_t)BSP_CFG_ROM_REG_MPU_REGION1_ENABLE << 1) |             \
+   ((uint32_t)BSP_CFG_ROM_REG_MPU_REGION2_ENABLE << 2) |             \
+   ((uint32_t)BSP_CFG_ROM_REG_MPU_REGION3_ENABLE << 3))
 
 /*******************************************************************************************************************//**
  * @addtogroup BSP_MCU
@@ -52,35 +52,35 @@
 
 #if !BSP_CFG_BOOT_IMAGE
 
- #if BSP_FEATURE_FLASH_SUPPORTS_ID_CODE == 1
+#if BSP_FEATURE_FLASH_SUPPORTS_ID_CODE == 1
 
 /** ID code definitions defined here. */
 BSP_DONT_REMOVE static const uint32_t g_bsp_id_codes[] BSP_PLACE_IN_SECTION (BSP_SECTION_ID_CODE) =
 {
     BSP_CFG_ID_CODE_LONG_1,
-  #if BSP_FEATURE_BSP_OSIS_PADDING
+#if BSP_FEATURE_BSP_OSIS_PADDING
     0xFFFFFFFFU,
-  #endif
+#endif
     BSP_CFG_ID_CODE_LONG_2,
-  #if BSP_FEATURE_BSP_OSIS_PADDING
+#if BSP_FEATURE_BSP_OSIS_PADDING
     0xFFFFFFFFU,
-  #endif
+#endif
     BSP_CFG_ID_CODE_LONG_3,
-  #if BSP_FEATURE_BSP_OSIS_PADDING
+#if BSP_FEATURE_BSP_OSIS_PADDING
     0xFFFFFFFFU,
-  #endif
+#endif
     BSP_CFG_ID_CODE_LONG_4
 };
- #endif
+#endif
 
- #if 33U != __CORTEX_M && 85U != __CORTEX_M // NOLINT(readability-magic-numbers)
+#if 33U != __CORTEX_M && 85U != __CORTEX_M  // NOLINT(readability-magic-numbers)
 
 /** ROM registers defined here. Some have masks to make sure reserved bits are set appropriately. */
 BSP_DONT_REMOVE static const uint32_t g_bsp_rom_registers[] BSP_PLACE_IN_SECTION (BSP_SECTION_ROM_REGISTERS) =
 {
     (uint32_t) BSP_CFG_ROM_REG_OFS0,
     (uint32_t) BSP_ROM_REG_OFS1_SETTING,
-  #if __MPU_PRESENT
+#if __MPU_PRESENT
     ((uint32_t) BSP_CFG_ROM_REG_MPU_PC0_START & 0xFFFFFFFCU),
     ((uint32_t) BSP_CFG_ROM_REG_MPU_PC0_END | 0x00000003U),
     ((uint32_t) BSP_CFG_ROM_REG_MPU_PC1_START & 0xFFFFFFFCU),
@@ -94,12 +94,12 @@ BSP_DONT_REMOVE static const uint32_t g_bsp_rom_registers[] BSP_PLACE_IN_SECTION
     (((uint32_t) BSP_CFG_ROM_REG_MPU_REGION3_START & 0x407FFFFCU) | 0x40000000U),
     (((uint32_t) BSP_CFG_ROM_REG_MPU_REGION3_END & 0x407FFFFCU) | 0x40000003U),
     (uint32_t) BSP_ROM_REG_MPU_CONTROL_SETTING
-  #endif
+#endif
 };
 
- #elif BSP_FEATURE_FLASH_SUPPORTS_ID_CODE == 1
+#elif BSP_FEATURE_FLASH_SUPPORTS_ID_CODE == 1
 
-  #if !BSP_TZ_NONSECURE_BUILD
+#if !BSP_TZ_NONSECURE_BUILD
 BSP_DONT_REMOVE static const uint32_t BSP_PLACE_IN_SECTION(".option_setting_ofs0") g_bsp_rom_ofs0 =
     BSP_CFG_ROM_REG_OFS0;
 
@@ -115,38 +115,38 @@ BSP_DONT_REMOVE static const uint32_t BSP_PLACE_IN_SECTION(".option_setting_bps_
 BSP_DONT_REMOVE static const uint32_t BSP_PLACE_IN_SECTION(".option_setting_pbps_sec0") g_bsp_rom_pbps0 =
     BSP_CFG_ROM_REG_PBPS0;
 
-  #endif
+#endif
 
- #else                                 /* CM33 & CM85 parts */
+#else /* CM33 & CM85 parts */
 
-  #if !BSP_TZ_NONSECURE_BUILD
+#if !BSP_TZ_NONSECURE_BUILD
 
 BSP_DONT_REMOVE static const uint32_t BSP_PLACE_IN_SECTION(".option_setting_ofs0") g_bsp_rom_ofs0 =
     BSP_CFG_ROM_REG_OFS0;
 
-   #if BSP_FEATURE_BSP_HAS_OFS2
+#if BSP_FEATURE_BSP_HAS_OFS2
 BSP_DONT_REMOVE static const uint32_t BSP_PLACE_IN_SECTION(".option_setting_ofs2") g_bsp_rom_ofs2 =
     BSP_CFG_ROM_REG_OFS2;
 
-   #endif
-   #if BSP_FEATURE_FLASH_HP_SUPPORTS_DUAL_BANK
+#endif
+#if BSP_FEATURE_FLASH_HP_SUPPORTS_DUAL_BANK
 BSP_DONT_REMOVE static const uint32_t BSP_PLACE_IN_SECTION(".option_setting_dualsel") g_bsp_rom_dualsel =
     BSP_CFG_ROM_REG_DUALSEL;
 
-   #endif
+#endif
 BSP_DONT_REMOVE static const uint32_t BSP_PLACE_IN_SECTION(".option_setting_sas") g_bsp_rom_sas =
     0xFFFFFFFF;
 
-  #else
+#else
 
 BSP_DONT_REMOVE static const uint32_t BSP_PLACE_IN_SECTION(".option_setting_ofs1") g_bsp_rom_ofs1 =
     BSP_ROM_REG_OFS1_SETTING;
 
-   #if BSP_FEATURE_BSP_HAS_OFS3
+#if BSP_FEATURE_BSP_HAS_OFS3
 BSP_DONT_REMOVE static const uint32_t BSP_PLACE_IN_SECTION(".option_setting_ofs3") g_bsp_rom_ofs3 =
     BSP_CFG_ROM_REG_OFS3;
 
-   #endif
+#endif
 BSP_DONT_REMOVE static const uint32_t BSP_PLACE_IN_SECTION(".option_setting_banksel") g_bsp_rom_banksel =
     0xFFFFFFFF;
 BSP_DONT_REMOVE static const uint32_t BSP_PLACE_IN_SECTION(".option_setting_bps0") g_bsp_rom_bps0 =
@@ -166,18 +166,18 @@ BSP_DONT_REMOVE static const uint32_t BSP_PLACE_IN_SECTION(".option_setting_pbps
 BSP_DONT_REMOVE static const uint32_t BSP_PLACE_IN_SECTION(".option_setting_pbps3") g_bsp_rom_pbps3 =
     BSP_CFG_ROM_REG_PBPS3;
 
-  #endif
+#endif
 
-  #if !BSP_TZ_NONSECURE_BUILD
+#if !BSP_TZ_NONSECURE_BUILD
 
 BSP_DONT_REMOVE static const uint32_t BSP_PLACE_IN_SECTION(".option_setting_ofs1_sec") g_bsp_rom_ofs1_sec =
     BSP_ROM_REG_OFS1_SETTING;
 
-   #if BSP_FEATURE_BSP_HAS_OFS3
+#if BSP_FEATURE_BSP_HAS_OFS3
 BSP_DONT_REMOVE static const uint32_t BSP_PLACE_IN_SECTION(".option_setting_ofs3_sec") g_bsp_rom_ofs3_sec =
     BSP_CFG_ROM_REG_OFS3;
 
-   #endif
+#endif
 BSP_DONT_REMOVE static const uint32_t BSP_PLACE_IN_SECTION(".option_setting_banksel_sec") g_bsp_rom_banksel_sec =
     0xFFFFFFFF;
 BSP_DONT_REMOVE static const uint32_t BSP_PLACE_IN_SECTION(".option_setting_bps_sec0") g_bsp_rom_bps_sec0 =
@@ -199,16 +199,16 @@ BSP_DONT_REMOVE static const uint32_t BSP_PLACE_IN_SECTION(".option_setting_pbps
 BSP_DONT_REMOVE static const uint32_t BSP_PLACE_IN_SECTION(".option_setting_ofs1_sel") g_bsp_rom_ofs1_sel =
     BSP_CFG_ROM_REG_OFS1_SEL;
 
-   #if BSP_FEATURE_BSP_HAS_OFS3
+#if BSP_FEATURE_BSP_HAS_OFS3
 BSP_DONT_REMOVE static const uint32_t BSP_PLACE_IN_SECTION(".option_setting_ofs3_sel") g_bsp_rom_ofs3_sel =
     BSP_CFG_ROM_REG_OFS3_SEL;
 
-   #endif
-   #if BSP_FEATURE_FLASH_HP_SUPPORTS_DUAL_BANK
+#endif
+#if BSP_FEATURE_FLASH_HP_SUPPORTS_DUAL_BANK
 BSP_DONT_REMOVE static const uint32_t BSP_PLACE_IN_SECTION(".option_setting_banksel_sel") g_bsp_rom_banksel_sel =
     BSP_CFG_ROM_REG_BANKSEL_SEL;
 
-   #endif
+#endif
 BSP_DONT_REMOVE static const uint32_t BSP_PLACE_IN_SECTION(".option_setting_bps_sel0") g_bsp_rom_bps_sel0 =
     BSP_CFG_ROM_REG_BPS_SEL0;
 BSP_DONT_REMOVE static const uint32_t BSP_PLACE_IN_SECTION(".option_setting_bps_sel1") g_bsp_rom_bps_sel1 =
@@ -218,9 +218,9 @@ BSP_DONT_REMOVE static const uint32_t BSP_PLACE_IN_SECTION(".option_setting_bps_
 BSP_DONT_REMOVE static const uint32_t BSP_PLACE_IN_SECTION(".option_setting_bps_sel3") g_bsp_rom_bps_sel3 =
     BSP_CFG_ROM_REG_BPS_SEL3;
 
-  #endif
+#endif
 
-  #if 85U == __CORTEX_M && !BSP_TZ_NONSECURE_BUILD
+#if 85U == __CORTEX_M && !BSP_TZ_NONSECURE_BUILD
 BSP_DONT_REMOVE static const uint32_t BSP_PLACE_IN_SECTION(".option_setting_data_flash_fsblctrl0") g_bsp_rom_fsblctrl0 =
     BSP_CFG_ROM_REG_FSBLCTRL0;
 
@@ -239,9 +239,9 @@ BSP_DONT_REMOVE static const uint32_t BSP_PLACE_IN_SECTION(".option_setting_data
 BSP_DONT_REMOVE static const uint32_t BSP_PLACE_IN_SECTION(".option_setting_data_flash_samr") g_bsp_rom_samr =
     BSP_CFG_ROM_REG_SAMR;
 
-  #endif
+#endif
 
- #endif
+#endif
 
 #endif
 

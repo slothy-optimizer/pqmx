@@ -9,8 +9,8 @@
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -41,51 +41,46 @@
 #define TEST_CT_TABLE_LOOKUP
 
 
-int test_ct_table_lookup()
-{
-    uint8_t tbl[CT_SZ_TABLE];
-    uint8_t entry[CT_SZ_ENTRY];
+int test_ct_table_lookup() {
+  uint8_t tbl[CT_SZ_TABLE];
+  uint8_t entry[CT_SZ_ENTRY];
 
-    debug_test_start( "Test constant time table lookup" );
+  debug_test_start("Test constant time table lookup");
 
-    for( unsigned e_idx=0; e_idx < CT_NUM_ENTRY; e_idx++ )
-    {
-        uint8_t * cur_entry = tbl + e_idx * CT_SZ_ENTRY;
-        for( unsigned i=0; i < CT_SZ_ENTRY; i++ )
-            cur_entry[i] = ( e_idx + i );
+  for (unsigned e_idx = 0; e_idx < CT_NUM_ENTRY; e_idx++) {
+    uint8_t *cur_entry = tbl + e_idx * CT_SZ_ENTRY;
+    for (unsigned i = 0; i < CT_SZ_ENTRY; i++)
+      cur_entry[i] = (e_idx + i);
+  }
+
+  unsigned lookup_idx = 12;
+  debug_printf("Lookup index: %u\n", lookup_idx);
+
+  ct_table_lookup(entry, tbl, lookup_idx);
+
+  for (unsigned i = 0; i < CT_SZ_ENTRY; i++) {
+    if (entry[i] != (unsigned char)(lookup_idx + i)) {
+      debug_printf("Failure at index %u: %u != %u\n", i, entry[i],
+                   (unsigned)((unsigned char)(lookup_idx + i)));
+      debug_test_fail();
+      return (1);
     }
+  }
 
-    unsigned lookup_idx = 12;
-    debug_printf( "Lookup index: %u\n", lookup_idx );
-
-    ct_table_lookup( entry, tbl, lookup_idx );
-
-    for( unsigned i=0; i < CT_SZ_ENTRY; i++ )
-    {
-        if( entry[i] != (unsigned char)( lookup_idx + i ) )
-        {
-            debug_printf( "Failure at index %u: %u != %u\n",
-                          i, entry[i], (unsigned)( (unsigned char)( lookup_idx + i ) ) );
-            debug_test_fail();
-            return( 1 );
-        }
-    }
-
-    debug_test_ok();
-    return( 0 );
+  debug_test_ok();
+  return (0);
 }
 
-int main(void)
-{
-    int ret = 0;
+int main(void) {
+  int ret = 0;
 
 #if defined(TEST_CT_TABLE_LOOKUP)
-    ret |= test_ct_table_lookup();
+  ret |= test_ct_table_lookup();
 #endif /* TEST_CT_LOOKUP */
 
-    if (ret == 0){
-        debug_printf( "ALL GOOD!\n" );
-    }
+  if (ret == 0) {
+    debug_printf("ALL GOOD!\n");
+  }
 
-    return( 0 );
+  return (0);
 }

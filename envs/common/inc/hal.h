@@ -9,8 +9,8 @@
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -31,29 +31,24 @@
 
 
 
-
 #define ALIGNED(N) __attribute__((aligned(N)))
 
 
-enum clock_mode {
-    CLOCK_FAST,
-    CLOCK_BENCHMARK
-};
+enum clock_mode { CLOCK_FAST, CLOCK_BENCHMARK };
 
-typedef struct
-{
-    uint32_t systick_cycles;
-    uint32_t pmu_cycles;
+typedef struct {
+  uint32_t systick_cycles;
+  uint32_t pmu_cycles;
 
-    uint32_t inst_all;
-    uint32_t inst_mve_all;
-    uint32_t inst_mve_lsu;
-    uint32_t inst_mve_int;
-    uint32_t inst_mve_mul;
+  uint32_t inst_all;
+  uint32_t inst_mve_all;
+  uint32_t inst_mve_lsu;
+  uint32_t inst_mve_int;
+  uint32_t inst_mve_mul;
 
-    uint32_t stall_all;
-    uint32_t stall_mve_all;
-    uint32_t stall_mve_resource;
+  uint32_t stall_all;
+  uint32_t stall_mve_all;
+  uint32_t stall_mve_resource;
 } pmu_stats;
 
 /* Request random data. */
@@ -93,8 +88,8 @@ uint64_t hal_get_time();
  * in hal_env.h.
  */
 #if !defined(MVE_POLY_ARITHMETIC_TESTS_DEBUG_MACRO)
-extern void debug_test_start( const char *testname );
-extern void debug_printf(const char * restrict format, ... );
+extern void debug_test_start(const char *testname);
+extern void debug_printf(const char *restrict format, ...);
 extern void debug_test_ok();
 extern void debug_test_fail();
 #endif /* MVE_POLY_ARITHMETIC_TESTS_DEBUG_MACRO */

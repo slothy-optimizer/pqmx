@@ -6,8 +6,7 @@
 #include <stdint.h>
 #include "ARMCM55.h"
 
-typedef struct cmdline_s
-{
+typedef struct cmdline_s {
   int argc;
   char *argv[];
 } cmdline_t;
@@ -24,10 +23,8 @@ int __wrap_main(int unused_argc, char *unused_argv[]);
 extern void semihosting_syscall(int32_t opnr, int32_t param);
 void semihosting_exit_with_rc(int rc);
 
-void semihosting_exit_with_rc(int rc)
-{
-  struct exit_code_s
-  {
+void semihosting_exit_with_rc(int rc) {
+  struct exit_code_s {
     int32_t reason_code;
     int32_t return_code;
   } s = {ADP_Stopped_ApplicationExit, rc};
@@ -36,8 +33,7 @@ void semihosting_exit_with_rc(int rc)
 #endif
 
 /* Wrap main: build argc/argv from cmdline and forward to __real_main. */
-int __wrap_main(int unused_argc, char *unused_argv[])
-{
+int __wrap_main(int unused_argc, char *unused_argv[]) {
   (void)unused_argc;
   (void)unused_argv;
   cmdline_t *cmdline = (cmdline_t *)CMDLINE_ADDR;

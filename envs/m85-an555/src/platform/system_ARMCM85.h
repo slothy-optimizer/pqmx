@@ -1,9 +1,9 @@
-/**************************************************************************//**
- * @file     system_ARMCM85.h
- * @brief    CMSIS Device System Header File for ARMCM85 Device
- * @version  V1.0.1
- * @date     11. July 2022
- ******************************************************************************/
+/**************************************************************************/ /**
+                                                                              * @file     system_ARMCM85.h
+                                                                              * @brief    CMSIS Device System Header File for ARMCM85 Device
+                                                                              * @version  V1.0.1
+                                                                              * @date     11. July 2022
+                                                                              ******************************************************************************/
 /*
  * Copyright (c) 2022 Arm Limited. All rights reserved.
  *
@@ -34,7 +34,7 @@ extern "C" {
 /**
   \brief Exception / Interrupt Handler Function Prototype
 */
-typedef void(*VECTOR_TABLE_Type)(void);
+typedef void (*VECTOR_TABLE_Type)(void);
 
 /**
   \brief System Clock Frequency (Core Clock)
@@ -46,15 +46,16 @@ extern uint32_t SystemCoreClock;
 
    Initialize the System and update the SystemCoreClock variable.
  */
-extern void SystemInit (void);
+extern void SystemInit(void);
 
 
 /**
   \brief  Update SystemCoreClock variable.
 
-   Updates the SystemCoreClock with current core Clock retrieved from cpu registers.
+   Updates the SystemCoreClock with current core Clock retrieved from cpu
+  registers.
  */
-extern void SystemCoreClockUpdate (void);
+extern void SystemCoreClockUpdate(void);
 
 #ifdef __cplusplus
 }
