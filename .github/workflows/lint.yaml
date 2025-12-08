@@ -1,0 +1,29 @@
+name: Lint
+on:
+  pull_request:
+    branches: [ "main" ]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: nix develop -c bash -e {0}
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: true
+    - name: Setup nix
+      uses: ./.github/actions/setup-nix
+    - name: Environment info
+      run: |
+        cat >> $GITHUB_STEP_SUMMARY << EOF
+        ## Setup
+        Architecture: $(uname -m)
+        - $(uname -a)
+        - $(nix --version)
+        - $(clang-format --version)
+        - $(bash --version | grep -m1 "")
+        EOF
+    - name: Run lint
+      run: |
+        lint
