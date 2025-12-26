@@ -1,19 +1,20 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
-*
-* SPDX-License-Identifier: BSD-3-Clause
-*/
+ * Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its
+ * affiliates
+ *
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
 
 #ifndef SYSTEM_RENESAS_ARM_H
- #define SYSTEM_RENESAS_ARM_H
+#define SYSTEM_RENESAS_ARM_H
 
- #ifdef __cplusplus
+#ifdef __cplusplus
 extern "C" {
- #endif
+#endif
 
- #include <stdint.h>
+#include <stdint.h>
 
-extern uint32_t SystemCoreClock;       /** System Clock Frequency (Core Clock)  */
+extern uint32_t SystemCoreClock; /** System Clock Frequency (Core Clock)  */
 
 /**
  * Initialize the system
@@ -37,8 +38,8 @@ extern void SystemInit(void);
  */
 extern void SystemCoreClockUpdate(void);
 
- #ifdef __cplusplus
+#ifdef __cplusplus
 }
- #endif
+#endif
 
 #endif

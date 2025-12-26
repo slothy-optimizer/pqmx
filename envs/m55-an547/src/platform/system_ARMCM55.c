@@ -1,10 +1,10 @@
-/**************************************************************************//**
- * @file     system_ARMCM55.c
- * @brief    CMSIS Device System Source File for
- *           ARMCM55 Device
- * @version  V1.0.2
- * @date     13. Oct 2021
- ******************************************************************************/
+/**************************************************************************/ /**
+                                                                              * @file     system_ARMCM55.c
+                                                                              * @brief    CMSIS Device System Source File for
+                                                                              *           ARMCM55 Device
+                                                                              * @version  V1.0.2
+                                                                              * @date     13. Oct 2021
+                                                                              ******************************************************************************/
 /*
  * Copyright (c) 2009-2021 Arm Limited. All rights reserved.
  *
@@ -23,14 +23,14 @@
  * limitations under the License.
  */
 
-#if defined (ARMCM55)
-  #include "ARMCM55.h"
+#if defined(ARMCM55)
+#include "ARMCM55.h"
 #else
-  #error device not specified!
+#error device not specified!
 #endif
 
-#if defined (__ARM_FEATURE_CMSE) &&  (__ARM_FEATURE_CMSE == 3U)
-  #include "partition_ARMCM55.h"
+#if defined(__ARM_FEATURE_CMSE) && (__ARM_FEATURE_CMSE == 3U)
+#include "partition_ARMCM55.h"
 #endif
 
 #include "uart.h"
@@ -38,9 +38,9 @@
 /*----------------------------------------------------------------------------
   Define clocks
  *----------------------------------------------------------------------------*/
-#define  XTAL            ( 5000000UL)      /* Oscillator frequency */
+#define XTAL (5000000UL) /* Oscillator frequency */
 
-#define  SYSTEM_CLOCK    (5U * XTAL)
+#define SYSTEM_CLOCK (5U * XTAL)
 
 
 /*----------------------------------------------------------------------------
@@ -58,25 +58,20 @@ uint32_t SystemCoreClock = SYSTEM_CLOCK;
 /*----------------------------------------------------------------------------
   System Core Clock update function
  *----------------------------------------------------------------------------*/
-void SystemCoreClockUpdate (void)
-{
-  SystemCoreClock = SYSTEM_CLOCK;
-}
+void SystemCoreClockUpdate(void) { SystemCoreClock = SYSTEM_CLOCK; }
 
 /*----------------------------------------------------------------------------
   System initialization function
  *----------------------------------------------------------------------------*/
-void SystemInit (void)
-{
-
-#if defined (__VTOR_PRESENT) && (__VTOR_PRESENT == 1U)
+void SystemInit(void) {
+#if defined(__VTOR_PRESENT) && (__VTOR_PRESENT == 1U)
   SCB->VTOR = (uint32_t)(&__VECTOR_TABLE[0]);
 #endif
 
-/* #if (defined (__FPU_USED) && (__FPU_USED == 1U)) || \ */
-/*     (defined (__ARM_FEATURE_MVE) && (__ARM_FEATURE_MVE > 0U)) */
-  SCB->CPACR |= ((3U << 10U*2U) |           /* enable CP10 Full Access */
-                 (3U << 11U*2U)  );         /* enable CP11 Full Access */
+  /* #if (defined (__FPU_USED) && (__FPU_USED == 1U)) || \ */
+  /*     (defined (__ARM_FEATURE_MVE) && (__ARM_FEATURE_MVE > 0U)) */
+  SCB->CPACR |= ((3U << 10U * 2U) | /* enable CP10 Full Access */
+                 (3U << 11U * 2U)); /* enable CP11 Full Access */
 
   /* Set low-power state for PDEPU                */
   /*  0b00  | ON, PDEPU is not in low-power state */
@@ -85,12 +80,13 @@ void SystemInit (void)
   /*  0b11  | OFF                                 */
 
   /* Clear ELPSTATE, value is 0b11 on Cold reset */
-  PWRMODCTL->CPDLPSTATE &= ~(PWRMODCTL_CPDLPSTATE_ELPSTATE_Msk << PWRMODCTL_CPDLPSTATE_ELPSTATE_Pos);
+  PWRMODCTL->CPDLPSTATE &=
+      ~(PWRMODCTL_CPDLPSTATE_ELPSTATE_Msk << PWRMODCTL_CPDLPSTATE_ELPSTATE_Pos);
 
   /* Favor best FP/MVE performance by default, avoid EPU switch-ON delays */
   /* PDEPU ON, Clock OFF */
   PWRMODCTL->CPDLPSTATE |= 0x1 << PWRMODCTL_CPDLPSTATE_ELPSTATE_Pos;
-/* #endif */
+  /* #endif */
 
 #ifdef UNALIGNED_SUPPORT_DISABLE
   SCB->CCR |= SCB_CCR_UNALIGN_TRP_Msk;
@@ -101,7 +97,7 @@ void SystemInit (void)
   __DSB();
   __ISB();
 
-#if defined (__ARM_FEATURE_CMSE) && (__ARM_FEATURE_CMSE == 3U)
+#if defined(__ARM_FEATURE_CMSE) && (__ARM_FEATURE_CMSE == 3U)
   TZ_SAU_Setup();
 #endif
 
@@ -114,8 +110,7 @@ void SystemInit (void)
 #undef errno
 extern int errno;
 
-int __wrap__read(int file, char* ptr, int len)
-{
+int __wrap__read(int file, char *ptr, int len) {
   if (file == 0) {
     int i;
     for (i = 0; i < len; ++i) {
@@ -136,8 +131,7 @@ int __wrap__read(int file, char* ptr, int len)
   return -1;
 }
 
-int __wrap__write(int file, char* ptr, int len)
-{
+int __wrap__write(int file, char *ptr, int len) {
   if (file == 1 || file == 2) {
     for (int i = 0; i < len; ++i) {
       uart_putc(ptr[i]);
