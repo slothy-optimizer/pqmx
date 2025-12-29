@@ -110,7 +110,7 @@ run:
 	@echo "WARNING: Target platform does not support the run-target. Use the flash- target instead to flash to the board. Skipping"
 
 check:
-	@echo "WARNING: Target platform does not support the check-target. Use the flash- target instead to flash to the board. Skipping"
+	@echo "SKIP"; exit 2
 
 
 clean:
