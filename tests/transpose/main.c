@@ -9,8 +9,8 @@
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -28,81 +28,74 @@
 #include <hal.h>
 
 #define BITWIDTH 16
-#define BLOCK    8
-#define DIM_X    4
-#define DIM_Y    4
+#define BLOCK 8
+#define DIM_X 4
+#define DIM_Y 4
 
-#define ENTRIES ( BLOCK * DIM_X * DIM_Y )
+#define ENTRIES (BLOCK * DIM_X * DIM_Y)
 
 /* Pick one of the two below */
 
-//#define TEST_TYPE_RANDOM
+// #define TEST_TYPE_RANDOM
 #define TEST_TYPE_SIMPLE
 
 /*
  * Some external references to auto-generated assembly.
  */
 
-#define transpose_asm CONCAT8(transpose_u, BITWIDTH, x, BLOCK, _, DIM_X, x, DIM_Y)
-extern void transpose_asm( uint(BITWIDTH) *dst, uint(BITWIDTH) const *src );
+#define transpose_asm \
+  CONCAT8(transpose_u, BITWIDTH, x, BLOCK, _, DIM_X, x, DIM_Y)
+extern void transpose_asm(uint(BITWIDTH) * dst, uint(BITWIDTH) const *src);
 
 #define transpose_real CONCAT2(buffer_transpose_u, BITWIDTH)
-#define compare        CONCAT2(compare_buf_u, BITWIDTH)
-#define fill           CONCAT2(fill_random_u, BITWIDTH)
-#define print          CONCAT2(debug_print_buf_u, BITWIDTH)
+#define compare CONCAT2(compare_buf_u, BITWIDTH)
+#define fill CONCAT2(fill_random_u, BITWIDTH)
+#define print CONCAT2(debug_print_buf_u, BITWIDTH)
 
-static uint(BITWIDTH) src [ENTRIES];
+static uint(BITWIDTH) src[ENTRIES];
 static uint(BITWIDTH) dst0[ENTRIES];
 static uint(BITWIDTH) dst1[ENTRIES];
 
-void generate_random_sample()
-{
-    fill( src, ENTRIES );
+void generate_random_sample() { fill(src, ENTRIES); }
+
+void generate_simple_sample() {
+  unsigned idx;
+  for (idx = 0; idx < ENTRIES; idx++)
+    src[idx] = idx;
 }
 
-void generate_simple_sample()
-{
-    unsigned idx;
-    for( idx=0; idx < ENTRIES; idx++ )
-        src[idx] = idx;
-}
-
-void generate_sample()
-{
+void generate_sample() {
 #if defined(TEST_TYPE_RANDOM)
-    generate_random_sample();
+  generate_random_sample();
 #else
-    generate_simple_sample();
+  generate_simple_sample();
 #endif
 }
 
-static int test_transpose()
-{
-    debug_test_start( "Test: Transpose" );
-    generate_simple_sample();
+static int test_transpose() {
+  debug_test_start("Test: Transpose");
+  generate_simple_sample();
 
-    transpose_asm( dst0, src );
-    transpose_real( dst1, src, BLOCK, DIM_X, DIM_Y );
+  transpose_asm(dst0, src);
+  transpose_real(dst1, src, BLOCK, DIM_X, DIM_Y);
 
-    if( compare( dst0, dst1, ENTRIES ) != 0 )
-    {
-        debug_test_fail();
-        print( dst1, ENTRIES, "Expected" );
-        print( dst0, ENTRIES, "Actual" );
-        return( 1 );
-    }
+  if (compare(dst0, dst1, ENTRIES) != 0) {
+    debug_test_fail();
+    print(dst1, ENTRIES, "Expected");
+    print(dst0, ENTRIES, "Actual");
+    return (1);
+  }
 
-    debug_test_ok();
-    return( 0 );
+  debug_test_ok();
+  return (0);
 }
 
-int main (void)
-{
-    int ret;
+int main(void) {
+  int ret;
 
-    ret = test_transpose();
-    if( ret != 0 )
-        return( 1 );
-    debug_printf( "ALL GOOD!\n" );
-    return( 0 );
+  ret = test_transpose();
+  if (ret != 0)
+    return (1);
+  debug_printf("ALL GOOD!\n");
+  return (0);
 }

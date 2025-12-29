@@ -9,8 +9,8 @@
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -29,8 +29,7 @@
  * constants below, as well as the VECTOR_LENGTH. */
 #include "ct_const.h"
 
-void ct_table_lookup( unsigned char       dst[CT_SZ_ENTRY],
-                      unsigned char const tbl[CT_SZ_TABLE],
-                      unsigned idx );
+void ct_table_lookup(unsigned char dst[CT_SZ_ENTRY],
+                     unsigned char const tbl[CT_SZ_TABLE], unsigned idx);
 
 #endif /* CT_H */

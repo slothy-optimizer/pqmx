@@ -11,8 +11,7 @@ static int32_t outleft = 0;
 #define ROTATE(x, b) (((x) << (b)) | ((x) >> (32 - (b))))
 #define MUSH(i, b) x = t[i] += (((x ^ seed[i]) + sum) ^ ROTATE(x, b));
 
-static void surf(uint32_t out[8])
-{
+static void surf(uint32_t out[8]) {
   uint32_t t[12];
   uint32_t x;
   uint32_t sum = 0;
@@ -50,8 +49,7 @@ static void surf(uint32_t out[8])
 }
 
 void randombytes_regen(void);
-void randombytes_regen(void)
-{
+void randombytes_regen(void) {
   uint32_t out[8];
   if (!++in[0]) {
     if (!++in[1]) {
@@ -74,8 +72,7 @@ void randombytes_regen(void)
   outleft = sizeof(out_buf);
 }
 
-int randombytes(uint8_t* buf, size_t xlen)
-{
+int randombytes(uint8_t *buf, size_t xlen) {
   while (xlen > 0) {
     if (!outleft) {
       randombytes_regen();
