@@ -9,8 +9,8 @@
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -27,22 +27,22 @@
 
 #include "ntt_const.h"
 
-#define MODULUS_Q32               NTT_PRIME
-#define MODULUS_Q32_INV_U32       NTT_PRIME_TWISTED
-#define MODULUS_Q32_INV_U32_NEG  ((1<<32)-NTT_PRIME_TWISTED)
-#define VECTOR_LENGTH             NTT_SIZE
+#define MODULUS_Q32 NTT_PRIME
+#define MODULUS_Q32_INV_U32 NTT_PRIME_TWISTED
+#define MODULUS_Q32_INV_U32_NEG ((1 << 32) - NTT_PRIME_TWISTED)
+#define VECTOR_LENGTH NTT_SIZE
 
 /// Not really relevant, but the Montgomery source won't compile without it
 
 #if !defined(MODULUS_Q16)
 /* Prime modulus to be used by 16-bit multiplication routines */
-#define MODULUS_Q16              3329
+#define MODULUS_Q16 3329
 /* Modular inverse of q16 modulo 2**16                         */
-#define MODULUS_Q16_INV_U16     -3327
+#define MODULUS_Q16_INV_U16 -3327
 /* Negative of modular inverse of q16 modulo 2**16             */
 #define MODULUS_Q16_INV_U16_NEG +3327
 /* Modular inverse of 2**16 modulo q16                         */
-#define MODULUS_U16_INV_Q16       169
+#define MODULUS_U16_INV_Q16 169
 #endif
 
 #endif /* MONTGOMERY_CONST_H */

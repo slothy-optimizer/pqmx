@@ -43,8 +43,12 @@
                 qemu
                 gcc-arm-embedded
                 git # TODO: remove
+                clang-tools
                 ;
             };
+            shellHook = ''
+              export PATH=$PWD/scripts:$PATH
+            '';
             OPENCM3_DIR = ''${libopencm3}'';
             MBED_OS_DIR = ''${mbed-os}'';
             CMSIS_5_DIR = ''${cmsis_5}'';

@@ -13,14 +13,13 @@
 #include "profiling.h"
 #include <hal.h>
 
-int main( void )
-{
-    debug_test_start( "Profiling" );
+int main(void) {
+  debug_test_start("Profiling");
 
-    debug_printf( "=========== uArch profiling ===============\n" );
-    profile_full();
+  debug_printf("=========== uArch profiling ===============\n");
+  profile_full();
 
-    debug_test_ok();
-    debug_printf( "ALL GOOD!\n" );
-    return(0);
+  debug_test_ok();
+  debug_printf("ALL GOOD!\n");
+  return (0);
 }

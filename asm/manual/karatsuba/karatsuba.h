@@ -9,8 +9,8 @@
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -28,10 +28,10 @@
 #include "karatsuba_const.h"
 
 /* TODO: Document */
-void karatsuba_naive_inv_dual_32( void const *src_a, void *dst );
-void karatsuba_inv_dual_32      ( void const *src_a, void *dst );
-void karatsuba_inv_dual_32_loop ( void const *src_a, void *dst );
+void karatsuba_naive_inv_dual_32(void const *src_a, void *dst);
+void karatsuba_inv_dual_32(void const *src_a, void *dst);
+void karatsuba_inv_dual_32_loop(void const *src_a, void *dst);
 
-void karatsuba_fwd_dual_32_loop( void const *src_a, void *dst );
+void karatsuba_fwd_dual_32_loop(void const *src_a, void *dst);
 
 #endif /* KARATSUBA_H */

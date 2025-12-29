@@ -9,8 +9,8 @@
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -25,8 +25,8 @@
 #ifndef CT_CONST_H
 #define CT_CONST_H
 
-#define CT_SZ_ENTRY   512 // Size in Bytes per table entry
-#define CT_NUM_ENTRY   16 // Number of table entries
-#define CT_SZ_TABLE   (CT_SZ_ENTRY * CT_NUM_ENTRY)
+#define CT_SZ_ENTRY 512  // Size in Bytes per table entry
+#define CT_NUM_ENTRY 16  // Number of table entries
+#define CT_SZ_TABLE (CT_SZ_ENTRY * CT_NUM_ENTRY)
 
 #endif

@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
+
+
+set -o errexit
+set -o errtrace
+set -o nounset
+set -o pipefail
+
+# consts
+ROOT="$(realpath "$(dirname "$0")"/../)"
+
+# Standard color definitions
+GREEN="\033[32m"
+RED="\033[31m"
+BLUE="\033[94m"
+BOLD="\033[1m"
+NORMAL="\033[0m"
+
+# utility
+info()
+{
+  printf "%b %b\n" "${GREEN}info" "${NORMAL}${*}"
+}
+
+error()
+{
+  printf "%b %b\n" "${RED}error" "${NORMAL}${*}"
+}
+
+info "Formatting c files"
+if ! command -v clang-format 2>&1 >/dev/null; then
+  error "clang-format not found. Are you running in a nix shell? See BUILDING.md."
+  exit 1
+fi
+
+nproc=$(getconf _NPROCESSORS_ONLN || echo 1)
+
+# Exclude third-party platform files
+git ls-files -- ":/*.c" ":/*.h" \
+  ":!envs/ek-ra8m1/src/RA8M1/*" \
+  ":!envs/m55-an547/src/platform/*" \
+  ":!envs/m85-an555/src/platform/*" | xargs -P $nproc -I {} sh -c '
+  # Ignore symlinks
+  if [[ ! -L {} ]]; then
+    clang-format -i {}
+  fi'
+
