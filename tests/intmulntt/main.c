@@ -120,28 +120,35 @@ extern uint32_t ntt_u32_q_scale[];
 
 MAKE_SCHOOLBOOK_VARSIZE(32, 64, NUM_CHUNKS)
 
-void reduce_q_u32(int32_t *src, size_t size, int32_t modulus) {
-  for (unsigned idx = 0; idx < size; idx++) {
+void reduce_q_u32(int32_t *src, size_t size, int32_t modulus)
+{
+  for (unsigned idx = 0; idx < size; idx++)
+  {
     src[idx] = src[idx] % modulus;
     if (src[idx] < 0)
+    {
       src[idx] += modulus;
+    }
   }
 }
 
-void ntt_u32_p_pre(uint32_t dst[4 * NUM_CHUNKS], uint32_t src[1 * NUM_CHUNKS]) {
+void ntt_u32_p_pre(uint32_t dst[4 * NUM_CHUNKS], uint32_t src[1 * NUM_CHUNKS])
+{
   uint32_t tmp[2 * NUM_CHUNKS];
   ntt_u32_p_oop_halfinput(src, tmp);
   basemul_pre(dst, tmp, ntt_u32_p_twiddles, ntt_u32_p_scale, CRT_32_P);
 }
 
-void ntt_u32_q_pre(uint32_t dst[4 * NUM_CHUNKS], uint32_t src[1 * NUM_CHUNKS]) {
+void ntt_u32_q_pre(uint32_t dst[4 * NUM_CHUNKS], uint32_t src[1 * NUM_CHUNKS])
+{
   uint32_t tmp[2 * NUM_CHUNKS];
   ntt_u32_q_oop_halfinput(src, tmp);
   basemul_pre(dst, tmp, ntt_u32_q_twiddles, ntt_u32_q_scale, CRT_32_Q);
 }
 
 void poly_u22_mul_mve(uint64_t c[2 * NUM_CHUNKS], uint32_t a[NUM_CHUNKS],
-                      uint32_t b[NUM_CHUNKS]) {
+                      uint32_t b[NUM_CHUNKS])
+{
   uint32_t params_p[] = {CRT_32_P, CRT_32_P_INV_U32};
   uint32_t params_q[] = {CRT_32_Q, CRT_32_Q_INV_U32};
 
@@ -172,7 +179,8 @@ void poly_u22_mul_mve(uint64_t c[2 * NUM_CHUNKS], uint32_t a[NUM_CHUNKS],
 }
 
 void int_mul_mve_chunked_u22(uint32_t c[2 * NUM_CHUNKS], uint32_t a[NUM_CHUNKS],
-                             uint32_t b[NUM_CHUNKS]) {
+                             uint32_t b[NUM_CHUNKS])
+{
   uint32_t params_p[] = {CRT_32_P, CRT_32_P_INV_U32};
   uint32_t params_q[] = {CRT_32_Q, CRT_32_Q_INV_U32};
 
@@ -202,20 +210,28 @@ void int_mul_mve_chunked_u22(uint32_t c[2 * NUM_CHUNKS], uint32_t a[NUM_CHUNKS],
                                          (int32_t *)ntt_q, CRT_32_SIZE);
 }
 
-void sub_s32(int32_t *src, int32_t *a, int32_t *b, size_t size) {
+void sub_s32(int32_t *src, int32_t *a, int32_t *b, size_t size)
+{
   while (size--)
+  {
     *src++ = *a++ - *b++;
+  }
 }
 
-void add_s32(int32_t *src, int32_t *a, int32_t *b, size_t size) {
+void add_s32(int32_t *src, int32_t *a, int32_t *b, size_t size)
+{
   while (size--)
+  {
     *src++ = *a++ + *b++;
+  }
 }
 
-void chunk_dechunk_22_s32_to_s32(int32_t *dst, int32_t *src, size_t size) {
+void chunk_dechunk_22_s32_to_s32(int32_t *dst, int32_t *src, size_t size)
+{
   int32_t carry = 0;
   int32_t const mask = (1u << 22) - 1;
-  for (unsigned idx = 0; idx < size; idx++) {
+  for (unsigned idx = 0; idx < size; idx++)
+  {
     int32_t cur = src[idx];
     cur += carry;
     dst[idx] = (cur & mask);
@@ -227,7 +243,8 @@ void int_mulsub_mve_chunked_u22(int32_t c[2 * NUM_CHUNKS],
                                 uint32_t a0[NUM_CHUNKS],
                                 uint32_t b0[NUM_CHUNKS],
                                 uint32_t a1[NUM_CHUNKS],
-                                uint32_t b1[NUM_CHUNKS]) {
+                                uint32_t b1[NUM_CHUNKS])
+{
   uint32_t params_p[] = {CRT_32_P, CRT_32_P_INV_U32};
   uint32_t params_q[] = {CRT_32_Q, CRT_32_Q_INV_U32};
 
@@ -279,7 +296,8 @@ void int_muladd_mve_chunked_u22(int32_t c[2 * NUM_CHUNKS],
                                 uint32_t a0[NUM_CHUNKS],
                                 uint32_t b0[NUM_CHUNKS],
                                 uint32_t a1[NUM_CHUNKS],
-                                uint32_t b1[NUM_CHUNKS]) {
+                                uint32_t b1[NUM_CHUNKS])
+{
   uint32_t params_p[] = {CRT_32_P, CRT_32_P_INV_U32};
   uint32_t params_q[] = {CRT_32_Q, CRT_32_Q_INV_U32};
 
@@ -328,10 +346,12 @@ void int_muladd_mve_chunked_u22(int32_t c[2 * NUM_CHUNKS],
 }
 
 
-void chunk_dechunk_22_64_to_32(uint32_t *dst, uint64_t *src, size_t size) {
+void chunk_dechunk_22_64_to_32(uint32_t *dst, uint64_t *src, size_t size)
+{
   uint32_t carry = 0;
   uint32_t const mask = (1u << 22) - 1;
-  for (unsigned idx = 0; idx < size; idx++) {
+  for (unsigned idx = 0; idx < size; idx++)
+  {
     uint32_t low = (uint32_t)(src[idx] >> 0);
     uint32_t high = (uint32_t)(src[idx] >> 32);
 
@@ -348,7 +368,8 @@ void chunk_dechunk_22_64_to_32(uint32_t *dst, uint64_t *src, size_t size) {
   }
 }
 
-int test_intchunkmul() {
+int test_intchunkmul()
+{
   debug_test_start("NTT-based integer multiplication, chunked");
   unsigned seed = 1;
   srand(seed);
@@ -361,7 +382,8 @@ int test_intchunkmul() {
 
   fill_random_u32(a, NUM_CHUNKS);
   fill_random_u32(b, NUM_CHUNKS);
-  for (unsigned idx = 0; idx < NUM_CHUNKS; idx++) {
+  for (unsigned idx = 0; idx < NUM_CHUNKS; idx++)
+  {
     a[idx] >>= (32 - BITS_PER_CHUNK);
     b[idx] >>= (32 - BITS_PER_CHUNK);
   }
@@ -376,11 +398,14 @@ int test_intchunkmul() {
   measure_end();
 
   /* Step 3: Compare results */
-  if (compare_buf_u32(c_ref, c, 2 * NUM_CHUNKS) != 0) {
+  if (compare_buf_u32(c_ref, c, 2 * NUM_CHUNKS) != 0)
+  {
     debug_print_buf_u32(c_ref, 2 * NUM_CHUNKS, "Reference");
     debug_print_buf_u32(c, 2 * NUM_CHUNKS, "MVE");
-    for (unsigned idx = 0; idx < 2 * NUM_CHUNKS; idx++) {
-      if (c_ref[idx] != c[idx]) {
+    for (unsigned idx = 0; idx < 2 * NUM_CHUNKS; idx++)
+    {
+      if (c_ref[idx] != c[idx])
+      {
         debug_printf("Failure at index %u: %u (ref) != %u (mve)\n", idx,
                      c_ref[idx], c[idx]);
       }
@@ -394,7 +419,8 @@ int test_intchunkmul() {
   return (0);
 }
 
-int test_intchunkmulsub() {
+int test_intchunkmulsub()
+{
   debug_test_start("NTT-based integer multiplication, a*b-c*d, chunked");
   unsigned seed = 1;
   srand(seed);
@@ -414,7 +440,8 @@ int test_intchunkmulsub() {
   fill_random_u32(b0, NUM_CHUNKS);
   fill_random_u32(a1, NUM_CHUNKS);
   fill_random_u32(b1, NUM_CHUNKS);
-  for (unsigned idx = 0; idx < NUM_CHUNKS; idx++) {
+  for (unsigned idx = 0; idx < NUM_CHUNKS; idx++)
+  {
     a0[idx] >>= (32 - BITS_PER_CHUNK);
     b0[idx] >>= (32 - BITS_PER_CHUNK);
     a1[idx] >>= (32 - BITS_PER_CHUNK);
@@ -438,11 +465,14 @@ int test_intchunkmulsub() {
   measure_end();
 
   /* Step 3: Compare results */
-  if (compare_buf_u32(c_ref, c, 2 * NUM_CHUNKS) != 0) {
+  if (compare_buf_u32(c_ref, c, 2 * NUM_CHUNKS) != 0)
+  {
     debug_print_buf_u32(c_ref, 2 * NUM_CHUNKS, "Reference");
     debug_print_buf_u32(c, 2 * NUM_CHUNKS, "MVE");
-    for (unsigned idx = 0; idx < 2 * NUM_CHUNKS; idx++) {
-      if (c_ref[idx] != c[idx]) {
+    for (unsigned idx = 0; idx < 2 * NUM_CHUNKS; idx++)
+    {
+      if (c_ref[idx] != c[idx])
+      {
         debug_printf("Failure at index %u: %u (ref) != %u (mve)\n", idx,
                      c_ref[idx], c[idx]);
       }
@@ -456,7 +486,8 @@ int test_intchunkmulsub() {
   return (0);
 }
 
-int test_intchunkmuladd() {
+int test_intchunkmuladd()
+{
   debug_test_start("NTT-based integer multiplication, a*b+c*d, chunked");
   unsigned seed = 1;
   srand(seed);
@@ -476,7 +507,8 @@ int test_intchunkmuladd() {
   fill_random_u32(b0, NUM_CHUNKS);
   fill_random_u32(a1, NUM_CHUNKS);
   fill_random_u32(b1, NUM_CHUNKS);
-  for (unsigned idx = 0; idx < NUM_CHUNKS; idx++) {
+  for (unsigned idx = 0; idx < NUM_CHUNKS; idx++)
+  {
     a0[idx] >>= (32 - BITS_PER_CHUNK);
     b0[idx] >>= (32 - BITS_PER_CHUNK);
     a1[idx] >>= (32 - BITS_PER_CHUNK);
@@ -500,11 +532,14 @@ int test_intchunkmuladd() {
   measure_end();
 
   /* Step 3: Compare results */
-  if (compare_buf_u32(c_ref, c, 2 * NUM_CHUNKS) != 0) {
+  if (compare_buf_u32(c_ref, c, 2 * NUM_CHUNKS) != 0)
+  {
     debug_print_buf_u32(c_ref, 2 * NUM_CHUNKS, "Reference");
     debug_print_buf_u32(c, 2 * NUM_CHUNKS, "MVE");
-    for (unsigned idx = 0; idx < 2 * NUM_CHUNKS; idx++) {
-      if (c_ref[idx] != c[idx]) {
+    for (unsigned idx = 0; idx < 2 * NUM_CHUNKS; idx++)
+    {
+      if (c_ref[idx] != c[idx])
+      {
         debug_printf("Failure at index %u: %u (ref) != %u (mve)\n", idx,
                      c_ref[idx], c[idx]);
       }
@@ -519,7 +554,8 @@ int test_intchunkmuladd() {
 }
 
 
-int test_intpolymul() {
+int test_intpolymul()
+{
   debug_test_start("NTT-based integer polynomial multiplication");
   unsigned seed = time(NULL);
   srand(seed);
@@ -531,7 +567,8 @@ int test_intpolymul() {
 
   fill_random_u32(a, NUM_CHUNKS);
   fill_random_u32(b, NUM_CHUNKS);
-  for (unsigned idx = 0; idx < NUM_CHUNKS; idx++) {
+  for (unsigned idx = 0; idx < NUM_CHUNKS; idx++)
+  {
     a[idx] >>= (32 - BITS_PER_CHUNK);
     b[idx] >>= (32 - BITS_PER_CHUNK);
   }
@@ -543,7 +580,8 @@ int test_intpolymul() {
   poly_u22_mul_mve(c, a, b);
   measure_end();
   /* Step 3: Compare results */
-  if (compare_buf_u64(c_ref, c, 2 * NUM_CHUNKS) != 0) {
+  if (compare_buf_u64(c_ref, c, 2 * NUM_CHUNKS) != 0)
+  {
     debug_test_fail();
     debug_print_buf_u64(c_ref, 2 * NUM_CHUNKS, "Reference");
     debug_print_buf_u64(c, 2 * NUM_CHUNKS, "MVE");
@@ -555,11 +593,13 @@ int test_intpolymul() {
   return (0);
 }
 
-int main(void) {
+int main(void)
+{
   int ret = 0;
   int n = INITIAL_SEED;
 
-  for (unsigned i = 0; i < NUM_ITERATIONS; i++) {
+  for (unsigned i = 0; i < NUM_ITERATIONS; i++)
+  {
     srand(n + i);
 #if defined(TEST_INTPOLYMUL)
     ret |= test_intpolymul();
@@ -574,7 +614,9 @@ int main(void) {
     ret |= test_intchunkmuladd();
 #endif
     if (ret != 0)
+    {
       return (ret);
+    }
   }
 
   debug_printf("ALL GOOD!\n");

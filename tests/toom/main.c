@@ -616,14 +616,16 @@ MAKE_SCHOOLBOOK(16, 64)
 /* Compute the Toom4 evaluation step in-place, evaluating
  * at the points 0, -1/2, +1/2, -1, +1, +2, infty, in this
  * order. */
-static void poly_u16_toom4_fwd_C(uint16_t *poly) {
+static void poly_u16_toom4_fwd_C(uint16_t *poly)
+{
   unsigned limb_dim = DIMENSION / 4;
   uint16_t *limb[] = {poly + 0 * limb_dim, poly + 1 * limb_dim,
                       poly + 2 * limb_dim, poly + 3 * limb_dim};
   make_eval_offsets_toom4(poly, eval, 1);
   unsigned idx;
 
-  for (idx = 0; idx < limb_dim; idx++) {
+  for (idx = 0; idx < limb_dim; idx++)
+  {
     uint16_t val_a, val_b, val_c, val_d;
     val_a = limb[0][idx];
     val_b = limb[1][idx];
@@ -640,14 +642,16 @@ static void poly_u16_toom4_fwd_C(uint16_t *poly) {
   }
 }
 
-static void poly_u16_toom4_fwd_oop_C(uint16_t *src, uint16_t *dst) {
+static void poly_u16_toom4_fwd_oop_C(uint16_t *src, uint16_t *dst)
+{
   unsigned limb_dim = DIMENSION / 4;
   uint16_t *limb[] = {src + 0 * limb_dim, src + 1 * limb_dim,
                       src + 2 * limb_dim, src + 3 * limb_dim};
   make_eval_offsets_toom4_oop(dst, eval, 1);
   unsigned idx;
 
-  for (idx = 0; idx < limb_dim; idx++) {
+  for (idx = 0; idx < limb_dim; idx++)
+  {
     uint16_t val_a, val_b, val_c, val_d;
     val_a = limb[0][idx];
     val_b = limb[1][idx];
@@ -664,15 +668,16 @@ static void poly_u16_toom4_fwd_oop_C(uint16_t *src, uint16_t *dst) {
   }
 }
 
-static void poly_u16_toom4_fwd_karatsuba_x1_oop_C(uint16_t *src,
-                                                  uint16_t *dst) {
+static void poly_u16_toom4_fwd_karatsuba_x1_oop_C(uint16_t *src, uint16_t *dst)
+{
   unsigned limb_dim = DIMENSION / 4;
   uint16_t *limb[] = {src + 0 * limb_dim, src + 1 * limb_dim,
                       src + 2 * limb_dim, src + 3 * limb_dim};
   unsigned padded_limb_dim = 3 * limb_dim / 2;
   unsigned idx;
 
-  for (idx = 0; idx < limb_dim; idx++) {
+  for (idx = 0; idx < limb_dim; idx++)
+  {
     uint16_t val_a, val_b, val_c, val_d;
     val_a = limb[0][idx];
     val_b = limb[1][idx];
@@ -694,8 +699,8 @@ static void poly_u16_toom4_fwd_karatsuba_x1_oop_C(uint16_t *src,
   }
 }
 
-static void poly_u16_toom4_fwd_karatsuba_x2_oop_C(uint16_t *src,
-                                                  uint16_t *dst) {
+static void poly_u16_toom4_fwd_karatsuba_x2_oop_C(uint16_t *src, uint16_t *dst)
+{
   unsigned limb_dim = DIMENSION / 4;
   uint16_t *limb[] = {src + 0 * limb_dim, src + 1 * limb_dim,
                       src + 2 * limb_dim, src + 3 * limb_dim};
@@ -703,7 +708,8 @@ static void poly_u16_toom4_fwd_karatsuba_x2_oop_C(uint16_t *src,
   unsigned limb_shift = limb_dim / 4;
   unsigned idx;
 
-  for (idx = 0; idx < limb_dim / 2; idx++) {
+  for (idx = 0; idx < limb_dim / 2; idx++)
+  {
     uint16_t val_a, val_b, val_c, val_d;
     val_a = limb[0][idx];
     val_b = limb[1][idx];
@@ -724,7 +730,8 @@ static void poly_u16_toom4_fwd_karatsuba_x2_oop_C(uint16_t *src,
     dst[6 * padded_limb_dim + idx] = (uint16_t)(val_d);        /* infty */
   }
 
-  for (idx = limb_dim / 2; idx < limb_dim; idx++) {
+  for (idx = limb_dim / 2; idx < limb_dim; idx++)
+  {
     uint16_t val_a, val_b, val_c, val_d;
     val_a = limb[0][idx];
     val_b = limb[1][idx];
@@ -749,7 +756,8 @@ static void poly_u16_toom4_fwd_karatsuba_x2_oop_C(uint16_t *src,
 #if defined(TEST_TOOM4_FWD_INV_DUAL_TOP) || \
     defined(TEST_TOOM4_FWD_DUAL_TOP) || defined(TEST_TOOM4_FWD_DUAL_TOP_OOP)
 /* Compute the dual/striding Toom4 evaluation step in-place */
-static void poly_u16_toom4_fwd_dual_top_C(uint16_t *src, uint16_t *dst) {
+static void poly_u16_toom4_fwd_dual_top_C(uint16_t *src, uint16_t *dst)
+{
   MAKE_BUFFER(tmp, 16, BUFFER_SIZE, 0);
 
   unsigned limb_dim = DIMENSION_DIV4;
@@ -758,8 +766,10 @@ static void poly_u16_toom4_fwd_dual_top_C(uint16_t *src, uint16_t *dst) {
 
   copy_poly(tmp, src, DIMENSION);
 
-  for (idx = 0; idx < limb_dim / 8; idx++) {
-    for (k = 0; k < 8; k++) {
+  for (idx = 0; idx < limb_dim / 8; idx++)
+  {
+    for (k = 0; k < 8; k++)
+    {
       uint16_t tmp_eval[7];
       uint16_t val_a, val_b, val_c, val_d;
       val_a = tmp[4 * (8 * idx + k) + 0];
@@ -794,7 +804,8 @@ static void poly_u16_toom4_fwd_dual_top_C(uint16_t *src, uint16_t *dst) {
 #if defined(TEST_TOOM4_FWD_DUAL_PACKED_LIMBS_OOP)
 /* Compute the dual/striding Toom4 evaluation step in-place */
 static void poly_u16_toom4_fwd_dual_packed_limbs_oop_C(uint16_t *src,
-                                                       uint16_t *dst) {
+                                                       uint16_t *dst)
+{
   MAKE_BUFFER(tmp, 16, BUFFER_SIZE, 0);
 
   unsigned limb_dim = DIMENSION_DIV4;
@@ -802,7 +813,8 @@ static void poly_u16_toom4_fwd_dual_packed_limbs_oop_C(uint16_t *src,
 
   copy_poly(tmp, src, DIMENSION);
 
-  for (idx = 0; idx < limb_dim; idx++) {
+  for (idx = 0; idx < limb_dim; idx++)
+  {
     uint16_t tmp_eval[7];
     uint16_t val_a, val_b, val_c, val_d;
     val_a = tmp[4 * idx + 0];
@@ -835,7 +847,8 @@ static void poly_u16_toom4_fwd_dual_packed_limbs_oop_C(uint16_t *src,
 #if defined(TEST_TOOM4_FWD_DUAL_PACKED_LIMBS_KARATSUBA_X1_OOP)
 /* Compute the dual/striding Toom4 evaluation step in-place */
 static void poly_u16_toom4_fwd_dual_packed_limbs_karatsuba_x1_oop_C(
-    uint16_t *src, uint16_t *dst) {
+    uint16_t *src, uint16_t *dst)
+{
   MAKE_BUFFER(tmp, 16, BUFFER_SIZE, 0);
 
   unsigned limb_dim = DIMENSION_DIV4;
@@ -844,7 +857,8 @@ static void poly_u16_toom4_fwd_dual_packed_limbs_karatsuba_x1_oop_C(
 
   copy_poly(tmp, src, DIMENSION);
 
-  for (idx = 0; idx < limb_dim; idx++) {
+  for (idx = 0; idx < limb_dim; idx++)
+  {
     uint16_t tmp_eval[7];
     uint16_t val_a, val_b, val_c, val_d;
     val_a = tmp[4 * idx + 0];
@@ -877,7 +891,8 @@ static void poly_u16_toom4_fwd_dual_packed_limbs_karatsuba_x1_oop_C(
 #if defined(TEST_TOOM4_FWD_DUAL_PACKED_LIMBS_KARATSUBA_X2_OOP)
 /* Compute the dual/striding Toom4 evaluation step in-place */
 static void poly_u16_toom4_fwd_dual_packed_limbs_karatsuba_x2_oop_C(
-    uint16_t *src, uint16_t *dst) {
+    uint16_t *src, uint16_t *dst)
+{
   MAKE_BUFFER(tmp, 16, BUFFER_SIZE, 0);
 
   unsigned limb_dim = DIMENSION_DIV4;
@@ -887,7 +902,8 @@ static void poly_u16_toom4_fwd_dual_packed_limbs_karatsuba_x2_oop_C(
 
   copy_poly(tmp, src, DIMENSION);
 
-  for (idx = 0; idx < limb_dim / 2; idx++) {
+  for (idx = 0; idx < limb_dim / 2; idx++)
+  {
     uint16_t tmp_eval[7];
     uint16_t val_a, val_b, val_c, val_d;
     val_a = tmp[4 * idx + 0];
@@ -915,7 +931,8 @@ static void poly_u16_toom4_fwd_dual_packed_limbs_karatsuba_x2_oop_C(
     dst[6 * padded_limb_dim + idx] = tmp_eval[6];
   }
 
-  for (idx = limb_dim / 2; idx < limb_dim; idx++) {
+  for (idx = limb_dim / 2; idx < limb_dim; idx++)
+  {
     uint16_t tmp_eval[7];
     uint16_t val_a, val_b, val_c, val_d;
     val_a = tmp[4 * idx + 0];
@@ -950,7 +967,8 @@ static void poly_u16_toom4_fwd_dual_packed_limbs_karatsuba_x2_oop_C(
     defined(TEST_TOOM4_FWD_INV_DUAL_BOTTOM_OOP) || \
     defined(TEST_TOOM4_FWD_DUAL_BOTTOM)
 /* Compute the dual/striding Toom4 evaluation step in-place */
-static void poly_u16_toom4_fwd_dual_bottom_C(uint16_t *poly) {
+static void poly_u16_toom4_fwd_dual_bottom_C(uint16_t *poly)
+{
   MAKE_BUFFER(tmp, 16, BUFFER_SIZE, 0);
 
   unsigned limb_dim = DIMENSION_DIV4;
@@ -960,8 +978,10 @@ static void poly_u16_toom4_fwd_dual_bottom_C(uint16_t *poly) {
 
   copy_poly(tmp, poly, DIMENSION);
 
-  for (idx = 0; idx < limb_dim / 8; idx++) {
-    for (k = 0; k < 8; k++) {
+  for (idx = 0; idx < limb_dim / 8; idx++)
+  {
+    for (k = 0; k < 8; k++)
+    {
       uint16_t tmp_eval[7];
       uint16_t val_a, val_b, val_c, val_d;
       val_a = tmp[4 * (8 * idx + k) + 0];
@@ -1026,11 +1046,13 @@ static void poly_u16_toom3_fwd_C( uint16_t *poly )
  */
 
 #if defined(TEST_TYPE_SIMPLE)
-static void generate_simple_sample_core(uint16_t *poly, int type, int count) {
+static void generate_simple_sample_core(uint16_t *poly, int type, int count)
+{
   unsigned idx;
   zero_poly(poly, DIMENSION);
 
-  switch (type) {
+  switch (type)
+  {
     case 0:
       poly[0] = 1;
       break;
@@ -1074,7 +1096,9 @@ static void generate_simple_sample_core(uint16_t *poly, int type, int count) {
 
     case 7:
       for (idx = 0; idx < count; idx++)
+      {
         poly[idx] = 1;
+      }
       break;
 
     default:
@@ -1083,7 +1107,8 @@ static void generate_simple_sample_core(uint16_t *poly, int type, int count) {
   }
 }
 
-static void generate_simple_sample(int type, int count) {
+static void generate_simple_sample(int type, int count)
+{
   generate_simple_sample_core(a, type, count);
   generate_simple_sample_core(b, type, count);
   mask_poly(a, DIMENSION, PRECISION);
@@ -1092,7 +1117,8 @@ static void generate_simple_sample(int type, int count) {
 #endif /* TEST_TYPE_SIMPLE */
 
 #if defined(TEST_TYPE_RANDOM)
-static void generate_random_sample() {
+static void generate_random_sample()
+{
   random_poly(a, BUFFER_SIZE);
   random_poly(b, BUFFER_SIZE);
   mask_poly(a, BUFFER_SIZE, PRECISION);
@@ -1100,7 +1126,8 @@ static void generate_random_sample() {
 }
 #endif /* TEST_TYPE_RANDOM */
 
-static void generate_sample() {
+static void generate_sample()
+{
   memset(a, 0, 2 * BUFFER_SIZE);
   memset(b, 0, 2 * BUFFER_SIZE);
   memset(c, 0, 2 * BUFFER_SIZE);
@@ -1121,7 +1148,8 @@ static void generate_sample() {
  */
 
 #if defined(TEST_TOOM4_STANDALONE)
-int unfold(test_toom4_standalone)() {
+int unfold(test_toom4_standalone)()
+{
   debug_test_start(TEST_STRING_TOOM4_FWD_START);
   generate_sample();
 
@@ -1147,7 +1175,8 @@ int unfold(test_toom4_standalone)() {
   mask_poly(c2, 2 * DIMENSION, PRECISION);
 
 #if defined(poly_u16_mul_mve)
-  if (compare_poly(c0, c1, 2 * (DIMENSION - 1)) != 0) {
+  if (compare_poly(c0, c1, 2 * (DIMENSION - 1)) != 0)
+  {
     debug_test_fail();
     debug_print_poly(c1, 2 * (DIMENSION - 1), "Ref: ");
     debug_print_poly(c0, 2 * (DIMENSION - 1), "MVE: ");
@@ -1156,7 +1185,8 @@ int unfold(test_toom4_standalone)() {
 #endif
 
 #if defined(poly_u16_mul_m4)
-  if (compare_poly(c2, c1, 2 * (DIMENSION - 1)) != 0) {
+  if (compare_poly(c2, c1, 2 * (DIMENSION - 1)) != 0)
+  {
     debug_test_fail();
     debug_print_poly(c1, 2 * (DIMENSION - 1), "Ref: ");
     debug_print_poly(c2, 2 * (DIMENSION - 1), " M4: ");
@@ -1170,7 +1200,8 @@ int unfold(test_toom4_standalone)() {
 #endif /* TEST_TOOM4_STANDALONE */
 
 #if defined(TEST_TOOM3_STANDALONE)
-int unfold(test_toom3_standalone)() {
+int unfold(test_toom3_standalone)()
+{
   debug_test_start(TEST_STRING_TOOM3_STANDALONE_START);
   generate_sample();
 
@@ -1196,7 +1227,8 @@ int unfold(test_toom3_standalone)() {
   mask_poly(c2, 2 * DIMENSION, PRECISION);
 
 #if defined(poly_u16_mul_mve)
-  if (compare_poly(c0, c1, 2 * (DIMENSION - 1)) != 0) {
+  if (compare_poly(c0, c1, 2 * (DIMENSION - 1)) != 0)
+  {
     debug_test_fail();
     debug_print_poly(c1, 2 * (DIMENSION - 1), "Ref: ");
     debug_print_poly(c0, 2 * (DIMENSION - 1), "MVE: ");
@@ -1205,7 +1237,8 @@ int unfold(test_toom3_standalone)() {
 #endif
 
 #if defined(poly_u16_mul_m4)
-  if (compare_poly(c2, c1, 2 * (DIMENSION - 1)) != 0) {
+  if (compare_poly(c2, c1, 2 * (DIMENSION - 1)) != 0)
+  {
     debug_test_fail();
     debug_print_poly(c1, 2 * (DIMENSION - 1), "Ref: ");
     debug_print_poly(c2, 2 * (DIMENSION - 1), " M4: ");
@@ -1223,7 +1256,8 @@ int unfold(test_toom3_standalone)() {
  */
 
 #if defined(TEST_TOOM3_FWD)
-int unfold(test_toom3_fwd)() {
+int unfold(test_toom3_fwd)()
+{
   debug_test_start(TEST_STRING_TOOM3_FWD_START);
   generate_sample();
   copy_poly(b, a, DIMENSION);
@@ -1238,7 +1272,8 @@ int unfold(test_toom3_fwd)() {
 
   poly_u16_toom3_fwd_C(b);
 
-  if (compare_poly(a, b, 5 * DIMENSION_DIV3) != 0) {
+  if (compare_poly(a, b, 5 * DIMENSION_DIV3) != 0)
+  {
     debug_test_fail();
     debug_print_poly(a, 2 * (DIMENSION - 1), "MVE: ");
     debug_print_poly(b, 2 * (DIMENSION - 1), "Ref: ");
@@ -1255,7 +1290,8 @@ int unfold(test_toom3_fwd)() {
  */
 
 #if defined(TEST_TOOM4_FWD)
-int unfold(test_toom4_fwd)() {
+int unfold(test_toom4_fwd)()
+{
   debug_test_start(TEST_STRING_TOOM4_FWD_START);
   generate_sample();
   copy_poly(b, a, DIMENSION);
@@ -1270,7 +1306,8 @@ int unfold(test_toom4_fwd)() {
 
   poly_u16_toom4_fwd_C(b);
 
-  if (compare_poly(a, b, 7 * DIMENSION_DIV4) != 0) {
+  if (compare_poly(a, b, 7 * DIMENSION_DIV4) != 0)
+  {
     debug_test_fail();
     debug_print_poly(a, 7 * DIMENSION_DIV4, "MVE: ");
     debug_print_poly(b, 7 * DIMENSION_DIV4, "Ref: ");
@@ -1283,7 +1320,8 @@ int unfold(test_toom4_fwd)() {
 #endif /* TEST_TOOM4_FWD */
 
 #if defined(TEST_TOOM4_FWD_OOP)
-int unfold(test_toom4_fwd_oop)() {
+int unfold(test_toom4_fwd_oop)()
+{
   debug_test_start(TEST_STRING_TOOM4_FWD_OOP_START);
   generate_sample();
   copy_poly(b, a, DIMENSION);
@@ -1298,7 +1336,8 @@ int unfold(test_toom4_fwd_oop)() {
 
   poly_u16_toom4_fwd_oop_C(b, d);
 
-  if (compare_poly(c, d, 7 * DIMENSION_DIV4) != 0) {
+  if (compare_poly(c, d, 7 * DIMENSION_DIV4) != 0)
+  {
     debug_test_fail();
     debug_print_poly(c, 7 * DIMENSION_DIV4, "MVE: ");
     debug_print_poly(d, 7 * DIMENSION_DIV4, "Ref: ");
@@ -1311,7 +1350,8 @@ int unfold(test_toom4_fwd_oop)() {
 #endif /* TEST_TOOM4_FWD_OOP */
 
 #if defined(TEST_TOOM4_FWD_KARATSUBA_X1_OOP)
-int unfold(test_toom4_fwd_karatsuba_x1_oop)() {
+int unfold(test_toom4_fwd_karatsuba_x1_oop)()
+{
   unsigned out_dim = 7 * 3 * DIMENSION_DIV4 / 2;
 
   debug_test_start(TEST_STRING_TOOM4_FWD_KARATSUBA_X1_OOP_START);
@@ -1328,7 +1368,8 @@ int unfold(test_toom4_fwd_karatsuba_x1_oop)() {
 
   poly_u16_toom4_fwd_karatsuba_x1_oop_C(b, d);
 
-  if (compare_poly(c, d, out_dim) != 0) {
+  if (compare_poly(c, d, out_dim) != 0)
+  {
     debug_test_fail();
     debug_print_poly(c, out_dim, "MVE: ");
     debug_print_poly(d, out_dim, "Ref: ");
@@ -1341,7 +1382,8 @@ int unfold(test_toom4_fwd_karatsuba_x1_oop)() {
 #endif /* TEST_TOOM4_FWD_KARATSUBA_X1_OOP */
 
 #if defined(TEST_TOOM4_FWD_KARATSUBA_X2_OOP)
-int unfold(test_toom4_fwd_karatsuba_x2_oop)() {
+int unfold(test_toom4_fwd_karatsuba_x2_oop)()
+{
   unsigned out_dim = 7 * 9 * DIMENSION_DIV4 / 4;
 
   debug_test_start(TEST_STRING_TOOM4_FWD_KARATSUBA_X2_OOP_START);
@@ -1358,7 +1400,8 @@ int unfold(test_toom4_fwd_karatsuba_x2_oop)() {
 
   poly_u16_toom4_fwd_karatsuba_x2_oop_C(b, d);
 
-  if (compare_poly(c, d, out_dim) != 0) {
+  if (compare_poly(c, d, out_dim) != 0)
+  {
     debug_test_fail();
     debug_print_poly(c, out_dim, "MVE: ");
     debug_print_poly(b, out_dim, "Ref: ");
@@ -1376,7 +1419,8 @@ int unfold(test_toom4_fwd_karatsuba_x2_oop)() {
  */
 
 #if defined(TEST_TOOM4_FWD_DUAL_TOP)
-int unfold(test_toom4_fwd_dual_top)() {
+int unfold(test_toom4_fwd_dual_top)()
+{
   debug_test_start(TEST_STRING_TOOM4_FWD_DUAL_TOP_START);
   generate_sample();
   copy_poly(b, a, DIMENSION);
@@ -1391,7 +1435,8 @@ int unfold(test_toom4_fwd_dual_top)() {
 
   poly_u16_toom4_fwd_dual_top_C(b, b);
 
-  if (compare_poly(a, b, 7 * DIMENSION_DIV4) != 0) {
+  if (compare_poly(a, b, 7 * DIMENSION_DIV4) != 0)
+  {
     debug_test_fail();
     debug_print_poly(a, 7 * DIMENSION_DIV4, "MVE: ");
     debug_print_poly(b, 7 * DIMENSION_DIV4, "Ref: ");
@@ -1404,7 +1449,8 @@ int unfold(test_toom4_fwd_dual_top)() {
 #endif /* TEST_TOOM4_FWD_DUAL_TOP */
 
 #if defined(TEST_TOOM4_FWD_DUAL_TOP_OOP)
-int unfold(test_toom4_fwd_dual_top_oop)() {
+int unfold(test_toom4_fwd_dual_top_oop)()
+{
   debug_test_start(TEST_STRING_TOOM4_FWD_DUAL_TOP_OOP_START);
   generate_sample();
   copy_poly(b, a, DIMENSION);
@@ -1419,7 +1465,8 @@ int unfold(test_toom4_fwd_dual_top_oop)() {
 
   poly_u16_toom4_fwd_dual_top_C(b, b);
 
-  if (compare_poly(c, b, 7 * DIMENSION_DIV4) != 0) {
+  if (compare_poly(c, b, 7 * DIMENSION_DIV4) != 0)
+  {
     debug_test_fail();
     debug_print_poly(c, 7 * DIMENSION_DIV4, "MVE: ");
     debug_print_poly(b, 7 * DIMENSION_DIV4, "Ref: ");
@@ -1432,7 +1479,8 @@ int unfold(test_toom4_fwd_dual_top_oop)() {
 #endif /* TEST_TOOM4_FWD_DUAL_TOP_OOP */
 
 #if defined(TEST_TOOM4_FWD_DUAL_PACKED_LIMBS_OOP)
-int unfold(test_toom4_fwd_dual_packed_limbs_oop)() {
+int unfold(test_toom4_fwd_dual_packed_limbs_oop)()
+{
   debug_test_start(TEST_STRING_TOOM4_FWD_DUAL_PACKED_LIMBS_OOP_START);
   generate_sample();
   copy_poly(b, a, DIMENSION);
@@ -1447,7 +1495,8 @@ int unfold(test_toom4_fwd_dual_packed_limbs_oop)() {
 
   poly_u16_toom4_fwd_dual_packed_limbs_oop_C(b, b);
 
-  if (compare_poly(c, b, 7 * DIMENSION_DIV4) != 0) {
+  if (compare_poly(c, b, 7 * DIMENSION_DIV4) != 0)
+  {
     debug_test_fail();
     debug_print_poly(c, 7 * DIMENSION_DIV4, "MVE: ");
     debug_print_poly(b, 7 * DIMENSION_DIV4, "Ref: ");
@@ -1460,7 +1509,8 @@ int unfold(test_toom4_fwd_dual_packed_limbs_oop)() {
 #endif /* TEST_TOOM4_FWD_DUAL_PACKED_LIMBS_OOP */
 
 #if defined(TEST_TOOM4_FWD_DUAL_PACKED_LIMBS_KARATSUBA_X1_OOP)
-int unfold(test_toom4_fwd_dual_packed_limbs_karatsuba_x1_oop)() {
+int unfold(test_toom4_fwd_dual_packed_limbs_karatsuba_x1_oop)()
+{
   debug_test_start(
       TEST_STRING_TOOM4_FWD_DUAL_PACKED_LIMBS_KARATSUBA_X1_OOP_START);
   generate_sample();
@@ -1478,7 +1528,8 @@ int unfold(test_toom4_fwd_dual_packed_limbs_karatsuba_x1_oop)() {
 
   poly_u16_toom4_fwd_dual_packed_limbs_karatsuba_x1_oop_C(b, d);
 
-  if (compare_poly(c, d, out_dim) != 0) {
+  if (compare_poly(c, d, out_dim) != 0)
+  {
     debug_test_fail();
     debug_print_poly(c, out_dim, "MVE: ");
     debug_print_poly(d, out_dim, "Ref: ");
@@ -1491,7 +1542,8 @@ int unfold(test_toom4_fwd_dual_packed_limbs_karatsuba_x1_oop)() {
 #endif /* TEST_TOOM4_FWD_DUAL_PACKED_LIMBS_KARATSUBA_X1_OOP */
 
 #if defined(TEST_TOOM4_FWD_DUAL_PACKED_LIMBS_KARATSUBA_X2_OOP)
-int unfold(test_toom4_fwd_dual_packed_limbs_karatsuba_x2_oop)() {
+int unfold(test_toom4_fwd_dual_packed_limbs_karatsuba_x2_oop)()
+{
   debug_test_start(
       TEST_STRING_TOOM4_FWD_DUAL_PACKED_LIMBS_KARATSUBA_X2_OOP_START);
   generate_sample();
@@ -1509,7 +1561,8 @@ int unfold(test_toom4_fwd_dual_packed_limbs_karatsuba_x2_oop)() {
 
   poly_u16_toom4_fwd_dual_packed_limbs_karatsuba_x2_oop_C(b, d);
 
-  if (compare_poly(c, d, out_dim) != 0) {
+  if (compare_poly(c, d, out_dim) != 0)
+  {
     debug_test_fail();
     debug_print_poly(c, out_dim, "MVE: ");
     debug_print_poly(b, out_dim, "Ref: ");
@@ -1522,7 +1575,8 @@ int unfold(test_toom4_fwd_dual_packed_limbs_karatsuba_x2_oop)() {
 #endif /* TEST_TOOM4_FWD_DUAL_PACKED_LIMBS_KARATSUBA_X2_OOP */
 
 #if defined(TEST_TOOM4_FWD_DUAL_BOTTOM)
-int unfold(test_toom4_fwd_dual_bottom)() {
+int unfold(test_toom4_fwd_dual_bottom)()
+{
   uint16_t *const a_shift = a + 3 * DIMENSION_DIV4;
   uint16_t *const b_shift = b + 3 * DIMENSION_DIV4;
   debug_test_start(TEST_STRING_TOOM4_FWD_DUAL_BOTTOM_START);
@@ -1539,7 +1593,8 @@ int unfold(test_toom4_fwd_dual_bottom)() {
 
   poly_u16_toom4_fwd_dual_bottom_C(b_shift);
 
-  if (compare_poly(a, b, 7 * DIMENSION_DIV4) != 0) {
+  if (compare_poly(a, b, 7 * DIMENSION_DIV4) != 0)
+  {
     debug_test_fail();
     debug_print_poly(a, 7 * DIMENSION_DIV4, "MVE: ");
     debug_print_poly(b, 7 * DIMENSION_DIV4, "Ref: ");
@@ -1557,7 +1612,8 @@ int unfold(test_toom4_fwd_dual_bottom)() {
  */
 
 #if defined(TEST_TOOM4_FWD_INV)
-static void multiply_by_eval_of_1_toom4(uint16_t *poly_a) {
+static void multiply_by_eval_of_1_toom4(uint16_t *poly_a)
+{
   unsigned limb_dim = DIMENSION / 4;
   unsigned idx, pt_idx;
   MAKE_BUFFER(tmp, 16, BUFFER_SIZE, 8);
@@ -1568,15 +1624,24 @@ static void multiply_by_eval_of_1_toom4(uint16_t *poly_a) {
   uint16_t eval_of_one[] = {1, 8, 8, 1, 1, 1, 0};
 
   for (idx = 0; idx < limb_dim; idx++)
+  {
     for (pt_idx = 0; pt_idx < 7; pt_idx++)
+    {
       prod_tmp[pt_idx][idx] = eval_a[pt_idx][idx] * eval_of_one[pt_idx];
+    }
+  }
 
   for (idx = 0; idx < limb_dim; idx++)
+  {
     for (pt_idx = 0; pt_idx < 7; pt_idx++)
+    {
       prod_a[pt_idx][idx] = prod_tmp[pt_idx][idx];
+    }
+  }
 }
 
-int unfold(test_toom4_fwd_inv)() {
+int unfold(test_toom4_fwd_inv)()
+{
   debug_test_start(TEST_STRING_TOOM4_FWD_INV_START);
   generate_sample();
   copy_poly(b, a, DIMENSION);
@@ -1612,7 +1677,8 @@ int unfold(test_toom4_fwd_inv)() {
   mask_poly(a, DIMENSION, PRECISION);
   mask_poly(b, DIMENSION, PRECISION);
 
-  if (compare_poly(a, b, DIMENSION) != 0) {
+  if (compare_poly(a, b, DIMENSION) != 0)
+  {
     debug_test_fail();
     debug_print_poly(b, DIMENSION, "Ref: ");
     debug_print_poly(a, DIMENSION, "MVE: ");
@@ -1625,8 +1691,8 @@ int unfold(test_toom4_fwd_inv)() {
 #endif /* TEST_TOOM4_FWD_INV */
 
 #if defined(TEST_TOOM4_FWD_INV_DUAL_PACKED_LIMBS_OOP)
-static void multiply_by_eval_of_1_toom4_dual_packed_limbs_oop(
-    uint16_t *poly_a) {
+static void multiply_by_eval_of_1_toom4_dual_packed_limbs_oop(uint16_t *poly_a)
+{
   unsigned limb_dim = DIMENSION / 4;
   unsigned idx, pt_idx;
   MAKE_BUFFER(tmp, 16, BUFFER_SIZE, 8);
@@ -1637,15 +1703,24 @@ static void multiply_by_eval_of_1_toom4_dual_packed_limbs_oop(
   uint16_t eval_of_one[] = {1, 8, 8, 1, 1, 1, 0};
 
   for (idx = 0; idx < limb_dim; idx++)
+  {
     for (pt_idx = 0; pt_idx < 7; pt_idx++)
+    {
       prod_tmp[pt_idx][idx] = eval_a[pt_idx][idx] * eval_of_one[pt_idx];
+    }
+  }
 
   for (idx = 0; idx < limb_dim; idx++)
+  {
     for (pt_idx = 0; pt_idx < 7; pt_idx++)
+    {
       prod_a[pt_idx][idx] = prod_tmp[pt_idx][idx];
+    }
+  }
 }
 
-int unfold(test_toom4_fwd_inv_dual_packed_limbs_oop)() {
+int unfold(test_toom4_fwd_inv_dual_packed_limbs_oop)()
+{
   debug_test_start(TEST_STRING_TOOM4_FWD_INV_DUAL_PACKED_LIMBS_OOP_START);
   generate_sample();
   copy_poly(b, a, DIMENSION);
@@ -1681,7 +1756,8 @@ int unfold(test_toom4_fwd_inv_dual_packed_limbs_oop)() {
   mask_poly(d, DIMENSION, PRECISION);
   mask_poly(b, DIMENSION, PRECISION);
 
-  if (compare_poly(d, b, DIMENSION) != 0) {
+  if (compare_poly(d, b, DIMENSION) != 0)
+  {
     debug_test_fail();
     debug_print_poly(b, DIMENSION, "Ref: ");
     debug_print_poly(d, DIMENSION, "MVE: ");
@@ -1695,7 +1771,8 @@ int unfold(test_toom4_fwd_inv_dual_packed_limbs_oop)() {
 
 #if defined(TEST_TOOM4_FWD_INV_DUAL_BOTTOM) || \
     defined(TEST_TOOM4_FWD_INV_DUAL_BOTTOM_OOP)
-static void multiply_by_eval_of_1_toom4_dual_bottom(uint16_t *poly_a) {
+static void multiply_by_eval_of_1_toom4_dual_bottom(uint16_t *poly_a)
+{
   unsigned limb_dim = DIMENSION_DIV4;
   unsigned idx, pt_idx, k;
   MAKE_BUFFER(tmp, 16, BUFFER_SIZE, 8);
@@ -1705,28 +1782,41 @@ static void multiply_by_eval_of_1_toom4_dual_bottom(uint16_t *poly_a) {
 
   uint16_t eval_of_one[] = {1, 8, 8, 1, 1, 1, 0};
 
-  for (idx = 0; idx < limb_dim / 8; idx++) {
-    for (k = 0; k < 8; k++) {
+  for (idx = 0; idx < limb_dim / 8; idx++)
+  {
+    for (k = 0; k < 8; k++)
+    {
       for (pt_idx = 0; pt_idx < 4; pt_idx++)
+      {
         prod_tmp[pt_idx][4 * 8 * idx + k] =
             eval_a[pt_idx][4 * 8 * idx + k] * eval_of_one[pt_idx];
+      }
       for (pt_idx = 4; pt_idx < 7; pt_idx++)
+      {
         prod_tmp[pt_idx][3 * 8 * idx + k] =
             eval_a[pt_idx][3 * 8 * idx + k] * eval_of_one[pt_idx];
+      }
     }
   }
 
-  for (idx = 0; idx < limb_dim / 8; idx++) {
-    for (k = 0; k < 8; k++) {
+  for (idx = 0; idx < limb_dim / 8; idx++)
+  {
+    for (k = 0; k < 8; k++)
+    {
       for (pt_idx = 0; pt_idx < 4; pt_idx++)
+      {
         prod_a[pt_idx][4 * 8 * idx + k] = prod_tmp[pt_idx][4 * 8 * idx + k];
+      }
       for (pt_idx = 4; pt_idx < 7; pt_idx++)
+      {
         prod_a[pt_idx][3 * 8 * idx + k] = prod_tmp[pt_idx][3 * 8 * idx + k];
+      }
     }
   }
 }
 
-int unfold(test_toom4_fwd_inv_dual_bottom)() {
+int unfold(test_toom4_fwd_inv_dual_bottom)()
+{
   uint16_t *const a_shift = a + 3 * DIMENSION_DIV4;
   uint16_t *const b_shift = b + 3 * DIMENSION_DIV4;
   debug_test_start(TEST_STRING_TOOM4_FWD_INV_DUAL_BOTTOM_START);
@@ -1765,7 +1855,8 @@ int unfold(test_toom4_fwd_inv_dual_bottom)() {
   mask_poly(a, 7 * DIMENSION_DIV4, PRECISION);
   mask_poly(b, 7 * DIMENSION_DIV4, PRECISION);
 
-  if (compare_poly(a_shift, b_shift, DIMENSION) != 0) {
+  if (compare_poly(a_shift, b_shift, DIMENSION) != 0)
+  {
     debug_test_fail();
     debug_print_poly(b_shift, DIMENSION, "Ref: ");
     debug_print_poly(a_shift, DIMENSION, "MVE: ");
@@ -1776,7 +1867,8 @@ int unfold(test_toom4_fwd_inv_dual_bottom)() {
   return (0);
 }
 
-int unfold(test_toom4_fwd_inv_dual_bottom_oop)() {
+int unfold(test_toom4_fwd_inv_dual_bottom_oop)()
+{
   uint16_t *const a_shift = a + 3 * DIMENSION_DIV4;
   uint16_t *const b_shift = b + 3 * DIMENSION_DIV4;
   debug_test_start(TEST_STRING_TOOM4_FWD_INV_DUAL_BOTTOM_OOP_START);
@@ -1815,7 +1907,8 @@ int unfold(test_toom4_fwd_inv_dual_bottom_oop)() {
   mask_poly(c, 7 * DIMENSION_DIV4, PRECISION);
   mask_poly(b, 7 * DIMENSION_DIV4, PRECISION);
 
-  if (compare_poly(c, b_shift, DIMENSION) != 0) {
+  if (compare_poly(c, b_shift, DIMENSION) != 0)
+  {
     debug_test_fail();
     debug_print_poly(b_shift, DIMENSION, "Ref: ");
     debug_print_poly(c, DIMENSION, "MVE: ");
@@ -1829,7 +1922,8 @@ int unfold(test_toom4_fwd_inv_dual_bottom_oop)() {
 
 #if defined(TEST_TOOM4_FWD_INV_DUAL_TOP) || \
     defined(TEST_TOOM4_FWD_INV_DUAL_TOP_OOP)
-static void multiply_by_eval_of_1_toom4_dual_top(uint16_t *poly_a) {
+static void multiply_by_eval_of_1_toom4_dual_top(uint16_t *poly_a)
+{
   unsigned limb_dim = DIMENSION_DIV4;
   unsigned idx, pt_idx, k;
   MAKE_BUFFER(tmp, 16, BUFFER_SIZE, 8);
@@ -1839,30 +1933,43 @@ static void multiply_by_eval_of_1_toom4_dual_top(uint16_t *poly_a) {
 
   uint16_t eval_of_one[] = {1, 8, 8, 1, 1, 1, 0};
 
-  for (idx = 0; idx < limb_dim / 8; idx++) {
-    for (k = 0; k < 8; k++) {
+  for (idx = 0; idx < limb_dim / 8; idx++)
+  {
+    for (k = 0; k < 8; k++)
+    {
       for (pt_idx = 0; pt_idx < 4; pt_idx++)
+      {
         prod_tmp[pt_idx][4 * 8 * idx + k] =
             eval_a[pt_idx][4 * 8 * idx + k] * eval_of_one[pt_idx];
+      }
       for (pt_idx = 4; pt_idx < 7; pt_idx++)
+      {
         prod_tmp[pt_idx][3 * 8 * idx + k] =
             eval_a[pt_idx][3 * 8 * idx + k] * eval_of_one[pt_idx];
+      }
     }
   }
 
-  for (idx = 0; idx < limb_dim / 8; idx++) {
-    for (k = 0; k < 8; k++) {
+  for (idx = 0; idx < limb_dim / 8; idx++)
+  {
+    for (k = 0; k < 8; k++)
+    {
       for (pt_idx = 0; pt_idx < 4; pt_idx++)
+      {
         prod_a[pt_idx][4 * 8 * idx + k] = prod_tmp[pt_idx][4 * 8 * idx + k];
+      }
       for (pt_idx = 4; pt_idx < 7; pt_idx++)
+      {
         prod_a[pt_idx][3 * 8 * idx + k] = prod_tmp[pt_idx][3 * 8 * idx + k];
+      }
     }
   }
 }
 #endif
 
 #if defined(TEST_TOOM4_FWD_INV_DUAL_TOP)
-int unfold(test_toom4_fwd_inv_dual_top)() {
+int unfold(test_toom4_fwd_inv_dual_top)()
+{
   debug_test_start(TEST_STRING_TOOM4_FWD_INV_DUAL_TOP_START);
 
   generate_sample();
@@ -1899,7 +2006,8 @@ int unfold(test_toom4_fwd_inv_dual_top)() {
   mask_poly(a, 7 * DIMENSION_DIV4, PRECISION);
   mask_poly(b, 7 * DIMENSION_DIV4, PRECISION);
 
-  if (compare_poly(a, b, DIMENSION) != 0) {
+  if (compare_poly(a, b, DIMENSION) != 0)
+  {
     debug_test_fail();
     debug_print_poly(b, DIMENSION, "REF: ");
     debug_print_poly(a, DIMENSION, "MVE: ");
@@ -1912,7 +2020,8 @@ int unfold(test_toom4_fwd_inv_dual_top)() {
 #endif
 
 #if defined(TEST_TOOM4_FWD_INV_DUAL_TOP_OOP)
-int unfold(test_toom4_fwd_inv_dual_top_oop)() {
+int unfold(test_toom4_fwd_inv_dual_top_oop)()
+{
   debug_test_start(TEST_STRING_TOOM4_FWD_INV_DUAL_TOP_START);
 
   generate_sample();
@@ -1949,7 +2058,8 @@ int unfold(test_toom4_fwd_inv_dual_top_oop)() {
   mask_poly(c, 7 * DIMENSION_DIV4, PRECISION);
   mask_poly(b, 7 * DIMENSION_DIV4, PRECISION);
 
-  if (compare_poly(c, b, DIMENSION) != 0) {
+  if (compare_poly(c, b, DIMENSION) != 0)
+  {
     debug_test_fail();
     debug_print_poly(b, DIMENSION, "REF: ");
     debug_print_poly(c, DIMENSION, "MVE: ");
@@ -1962,7 +2072,8 @@ int unfold(test_toom4_fwd_inv_dual_top_oop)() {
 #endif /* TEST_TOOM4_FWD_INV_DUAL_TOP_OOP */
 
 #if defined(TEST_TOOM3_FWD_INV)
-static void multiply_by_eval_of_1_toom3(uint16_t *a) {
+static void multiply_by_eval_of_1_toom3(uint16_t *a)
+{
   unsigned limb_dim = DIMENSION / 3;
   unsigned idx, pt_idx;
   MAKE_BUFFER(tmp, 16, BUFFER_SIZE, 8);
@@ -1973,15 +2084,24 @@ static void multiply_by_eval_of_1_toom3(uint16_t *a) {
   uint16_t eval_of_one[] = {1, 1, 1, 1, 0};
 
   for (idx = 0; idx < limb_dim; idx++)
+  {
     for (pt_idx = 0; pt_idx < 5; pt_idx++)
+    {
       prod_tmp[pt_idx][idx] = eval_a[pt_idx][idx] * eval_of_one[pt_idx];
+    }
+  }
 
   for (idx = 0; idx < limb_dim; idx++)
+  {
     for (pt_idx = 0; pt_idx < 5; pt_idx++)
+    {
       prod_a[pt_idx][idx] = prod_tmp[pt_idx][idx];
+    }
+  }
 }
 
-int unfold(test_toom3_fwd_inv)() {
+int unfold(test_toom3_fwd_inv)()
+{
   debug_test_start(TEST_STRING_TOOM3_FWD_INV_START);
   generate_sample();
   copy_poly(b, a, DIMENSION);
@@ -2016,7 +2136,8 @@ int unfold(test_toom3_fwd_inv)() {
   mask_poly(a, DIMENSION, PRECISION);
   mask_poly(b, DIMENSION, PRECISION);
 
-  if (compare_poly(a, b, DIMENSION) != 0) {
+  if (compare_poly(a, b, DIMENSION) != 0)
+  {
     debug_test_fail();
     debug_print_poly(b, DIMENSION, "Ref: ");
     debug_print_poly(a, DIMENSION, "MVE: ");
@@ -2031,7 +2152,8 @@ int unfold(test_toom3_fwd_inv)() {
 #if defined(TEST_TOOM4_FWD_MUL_INV)
 
 static void multiply_evals_toom4(uint16_t *poly_c, uint16_t *poly_a,
-                                 uint16_t *poly_b) {
+                                 uint16_t *poly_b)
+{
   unsigned limb_dim = DIMENSION / 4;
   unsigned pt_idx;
 
@@ -2039,27 +2161,33 @@ static void multiply_evals_toom4(uint16_t *poly_c, uint16_t *poly_a,
   make_eval_offsets_toom4(poly_b, eval_b, 1);
   make_prod_offsets_toom4(poly_c, prod_c, 2);
 
-  for (pt_idx = 0; pt_idx < 7; pt_idx++) {
+  for (pt_idx = 0; pt_idx < 7; pt_idx++)
+  {
     /* Multiply evaluations with naive schoolbook implementation. */
     poly_u16_mul_div4_C(prod_c[pt_idx], eval_a[pt_idx], eval_b[pt_idx]);
   }
 }
 
-static void narrow_limbs_toom4(uint16_t *poly_a) {
+static void narrow_limbs_toom4(uint16_t *poly_a)
+{
   unsigned limb_dim = DIMENSION / 4;
   unsigned idx, pt_idx;
 
   make_prod_offsets_toom4(poly_a, a_wide, 2);
   make_prod_offsets_toom4(poly_a, a_narrow, 1);
 
-  for (pt_idx = 0; pt_idx < 7; pt_idx++) {
+  for (pt_idx = 0; pt_idx < 7; pt_idx++)
+  {
     unsigned cur_limb_dim = pt_idx < 6 ? limb_dim : 2 * limb_dim;
     for (idx = 0; idx < cur_limb_dim; idx++)
+    {
       a_narrow[pt_idx][idx] = a_wide[pt_idx][idx];
+    }
   }
 }
 
-int unfold(test_toom4_fwd_mul_inv)() {
+int unfold(test_toom4_fwd_mul_inv)()
+{
   debug_test_start(TEST_STRING_TOOM4_FWD_MUL_INV_START);
   generate_sample();
 
@@ -2091,7 +2219,8 @@ int unfold(test_toom4_fwd_mul_inv)() {
   mask_poly(c0, 2 * DIMENSION, PRECISION);
   mask_poly(c1, 2 * DIMENSION, PRECISION);
 
-  if (compare_poly(c0, c1, 2 * DIMENSION) != 0) {
+  if (compare_poly(c0, c1, 2 * DIMENSION) != 0)
+  {
     debug_test_fail();
     debug_print_poly(c1, 2 * (DIMENSION - 1), "Ref: ");
     debug_print_poly(c0, 2 * (DIMENSION - 1), "MVE: ");
@@ -2106,7 +2235,8 @@ int unfold(test_toom4_fwd_mul_inv)() {
 #if defined(TEST_TOOM4_FWD_MUL_INV_DUAL_PACKED_LIMBS_OOP)
 static void multiply_evals_toom4_dual_packed_limbs_oop(uint16_t *poly_c,
                                                        uint16_t *poly_a,
-                                                       uint16_t *poly_b) {
+                                                       uint16_t *poly_b)
+{
   unsigned limb_dim = DIMENSION / 4;
   unsigned pt_idx;
 
@@ -2114,7 +2244,8 @@ static void multiply_evals_toom4_dual_packed_limbs_oop(uint16_t *poly_c,
   make_eval_offsets_toom4_oop(poly_b, eval_b, 1);
   make_prod_offsets_toom4(poly_c, prod_c, 1);
 
-  for (pt_idx = 0; pt_idx < 7; pt_idx++) {
+  for (pt_idx = 0; pt_idx < 7; pt_idx++)
+  {
     /* Multiply evaluations with naive schoolbook implementation. */
 
     poly_u16_mul_anticyclic_div4_C(prod_c[pt_idx], eval_a[pt_idx],
@@ -2122,7 +2253,8 @@ static void multiply_evals_toom4_dual_packed_limbs_oop(uint16_t *poly_c,
   }
 }
 
-int unfold(test_toom4_fwd_mul_inv_dual_packed_limbs_oop)() {
+int unfold(test_toom4_fwd_mul_inv_dual_packed_limbs_oop)()
+{
   debug_test_start(TEST_STRING_TOOM4_FWD_MUL_INV_DUAL_PACKED_LIMBS_OOP_START);
   generate_sample();
 
@@ -2146,7 +2278,8 @@ int unfold(test_toom4_fwd_mul_inv_dual_packed_limbs_oop)() {
   mask_poly(c2, DIMENSION, PRECISION);
   mask_poly(c1, DIMENSION, PRECISION);
 
-  if (compare_poly(c2, c1, DIMENSION) != 0) {
+  if (compare_poly(c2, c1, DIMENSION) != 0)
+  {
     debug_test_fail();
     debug_print_poly(c1, 2 * (DIMENSION - 1), "Ref: ");
     debug_print_poly(c2, 2 * (DIMENSION - 1), "MVE: ");
@@ -2161,7 +2294,8 @@ int unfold(test_toom4_fwd_mul_inv_dual_packed_limbs_oop)() {
 
 #if defined(TEST_TOOM4_FWD_MUL_INV_DUAL_BOTTOM)
 static void multiply_evals_toom4_dual_bottom(uint16_t *poly_c, uint16_t *poly_a,
-                                             uint16_t *poly_b) {
+                                             uint16_t *poly_b)
+{
   unsigned limb_dim = DIMENSION_DIV4;
   unsigned pt_idx;
 
@@ -2169,14 +2303,16 @@ static void multiply_evals_toom4_dual_bottom(uint16_t *poly_c, uint16_t *poly_a,
   make_eval_offsets_toom4_dual_bottom(poly_b, eval_b, 1);
   make_eval_offsets_toom4_dual_bottom(poly_c, prod_c, 1);
 
-  for (pt_idx = 0; pt_idx < 4; pt_idx++) {
+  for (pt_idx = 0; pt_idx < 4; pt_idx++)
+  {
     /* Multiply evaluations with naive schoolbook implementation. */
 
     poly_u16_mul_anticyclic_div4_4x8_C(prod_c[pt_idx], eval_a[pt_idx],
                                        eval_b[pt_idx]);
   }
 
-  for (pt_idx = 4; pt_idx < 7; pt_idx++) {
+  for (pt_idx = 4; pt_idx < 7; pt_idx++)
+  {
     /* Multiply evaluations with naive schoolbook implementation. */
 
     poly_u16_mul_anticyclic_div4_3x8_C(prod_c[pt_idx], eval_a[pt_idx],
@@ -2184,7 +2320,8 @@ static void multiply_evals_toom4_dual_bottom(uint16_t *poly_c, uint16_t *poly_a,
   }
 }
 
-int unfold(test_toom4_fwd_mul_inv_dual_bottom)() {
+int unfold(test_toom4_fwd_mul_inv_dual_bottom)()
+{
   uint16_t *const a_shift = a + 3 * DIMENSION_DIV4;
   uint16_t *const b_shift = b + 3 * DIMENSION_DIV4;
   uint16_t *const c0_shift = c0 + 3 * DIMENSION_DIV4;
@@ -2212,7 +2349,8 @@ int unfold(test_toom4_fwd_mul_inv_dual_bottom)() {
   mask_poly(c0_shift, DIMENSION, PRECISION);
   mask_poly(c1, DIMENSION, PRECISION);
 
-  if (compare_poly(c0_shift, c1, DIMENSION) != 0) {
+  if (compare_poly(c0_shift, c1, DIMENSION) != 0)
+  {
     debug_test_fail();
     debug_print_poly(c1, DIMENSION, "Ref: ");
     debug_print_poly(c0_shift, DIMENSION, "MVE: ");
@@ -2227,7 +2365,8 @@ int unfold(test_toom4_fwd_mul_inv_dual_bottom)() {
 #if defined(TEST_TOOM4_FWD_MUL_INV_DUAL_TOP)
 
 static void multiply_evals_toom4_dual_top(uint16_t *poly_c, uint16_t *poly_a,
-                                          uint16_t *poly_b) {
+                                          uint16_t *poly_b)
+{
   unsigned limb_dim = DIMENSION_DIV4;
   unsigned pt_idx;
 
@@ -2235,14 +2374,16 @@ static void multiply_evals_toom4_dual_top(uint16_t *poly_c, uint16_t *poly_a,
   make_eval_offsets_toom4_dual_top(poly_b, eval_b, 1);
   make_eval_offsets_toom4_dual_top(poly_c, prod_c, 1);
 
-  for (pt_idx = 0; pt_idx < 4; pt_idx++) {
+  for (pt_idx = 0; pt_idx < 4; pt_idx++)
+  {
     /* Multiply evaluations with naive schoolbook implementation. */
 
     poly_u16_mul_anticyclic_div4_4x8_C(prod_c[pt_idx], eval_a[pt_idx],
                                        eval_b[pt_idx]);
   }
 
-  for (pt_idx = 4; pt_idx < 7; pt_idx++) {
+  for (pt_idx = 4; pt_idx < 7; pt_idx++)
+  {
     /* Multiply evaluations with naive schoolbook implementation. */
 
     poly_u16_mul_anticyclic_div4_3x8_C(prod_c[pt_idx], eval_a[pt_idx],
@@ -2250,7 +2391,8 @@ static void multiply_evals_toom4_dual_top(uint16_t *poly_c, uint16_t *poly_a,
   }
 }
 
-int unfold(test_toom4_fwd_mul_inv_dual_top)() {
+int unfold(test_toom4_fwd_mul_inv_dual_top)()
+{
   debug_test_start(TEST_STRING_TOOM4_FWD_MUL_INV_DUAL_TOP_START);
   generate_sample();
 
@@ -2274,7 +2416,8 @@ int unfold(test_toom4_fwd_mul_inv_dual_top)() {
   mask_poly(c0, DIMENSION, PRECISION);
   mask_poly(c1, DIMENSION, PRECISION);
 
-  if (compare_poly(c0, c1, DIMENSION) != 0) {
+  if (compare_poly(c0, c1, DIMENSION) != 0)
+  {
     debug_test_fail();
     debug_print_poly(c1, DIMENSION, "Ref: ");
     debug_print_poly(c0, DIMENSION, "MVE: ");
@@ -2288,7 +2431,8 @@ int unfold(test_toom4_fwd_mul_inv_dual_top)() {
 
 #if defined(TEST_TOOM3_FWD_MUL_INV)
 
-static void multiply_evals_toom3(uint16_t *c, uint16_t *a, uint16_t *b) {
+static void multiply_evals_toom3(uint16_t *c, uint16_t *a, uint16_t *b)
+{
   unsigned limb_dim = DIMENSION / 3;
   unsigned pt_idx;
 
@@ -2296,28 +2440,34 @@ static void multiply_evals_toom3(uint16_t *c, uint16_t *a, uint16_t *b) {
   make_eval_offsets_toom3(b, eval_b, 1);
   make_prod_offsets_toom3(c, prod_c, 2);
 
-  for (pt_idx = 0; pt_idx < 5; pt_idx++) {
+  for (pt_idx = 0; pt_idx < 5; pt_idx++)
+  {
     /* Multiply evaluations with naive schoolbook implementation. */
 
     poly_u16_mul_div3_C(prod_c[pt_idx], eval_a[pt_idx], eval_b[pt_idx]);
   }
 }
 
-static void narrow_limbs_toom3(uint16_t *a) {
+static void narrow_limbs_toom3(uint16_t *a)
+{
   unsigned limb_dim = DIMENSION / 3;
   unsigned idx, pt_idx;
 
   make_prod_offsets_toom3(a, a_wide, 2);
   make_prod_offsets_toom3(a, a_narrow, 1);
 
-  for (pt_idx = 0; pt_idx < 5; pt_idx++) {
+  for (pt_idx = 0; pt_idx < 5; pt_idx++)
+  {
     unsigned cur_limb_dim = pt_idx < 4 ? limb_dim : 2 * limb_dim;
     for (idx = 0; idx < cur_limb_dim; idx++)
+    {
       a_narrow[pt_idx][idx] = a_wide[pt_idx][idx];
+    }
   }
 }
 
-int unfold(test_toom3_fwd_mul_inv)() {
+int unfold(test_toom3_fwd_mul_inv)()
+{
   debug_test_start(TEST_STRING_TOOM3_FWD_MUL_INV_START);
 
   generate_sample();
@@ -2352,7 +2502,8 @@ int unfold(test_toom3_fwd_mul_inv)() {
   mask_poly(c0, 2 * DIMENSION, PRECISION);
   mask_poly(c1, 2 * DIMENSION, PRECISION);
 
-  if (compare_poly(c0, c1, 2 * DIMENSION) != 0) {
+  if (compare_poly(c0, c1, 2 * DIMENSION) != 0)
+  {
     debug_test_fail();
     debug_print_poly(c1, 2 * (DIMENSION - 1), "Ref: ");
     debug_print_poly(c0, 2 * (DIMENSION - 1), "MVE: ");
@@ -2364,157 +2515,208 @@ int unfold(test_toom3_fwd_mul_inv)() {
 }
 #endif /* TEST_TOOM3_FWD_MUL_INV */
 
-int unfold(test_toom_all)(void) {
+int unfold(test_toom_all)(void)
+{
   int ret;
 
 #if defined(TEST_TOOM3_FWD)
   ret = run(test_toom3_fwd);
   if (ret != 0)
+  {
     return (1);
+  }
 #endif
 
 #if defined(TEST_TOOM3_FWD_INV)
   ret = run(test_toom3_fwd_inv);
   if (ret != 0)
+  {
     return (1);
+  }
 #endif
 
 #if defined(TEST_TOOM3_FWD_MUL_INV)
   ret = run(test_toom3_fwd_mul_inv);
   if (ret != 0)
+  {
     return (1);
+  }
 #endif
 
 #if defined(TEST_TOOM3_STANDALONE)
   ret = run(test_toom3_standalone);
   if (ret != 0)
+  {
     return (1);
+  }
 #endif
 
 #if defined(TEST_TOOM4_FWD)
   ret = run(test_toom4_fwd);
   if (ret != 0)
+  {
     return (1);
+  }
 #endif
 
 #if defined(TEST_TOOM4_FWD_OOP)
   ret = run(test_toom4_fwd_oop);
   if (ret != 0)
+  {
     return (1);
+  }
 #endif
 
 #if defined(TEST_TOOM4_FWD_KARATSUBA_X1_OOP)
   ret = run(test_toom4_fwd_karatsuba_x1_oop);
   if (ret != 0)
+  {
     return (1);
+  }
 #endif
 
 #if defined(TEST_TOOM4_FWD_KARATSUBA_X2_OOP)
   ret = run(test_toom4_fwd_karatsuba_x2_oop);
   if (ret != 0)
+  {
     return (1);
+  }
 #endif
 
 #if defined(TEST_TOOM4_FWD_DUAL_TOP)
   ret = run(test_toom4_fwd_dual_top);
   if (ret != 0)
+  {
     return (1);
+  }
 #endif
 
 #if defined(TEST_TOOM4_FWD_DUAL_TOP_OOP)
   ret = run(test_toom4_fwd_dual_top_oop);
   if (ret != 0)
+  {
     return (1);
+  }
 #endif
 
 #if defined(TEST_TOOM4_FWD_DUAL_PACKED_LIMBS_OOP)
   ret = run(test_toom4_fwd_dual_packed_limbs_oop);
   if (ret != 0)
+  {
     return (1);
+  }
 #endif
 
 #if defined(TEST_TOOM4_FWD_DUAL_PACKED_LIMBS_KARATSUBA_X1_OOP)
   ret = run(test_toom4_fwd_dual_packed_limbs_karatsuba_x1_oop);
   if (ret != 0)
+  {
     return (1);
+  }
 #endif
 
 #if defined(TEST_TOOM4_FWD_DUAL_PACKED_LIMBS_KARATSUBA_X2_OOP)
   ret = run(test_toom4_fwd_dual_packed_limbs_karatsuba_x2_oop);
   if (ret != 0)
+  {
     return (1);
+  }
 #endif
 
 #if defined(TEST_TOOM4_FWD_DUAL_BOTTOM)
   ret = run(test_toom4_fwd_dual_bottom);
   if (ret != 0)
+  {
     return (1);
+  }
 #endif
 
 #if defined(TEST_TOOM4_FWD_INV)
   ret = run(test_toom4_fwd_inv);
   if (ret != 0)
+  {
     return (1);
+  }
 #endif
 
 #if defined(TEST_TOOM4_FWD_INV_DUAL_TOP)
   ret = run(test_toom4_fwd_inv_dual_top);
   if (ret != 0)
+  {
     return (1);
+  }
 #endif
 
 #if defined(TEST_TOOM4_FWD_INV_DUAL_TOP_OOP)
   ret = run(test_toom4_fwd_inv_dual_top_oop);
   if (ret != 0)
+  {
     return (1);
+  }
 #endif
 
 #if defined(TEST_TOOM4_FWD_INV_DUAL_PACKED_LIMBS_OOP)
   ret = run(test_toom4_fwd_inv_dual_packed_limbs_oop);
   if (ret != 0)
+  {
     return (1);
+  }
 #endif
 
 #if defined(TEST_TOOM4_FWD_INV_DUAL_BOTTOM)
   ret = run(test_toom4_fwd_inv_dual_bottom);
   if (ret != 0)
+  {
     return (1);
+  }
 #endif
 
 #if defined(TEST_TOOM4_FWD_INV_DUAL_BOTTOM_OOP)
   ret = run(test_toom4_fwd_inv_dual_bottom_oop);
   if (ret != 0)
+  {
     return (1);
+  }
 #endif
 
 #if defined(TEST_TOOM4_FWD_MUL_INV)
   ret = run(test_toom4_fwd_mul_inv);
   if (ret != 0)
+  {
     return (1);
+  }
 #endif
 
 #if defined(TEST_TOOM4_FWD_MUL_INV_DUAL_BOTTOM)
   ret = run(test_toom4_fwd_mul_inv_dual_bottom);
   if (ret != 0)
+  {
     return (1);
+  }
 #endif
 
 #if defined(TEST_TOOM4_FWD_MUL_INV_DUAL_TOP)
   ret = run(test_toom4_fwd_mul_inv_dual_top);
   if (ret != 0)
+  {
     return (1);
+  }
 #endif
 
 #if defined(TEST_TOOM4_FWD_MUL_INV_DUAL_PACKED_LIMBS_OOP)
   ret = run(test_toom4_fwd_mul_inv_dual_packed_limbs_oop);
   if (ret != 0)
+  {
     return (1);
+  }
 #endif
 
 #if defined(TEST_TOOM4_STANDALONE)
   ret = run(test_toom4_standalone);
   if (ret != 0)
+  {
     return (1);
+  }
 #endif
 
   debug_printf("ALL GOOD!\n");

@@ -34,9 +34,14 @@
 #define ALIGNED(N) __attribute__((aligned(N)))
 
 
-enum clock_mode { CLOCK_FAST, CLOCK_BENCHMARK };
+enum clock_mode
+{
+  CLOCK_FAST,
+  CLOCK_BENCHMARK
+};
 
-typedef struct {
+typedef struct
+{
   uint32_t systick_cycles;
   uint32_t pmu_cycles;
 

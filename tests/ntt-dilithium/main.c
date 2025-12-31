@@ -79,15 +79,19 @@ int32_t modulus_inv_u32 = 58728449;
 
 int32_t roots[NTT_ROOT_ORDER / 2] __attribute__((aligned(16))) = {0};
 
-void build_roots() {
-  for (unsigned i = 0; i < NTT_ROOT_ORDER / 2; i++) {
+void build_roots()
+{
+  for (unsigned i = 0; i < NTT_ROOT_ORDER / 2; i++)
+  {
     roots[i] = mod_pow_s32(base_root, i, modulus);
   }
 }
 
-unsigned bit_reverse(unsigned in, unsigned width) {
+unsigned bit_reverse(unsigned in, unsigned width)
+{
   unsigned out = 0;
-  while (width--) {
+  while (width--)
+  {
     out <<= 1;
     out |= (in % 2);
     in >>= 1;
@@ -95,12 +99,15 @@ unsigned bit_reverse(unsigned in, unsigned width) {
   return (out);
 }
 
-void ntt_s32_C(int32_t *src) {
+void ntt_s32_C(int32_t *src)
+{
   int32_t res[NTT_SIZE];
   build_roots();
 
-  for (unsigned t = 0; t < NTT_LAYER_STRIDE; t++) {
-    for (unsigned i = 0; i < NTT_INCOMPLETE_SIZE; i++) {
+  for (unsigned t = 0; t < NTT_LAYER_STRIDE; t++)
+  {
+    for (unsigned i = 0; i < NTT_INCOMPLETE_SIZE; i++)
+    {
       int32_t tmp = 0;
       /* A negacyclic FFT is half of a full FFT, where we've 'chosen -1'
        * in the first layer. That explains the corrections by
@@ -110,7 +117,8 @@ void ntt_s32_C(int32_t *src) {
           bit_reverse(i + NTT_INCOMPLETE_SIZE, NTT_INCOMPLETE_LAYERS + 1) *
           NTT_LAYER_STRIDE;
 
-      for (unsigned j = 0; j < NTT_INCOMPLETE_SIZE; j++) {
+      for (unsigned j = 0; j < NTT_INCOMPLETE_SIZE; j++)
+      {
         int32_t cur;
         unsigned exp = (multiplier * j) % NTT_ROOT_ORDER;
         unsigned sub = (exp >= (NTT_ROOT_ORDER / 2));
@@ -119,9 +127,13 @@ void ntt_s32_C(int32_t *src) {
         cur = mod_mul_s32(src[NTT_LAYER_STRIDE * j + t], roots[exp], modulus);
 
         if (!sub)
+        {
           tmp = mod_add_s32(tmp, cur, modulus);
+        }
         else
+        {
           tmp = mod_sub_s32(tmp, cur, modulus);
+        }
       }
       res[NTT_LAYER_STRIDE * i + t] = tmp;
     }
@@ -130,21 +142,30 @@ void ntt_s32_C(int32_t *src) {
   memcpy(src, res, sizeof(res));
 }
 
-void buf_bitrev_4(int32_t *src) {
+void buf_bitrev_4(int32_t *src)
+{
   int32_t *src_ = (int32_t *)src;
-  for (unsigned i = 0; i < NTT_SIZE; i += 16) {
+  for (unsigned i = 0; i < NTT_SIZE; i += 16)
+  {
     int32_t tmp[16];
     for (unsigned t = 0; t < 16; t++)
+    {
       tmp[t] = src_[i + t];
+    }
 
     for (unsigned t0 = 0; t0 < 4; t0++)
+    {
       for (unsigned t1 = 0; t1 < 4; t1++)
+      {
         src_[i + t0 * 4 + t1] = tmp[t1 * 4 + t0];
+      }
+    }
   }
 }
 
 #define MAKE_TEST_FWD(var, func, rev4)                                     \
-  int test_ntt_##var() {                                                   \
+  int test_ntt_##var()                                                     \
+  {                                                                        \
     debug_test_start("NTT s32 for " #func);                                \
     int32_t src[NTT_SIZE] __attribute__((aligned(16)));                    \
     int32_t src_copy[NTT_SIZE] __attribute__((aligned(16)));               \
@@ -168,7 +189,8 @@ void buf_bitrev_4(int32_t *src) {
                                                                            \
     mod_reduce_buf_s32(src, NTT_SIZE, modulus);                            \
     if (compare_buf_u32((uint32_t const *)src, (uint32_t const *)src_copy, \
-                        NTT_SIZE) != 0) {                                  \
+                        NTT_SIZE) != 0)                                    \
+    {                                                                      \
       debug_print_buf_s32(src_copy, NTT_SIZE, "Reference");                \
       debug_print_buf_s32(src, NTT_SIZE, "MVE");                           \
       debug_test_fail();                                                   \
@@ -203,14 +225,16 @@ void hal_pmu_start_pmu_stats(pmu_stats *s);
 void hal_pmu_finish_pmu_stats(pmu_stats *s);
 void hal_pmu_send_stats(char *s, pmu_stats const *stats);
 
-void hal_pmu_send_stats_wrapper(pmu_stats *stats) {
+void hal_pmu_send_stats_wrapper(pmu_stats *stats)
+{
 #if defined(ENABLE_PMU_STATS)
   hal_pmu_send_stats("", stats);
 #endif
 }
 
 #define MAKE_BENCH(var, func)                                 \
-  int bench_##var() {                                         \
+  int bench_##var()                                           \
+  {                                                           \
     int32_t src[NTT_SIZE] __attribute__((aligned(16)));       \
     pmu_stats stats;                                          \
     (func)(src);                                              \
@@ -240,7 +264,8 @@ MAKE_BENCH(ntt_l2222_no_trans_vld4_opt_m85,
            ntt_dilithium_12_34_56_78_no_trans_vld4_opt_m85)
 MAKE_BENCH(ntt_l332_opt_size_m85, ntt_dilithium_123_456_78_opt_size_m85)
 
-int main(void) {
+int main(void)
+{
   int ret = 0;
 
   debug_printf("\nDilithium NTT Test!\n");
@@ -248,33 +273,51 @@ int main(void) {
   // base
   ret |= test_ntt_l2222();
   if (ret != 0)
+  {
     return (1);
+  }
   ret |= test_ntt_l2222_no_trans_vld4();
   if (ret != 0)
+  {
     return (1);
+  }
   ret |= test_ntt_l332();
   if (ret != 0)
+  {
     return (1);
+  }
   // M55
   ret |= test_ntt_l2222_opt_m55();
   if (ret != 0)
+  {
     return (1);
+  }
   ret |= test_ntt_l2222_no_trans_vld4_opt_m55();
   if (ret != 0)
+  {
     return (1);
+  }
   ret |= test_ntt_l332_opt_size_m55();
   if (ret != 0)
+  {
     return (1);
+  }
   // M85
   ret |= test_ntt_l2222_opt_m85();
   if (ret != 0)
+  {
     return (1);
+  }
   ret |= test_ntt_l2222_no_trans_vld4_opt_m85();
   if (ret != 0)
+  {
     return (1);
+  }
   ret |= test_ntt_l332_opt_size_m85();
   if (ret != 0)
+  {
     return (1);
+  }
 
   hal_pmu_enable();
   debug_printf("Dilithium NTT Bench!\n");

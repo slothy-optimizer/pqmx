@@ -44,7 +44,8 @@ extern void permute_and_clear_u32(uint32_t *src, uint32_t *dst);
 #define BITS_TO_BYTES(bits) (bits / 8)
 
 #define GEN_PERMUTATION_TEST(bits)                            \
-  int run_permute_test_u##bits() {                            \
+  int run_permute_test_u##bits()                              \
+  {                                                           \
     uint(bits) src[BUFSZ_BYTES / BITS_TO_BYTES(bits)];        \
     uint(bits) dst[BUFSZ_BYTES / BITS_TO_BYTES(bits)];        \
     unsigned i, j;                                            \
@@ -61,10 +62,13 @@ extern void permute_and_clear_u32(uint32_t *src, uint32_t *dst);
                                                               \
     /* In the case of 8-bit lanes, there will be overlapping  \
      * values. Account for that */                            \
-    if ((bits) == 8) {                                        \
+    if ((bits) == 8)                                          \
+    {                                                         \
       multiples = (entries + 255) >> 8;                       \
       values = 256;                                           \
-    } else {                                                  \
+    }                                                         \
+    else                                                      \
+    {                                                         \
       multiples = 1;                                          \
       values = entries;                                       \
     }                                                         \
@@ -73,20 +77,24 @@ extern void permute_and_clear_u32(uint32_t *src, uint32_t *dst);
                                                               \
     /* Check (very naively) that dst is a permutation of      \
      * [0, .., entries - 1] and that src has been cleared. */ \
-    for (i = 0; i < values; i++) {                            \
+    for (i = 0; i < values; i++)                              \
+    {                                                         \
       int num_found = 0;                                      \
-      for (j = 0; j < (unsigned)entries; j++) {               \
+      for (j = 0; j < (unsigned)entries; j++)                 \
+      {                                                       \
         if (dst[j] == i)                                      \
           num_found++;                                        \
       }                                                       \
                                                               \
-      if (src[i] != 42 || num_found != multiples) {           \
+      if (src[i] != 42 || num_found != multiples)             \
+      {                                                       \
         fail = 1;                                             \
         break;                                                \
       }                                                       \
     }                                                         \
                                                               \
-    if (fail) {                                               \
+    if (fail)                                                 \
+    {                                                         \
       debug_test_fail();                                      \
       debug_print_buf_u##bits(src, entries, "src");           \
       debug_print_buf_u##bits(dst, entries, "dst");           \
@@ -101,20 +109,27 @@ GEN_PERMUTATION_TEST(8)
 GEN_PERMUTATION_TEST(16)
 GEN_PERMUTATION_TEST(32)
 
-int main(void) {
+int main(void)
+{
   int ret;
 
   ret = run_permute_test_u32();
   if (ret != 0)
+  {
     return (1);
+  }
 
   ret = run_permute_test_u16();
   if (ret != 0)
+  {
     return (1);
+  }
 
   ret = run_permute_test_u8();
   if (ret != 0)
+  {
     return (1);
+  }
 
   debug_printf("ALL GOOD!\n");
   return (0);

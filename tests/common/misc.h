@@ -82,22 +82,26 @@ int compare_buf_u32(uint32_t const *src_a, uint32_t const *src_b, unsigned len);
 int compare_buf_u64(uint64_t const *src_a, uint64_t const *src_b, unsigned len);
 
 static inline int compare_buf_s8(int8_t const *src_a, int8_t const *src_b,
-                                 unsigned len) {
+                                 unsigned len)
+{
   return (compare_buf_u8((uint8_t const *)src_a, (uint8_t const *)src_b, len));
 }
 
 static inline int compare_buf_s16(int16_t const *src_a, int16_t const *src_b,
-                                  unsigned len) {
+                                  unsigned len)
+{
   return (
       compare_buf_u16((uint16_t const *)src_a, (uint16_t const *)src_b, len));
 }
 static inline int compare_buf_s32(int32_t const *src_a, int32_t const *src_b,
-                                  unsigned len) {
+                                  unsigned len)
+{
   return (
       compare_buf_u32((uint32_t const *)src_a, (uint32_t const *)src_b, len));
 }
 static inline int compare_buf_s64(int64_t const *src_a, int64_t const *src_b,
-                                  unsigned len) {
+                                  unsigned len)
+{
   return (
       compare_buf_u64((uint64_t const *)src_a, (uint64_t const *)src_b, len));
 }

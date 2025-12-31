@@ -98,28 +98,37 @@ int32_t modulus = NTT_PRIME;
 int32_t roots[NTT_ROOT_ORDER / 2] __attribute__((aligned(16))) = {0};
 uint32_t roots_twisted[NTT_ROOT_ORDER / 2] __attribute__((aligned(16))) = {0};
 
-void build_roots() {
+void build_roots()
+{
   static int done = 0;
   if (done == 1)
+  {
     return;
-  for (unsigned i = 0; i < NTT_ROOT_ORDER / 2; i++) {
+  }
+  for (unsigned i = 0; i < NTT_ROOT_ORDER / 2; i++)
+  {
     roots[i] = mod_pow_s32(base_root, i, modulus);
     roots_twisted[i] = roots[i] * modulus_inv_u32;
   }
   done = 1;
 }
 
-void trafo_good_full_to_split(unsigned idx, unsigned *i, unsigned *j) {
+void trafo_good_full_to_split(unsigned idx, unsigned *i, unsigned *j)
+{
   *i = idx % 3;
   *j = idx % 32;
 }
 
-unsigned trafo_good_split_to_full(unsigned i, unsigned j) {
-  for (unsigned k = 0; k < 384; k++) {
+unsigned trafo_good_split_to_full(unsigned i, unsigned j)
+{
+  for (unsigned k = 0; k < 384; k++)
+  {
     unsigned ti, tj;
     trafo_good_full_to_split(k, &ti, &tj);
     if (i == ti && j == tj)
+    {
       return k;
+    }
   }
 
   // Should not happen
@@ -128,11 +137,13 @@ unsigned trafo_good_split_to_full(unsigned i, unsigned j) {
     ;
 }
 
-unsigned bit_reverse_32(unsigned in) {
+unsigned bit_reverse_32(unsigned in)
+{
   unsigned out = 0;
   unsigned width = 5;
 
-  while (width--) {
+  while (width--)
+  {
     out <<= 1;
     out |= (in % 2);
     in >>= 1;
@@ -141,19 +152,23 @@ unsigned bit_reverse_32(unsigned in) {
   return (out);
 }
 
-unsigned bit_reverse_good(unsigned idx) {
+unsigned bit_reverse_good(unsigned idx)
+{
   unsigned i, j;
   trafo_good_full_to_split(idx, &i, &j);
   j = bit_reverse_32(j);
   return trafo_good_split_to_full(i, j);
 }
 
-void ntt_u32_C(int32_t *src) {
+void ntt_u32_C(int32_t *src)
+{
   int32_t res[NTT_SIZE];
   build_roots();
 
-  for (unsigned t = 0; t < NTT_LAYER_STRIDE; t++) {
-    for (unsigned i = 0; i < NTT_INCOMPLETE_SIZE; i++) {
+  for (unsigned t = 0; t < NTT_LAYER_STRIDE; t++)
+  {
+    for (unsigned i = 0; i < NTT_INCOMPLETE_SIZE; i++)
+    {
       int32_t tmp = 0;
 
 #if !defined(NTT_ROOT_INCOMPLETE)
@@ -162,7 +177,8 @@ void ntt_u32_C(int32_t *src) {
       unsigned const multiplier = i;
 #endif
 
-      for (unsigned j = 0; j < NTT_INCOMPLETE_SIZE; j++) {
+      for (unsigned j = 0; j < NTT_INCOMPLETE_SIZE; j++)
+      {
         int32_t cur;
         unsigned exp = (multiplier * j) % NTT_ROOT_ORDER;
         unsigned sub = (exp >= (NTT_ROOT_ORDER / 2));
@@ -171,9 +187,13 @@ void ntt_u32_C(int32_t *src) {
         cur = mod_mul_s32(src[NTT_LAYER_STRIDE * j + t], roots[exp], modulus);
 
         if (!sub)
+        {
           tmp = mod_add_s32(tmp, cur, modulus);
+        }
         else
+        {
           tmp = mod_sub_s32(tmp, cur, modulus);
+        }
       }
       res[NTT_LAYER_STRIDE * i + t] = tmp;
     }
@@ -181,10 +201,12 @@ void ntt_u32_C(int32_t *src) {
   memcpy(src, res, sizeof(res));
 }
 
-void ntt_u32_permute_bitrev_good(int32_t *src) {
+void ntt_u32_permute_bitrev_good(int32_t *src)
+{
   int32_t tmp[NTT_SIZE];
 
-  for (unsigned i = 0; i < NTT_INCOMPLETE_SIZE; i++) {
+  for (unsigned i = 0; i < NTT_INCOMPLETE_SIZE; i++)
+  {
     unsigned j = bit_reverse_good(i);
     memcpy(tmp + i * NTT_LAYER_STRIDE, src + j * NTT_LAYER_STRIDE,
            sizeof(int32_t) * NTT_LAYER_STRIDE);
@@ -193,8 +215,10 @@ void ntt_u32_permute_bitrev_good(int32_t *src) {
   memcpy(src, tmp, sizeof(tmp));
 }
 
-void buf_rev_4(int32_t *src) {
-  for (unsigned i = 0; i < NTT_SIZE; i += 4, src += 4) {
+void buf_rev_4(int32_t *src)
+{
+  for (unsigned i = 0; i < NTT_SIZE; i += 4, src += 4)
+  {
     int32_t tmp[4];
     tmp[0] = src[0];
     tmp[1] = src[1];
@@ -207,15 +231,21 @@ void buf_rev_4(int32_t *src) {
   }
 }
 
-void ntt_u32_permute_negate(int32_t *src) {
+void ntt_u32_permute_negate(int32_t *src)
+{
   int32_t tmp[NTT_SIZE] = {0};
 
-  for (unsigned i = 0; i < NTT_INCOMPLETE_SIZE; i++) {
+  for (unsigned i = 0; i < NTT_INCOMPLETE_SIZE; i++)
+  {
     unsigned j;
     if (i == 0)
+    {
       j = 0;
+    }
     else
+    {
       j = NTT_INCOMPLETE_SIZE - i;
+    }
 
     memcpy(&tmp[0] + j * NTT_LAYER_STRIDE, src + i * NTT_LAYER_STRIDE,
            sizeof(int32_t) * NTT_LAYER_STRIDE);
@@ -223,7 +253,8 @@ void ntt_u32_permute_negate(int32_t *src) {
   memcpy(src, tmp, sizeof(tmp));
 }
 
-int check_good_permutation() {
+int check_good_permutation()
+{
   int32_t src[NTT_SIZE];
   int32_t src_copy[NTT_SIZE];
 
@@ -237,7 +268,8 @@ int check_good_permutation() {
   ntt_u32_permute_bitrev_good(src);
 
   if (compare_buf_u32((uint32_t const *)src, (uint32_t const *)src_copy,
-                      NTT_SIZE) != 0) {
+                      NTT_SIZE) != 0)
+  {
     debug_print_buf_s32(src_copy, NTT_SIZE, "Original");
     debug_print_buf_s32(src, NTT_SIZE, "NTT");
     debug_test_fail();
@@ -249,7 +281,8 @@ int check_good_permutation() {
 }
 
 #if !defined(TEST_CORE_ONLY)
-int run_test_ntt_good() {
+int run_test_ntt_good()
+{
   debug_test_start("NTT u32, Good's trick");
   int32_t src[NTT_SIZE] __attribute__((aligned(16)));
   int32_t src_copy[NTT_SIZE] __attribute__((aligned(16)));
@@ -274,19 +307,25 @@ int run_test_ntt_good() {
 
   mod_reduce_buf_s32(src, NTT_SIZE, modulus);
   if (compare_buf_u32((uint32_t const *)src, (uint32_t const *)src_copy,
-                      NTT_SIZE) != 0) {
+                      NTT_SIZE) != 0)
+  {
     debug_print_buf_s32(src_copy, NTT_SIZE, "Reference");
     debug_print_buf_s32(src, NTT_SIZE, "MVE");
 
-    for (unsigned idx = 0; idx < NTT_SIZE; idx++) {
+    for (unsigned idx = 0; idx < NTT_SIZE; idx++)
+    {
       int hard_fail = 0, soft_fail = 0;
-      if (src_copy[idx] != src[idx]) {
+      if (src_copy[idx] != src[idx])
+      {
         soft_fail = hard_fail = 1;
       }
 
-      if (idx % 4 == 0) {
-        for (unsigned idx2 = 0; idx2 < NTT_SIZE; idx2++) {
-          if (soft_fail == 1 && src[idx] == src_copy[idx2]) {
+      if (idx % 4 == 0)
+      {
+        for (unsigned idx2 = 0; idx2 < NTT_SIZE; idx2++)
+        {
+          if (soft_fail == 1 && src[idx] == src_copy[idx2])
+          {
             unsigned i0, j0, i1, j1;
             trafo_good_full_to_split(idx, &i0, &j0);
             trafo_good_full_to_split(idx2, &i1, &j1);
@@ -299,12 +338,14 @@ int run_test_ntt_good() {
           }
         }
 
-        if (soft_fail != 0) {
+        if (soft_fail != 0)
+        {
           debug_printf("Failure at index %u: %d != %d\n", idx, src[idx],
                        src_copy[idx]);
         }
 
-        if (hard_fail != 0) {
+        if (hard_fail != 0)
+        {
           unsigned i, j;
           trafo_good_full_to_split(idx, &i, &j);
 
@@ -322,7 +363,8 @@ int run_test_ntt_good() {
   return (0);
 }
 
-int run_test_ntt_good_oop() {
+int run_test_ntt_good_oop()
+{
   debug_test_start("NTT u32, Good's trick, out of place");
   int32_t src[NTT_SIZE] __attribute__((aligned(16)));
   int32_t dst[NTT_SIZE] __attribute__((aligned(16)));
@@ -348,7 +390,8 @@ int run_test_ntt_good_oop() {
 
   mod_reduce_buf_s32(dst, NTT_SIZE, modulus);
   if (compare_buf_u32((uint32_t const *)dst, (uint32_t const *)src_copy,
-                      NTT_SIZE) != 0) {
+                      NTT_SIZE) != 0)
+  {
     debug_print_buf_s32(src_copy, NTT_SIZE, "Reference");
     debug_print_buf_s32(dst, NTT_SIZE, "MVE");
     debug_test_fail();
@@ -359,7 +402,8 @@ int run_test_ntt_good_oop() {
   return (0);
 }
 
-int run_test_ntt_good_oop_half_input() {
+int run_test_ntt_good_oop_half_input()
+{
   debug_test_start("NTT u32, Good's trick, out of place, half input");
   int32_t src[NTT_SIZE / 2] __attribute__((aligned(16)));
   int32_t dst[NTT_SIZE] __attribute__((aligned(16)));
@@ -387,7 +431,8 @@ int run_test_ntt_good_oop_half_input() {
 
   mod_reduce_buf_s32(dst, NTT_SIZE, modulus);
   if (compare_buf_u32((uint32_t const *)dst, (uint32_t const *)src_copy,
-                      NTT_SIZE) != 0) {
+                      NTT_SIZE) != 0)
+  {
     debug_print_buf_s32(src_copy, NTT_SIZE, "Reference");
     debug_print_buf_s32(dst, NTT_SIZE, "MVE");
     debug_test_fail();
@@ -398,7 +443,8 @@ int run_test_ntt_good_oop_half_input() {
   return (0);
 }
 
-int run_test_ntt_good_bitrev() {
+int run_test_ntt_good_bitrev()
+{
   debug_test_start("NTT u32, Good's trick, bitreverse");
   int32_t src[NTT_SIZE] __attribute__((aligned(16)));
   int32_t src_copy[NTT_SIZE] __attribute__((aligned(16)));
@@ -424,12 +470,15 @@ int run_test_ntt_good_bitrev() {
   mod_reduce_buf_s32(src, NTT_SIZE, modulus);
 
   if (compare_buf_u32((uint32_t const *)src, (uint32_t const *)src_copy,
-                      NTT_SIZE) != 0) {
+                      NTT_SIZE) != 0)
+  {
     debug_print_buf_s32(src_copy, NTT_SIZE, "Reference");
     debug_print_buf_s32(src, NTT_SIZE, "MVE");
 
-    for (unsigned idx = 0; idx < NTT_SIZE; idx += 4) {
-      if (src_copy[idx] != src[idx]) {
+    for (unsigned idx = 0; idx < NTT_SIZE; idx += 4)
+    {
+      if (src_copy[idx] != src[idx])
+      {
         debug_printf("Fatal failure at index %u: %d != %d\n", idx, src[idx],
                      src_copy[idx]);
       }
@@ -445,7 +494,8 @@ int run_test_ntt_good_bitrev() {
 
 #else
 
-int run_test_ntt_good() {
+int run_test_ntt_good()
+{
   int32_t src[NTT_SIZE] __attribute__((aligned(16)));
   measure_start();
   ntt_u32_mve_good(src);
@@ -453,7 +503,8 @@ int run_test_ntt_good() {
   return (0);
 }
 
-int run_test_ntt_good_bitrev() {
+int run_test_ntt_good_bitrev()
+{
   int32_t src[NTT_SIZE] __attribute__((aligned(16)));
   measure_start();
   ntt_u32_mve_good_bitrev(src);
@@ -463,7 +514,8 @@ int run_test_ntt_good_bitrev() {
 
 #endif
 
-void poly_mul_384(int32_t *dst, int32_t *srcA, int32_t *srcB) {
+void poly_mul_384(int32_t *dst, int32_t *srcA, int32_t *srcB)
+{
   int32_t params[] = {
       NTT_PRIME,
       NTT_PRIME_TWISTED,
@@ -478,7 +530,8 @@ void poly_mul_384(int32_t *dst, int32_t *srcA, int32_t *srcB) {
   ntt_u32_mve_good_bitrev((uint32_t *)dst);
 }
 
-int run_test_poly_mul() {
+int run_test_poly_mul()
+{
   srand(time(NULL));
   int32_t A[NTT_SIZE], B[NTT_SIZE], C[NTT_SIZE], C_ref[NTT_SIZE];
   debug_test_start("Polynomial multiplication in F_q[X]/(X^384-1)");
@@ -499,14 +552,18 @@ int run_test_poly_mul() {
   mod_reduce_buf_s32(C_ref, NTT_SIZE, modulus);
 
   if (compare_buf_u32((uint32_t const *)C, (uint32_t const *)C_ref, NTT_SIZE) !=
-      0) {
+      0)
+  {
     debug_print_buf_s32(C_ref, NTT_SIZE, "Ref");
     debug_print_buf_s32(C, NTT_SIZE, "MVE");
 
-    for (unsigned idx = 0; idx < NTT_SIZE; idx++) {
+    for (unsigned idx = 0; idx < NTT_SIZE; idx++)
+    {
       if (C[idx] != C_ref[idx])
+      {
         debug_printf("Failure at index %u: %u != %u\n", idx, C[idx],
                      C_ref[idx]);
+      }
     }
 
     debug_test_fail();
@@ -517,7 +574,8 @@ int run_test_poly_mul() {
   return (0);
 }
 
-int check_ntt_involutive() {
+int check_ntt_involutive()
+{
   debug_test_start("NTT, check involution property (C code)");
 
   int32_t src[NTT_SIZE];
@@ -547,7 +605,8 @@ int check_ntt_involutive() {
   ntt_u32_permute_negate(src);
 
   if (compare_buf_u32((uint32_t const *)src, (uint32_t const *)src_copy,
-                      NTT_SIZE) != 0) {
+                      NTT_SIZE) != 0)
+  {
     debug_print_buf_s32(src_copy, NTT_SIZE, "Original");
     debug_print_buf_s32(src, NTT_SIZE, "NTT");
     debug_test_fail();
@@ -558,7 +617,8 @@ int check_ntt_involutive() {
   return (0);
 }
 
-int main(void) {
+int main(void)
+{
   int ret = 0;
 
 #if !defined(TEST_CORE_ONLY)
@@ -569,31 +629,41 @@ int main(void) {
 #if defined(TEST_NTT_GOOD)
   ret |= run_test_ntt_good();
   if (ret != 0)
+  {
     return (1);
+  }
 #endif /* TEST_NTT */
 
 #if defined(TEST_NTT_GOOD_OOP)
   ret |= run_test_ntt_good_oop();
   if (ret != 0)
+  {
     return (1);
+  }
 #endif /* TEST_NTT_GOOD_OOP */
 
 #if defined(TEST_NTT_GOOD_OOP_HALF_INPUT)
   ret |= run_test_ntt_good_oop_half_input();
   if (ret != 0)
+  {
     return (1);
+  }
 #endif /* TEST_NTT_GOOD_OOP_HALF_INPUT */
 
 #if defined(TEST_NTT_GOOD_BITREV)
   ret |= run_test_ntt_good_bitrev();
   if (ret != 0)
+  {
     return (1);
+  }
 #endif /* TEST_NTT_GOOD_BITREV */
 
 #if defined(TEST_POLY_MUL)
   ret |= run_test_poly_mul();
   if (ret != 0)
+  {
     return (1);
+  }
 #endif /* TEST_POLY_MUL */
 
   debug_printf("ALL GOOD!\n");

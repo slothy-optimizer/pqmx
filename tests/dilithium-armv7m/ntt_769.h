@@ -109,15 +109,17 @@ void small_asymmetric_mul_asm_769(int16_t c[N], const int16_t a[N],
 
 // small NTT for computing cs0 and cs1; default use 769 as modulus.
 void small_ntt(int16_t *a) { small_ntt_asm_769(a, zetas_asm_769); }
-void small_invntt_tomont(int16_t *a) {
+void small_invntt_tomont(int16_t *a)
+{
   small_invntt_asm_769(a, zetas_inv_asm_769);
 }
-void small_point_mul(int16_t *out, int16_t *in) {
+void small_point_mul(int16_t *out, int16_t *in)
+{
   small_pointmul_asm_769(out, in, zetas_769);
 }
 
-void small_asymmetric_mul(int16_t *c, int16_t *a, int16_t *b,
-                          int16_t *b_prime) {
+void small_asymmetric_mul(int16_t *c, int16_t *a, int16_t *b, int16_t *b_prime)
+{
   small_asymmetric_mul_asm_769(c, a, b, b_prime);
 }
 
@@ -130,21 +132,25 @@ void small_asymmetric_mul_asm_769_opt_m7(int16_t c[N], const int16_t a[N],
                                          const int16_t b[N],
                                          const int16_t b_prime[N]);
 
-void small_ntt_opt_m7(int16_t *a) {
+void small_ntt_opt_m7(int16_t *a)
+{
   small_ntt_asm_769_opt_m7(a, zetas_asm_769);
 }
 
-void small_invntt_tomont_opt_m7(int16_t *a) {
+void small_invntt_tomont_opt_m7(int16_t *a)
+{
   small_invntt_asm_769_opt_m7(a, zetas_inv_asm_769);
 }
 
-void small_point_mul_opt_m7(int16_t *out, int16_t *in) {
+void small_point_mul_opt_m7(int16_t *out, int16_t *in)
+{
   small_pointmul_asm_769_opt_m7(out, in, zetas_769);
 }
 
 
 void small_asymmetric_mul_opt_m7(int16_t *c, int16_t *a, int16_t *b,
-                                 int16_t *b_prime) {
+                                 int16_t *b_prime)
+{
   small_asymmetric_mul_asm_769_opt_m7(c, a, b, b_prime);
 }
 

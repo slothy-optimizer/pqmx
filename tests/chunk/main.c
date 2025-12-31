@@ -32,11 +32,14 @@
 #include "chunk_const.h"
 #include "chunk.h"
 
-void radix11_reduce_x4_C(uint32_t *data) {
+void radix11_reduce_x4_C(uint32_t *data)
+{
   uint32_t acc, cur;
-  for (size_t j = 0; j < 4; j++) {
+  for (size_t j = 0; j < 4; j++)
+  {
     acc = 0;
-    for (size_t i = 0; i < SIZE / 4; i++) {
+    for (size_t i = 0; i < SIZE / 4; i++)
+    {
       cur = data[i];
       acc = cur + (acc >> 11);
       data[i] = acc & 0x7FF;
@@ -46,7 +49,8 @@ void radix11_reduce_x4_C(uint32_t *data) {
 }
 
 #define MAKE_TEST(funcname, top_clear)                         \
-  int test_radix11_reduce_x4_##funcname() {                    \
+  int test_radix11_reduce_x4_##funcname()                      \
+  {                                                            \
     uint32_t data[SIZE + 3];                                   \
     uint32_t data_copy[SIZE + 3];                              \
                                                                \
@@ -63,11 +67,14 @@ void radix11_reduce_x4_C(uint32_t *data) {
     measure_end();                                             \
     radix11_reduce_x4_C(data_copy);                            \
                                                                \
-    if (memcmp(data, data_copy, sizeof(data)) != 0) {          \
+    if (memcmp(data, data_copy, sizeof(data)) != 0)            \
+    {                                                          \
       debug_print_buf_u32(data_copy, SIZE + 3, "ref");         \
       debug_print_buf_u32(data, SIZE + 3, "actual");           \
-      for (size_t i = 0; i < SIZE + 3; i++) {                  \
-        if (data[i] != data_copy[i]) {                         \
+      for (size_t i = 0; i < SIZE + 3; i++)                    \
+      {                                                        \
+        if (data[i] != data_copy[i])                           \
+        {                                                      \
           debug_printf("Divergence at %#04x\n", (unsigned)i);  \
         }                                                      \
       }                                                        \
@@ -96,7 +103,8 @@ MAKE_TEST(mve_vqdmlah_v3, 1);
 MAKE_TEST(mve_vqdmlah_v4, 1);
 MAKE_TEST(mve_vqdmlah_v5, 1);
 
-int main(void) {
+int main(void)
+{
   int ret = 0;
 
   ret |= test_radix11_reduce_x4_m4();
@@ -116,7 +124,8 @@ int main(void) {
   ret |= test_radix11_reduce_x4_mve_vqdmlah_v4();
   ret |= test_radix11_reduce_x4_mve_vqdmlah_v5();
 
-  if (ret == 0) {
+  if (ret == 0)
+  {
     debug_printf("ALL GOOD!\n");
   }
   return (ret);

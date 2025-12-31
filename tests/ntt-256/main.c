@@ -72,16 +72,20 @@ int32_t modulus_inv_u32 = 375649793;
 int32_t roots[NTT_ROOT_ORDER / 2] __attribute__((aligned(16))) = {0};
 uint32_t roots_twisted[NTT_ROOT_ORDER / 2] __attribute__((aligned(16))) = {0};
 
-void build_roots() {
-  for (unsigned i = 0; i < NTT_ROOT_ORDER / 2; i++) {
+void build_roots()
+{
+  for (unsigned i = 0; i < NTT_ROOT_ORDER / 2; i++)
+  {
     roots[i] = mod_pow_s32(base_root, i, modulus);
     roots_twisted[i] = roots[i] * modulus_inv_u32;
   }
 }
 
-unsigned bit_reverse(unsigned in, unsigned width) {
+unsigned bit_reverse(unsigned in, unsigned width)
+{
   unsigned out = 0;
-  while (width--) {
+  while (width--)
+  {
     out <<= 1;
     out |= (in % 2);
     in >>= 1;
@@ -89,17 +93,21 @@ unsigned bit_reverse(unsigned in, unsigned width) {
   return (out);
 }
 
-void ntt_u32_C(int32_t *src) {
+void ntt_u32_C(int32_t *src)
+{
   int32_t res[NTT_SIZE];
   build_roots();
 
-  for (unsigned t = 0; t < NTT_LAYER_STRIDE; t++) {
-    for (unsigned i = 0; i < NTT_INCOMPLETE_SIZE; i++) {
+  for (unsigned t = 0; t < NTT_LAYER_STRIDE; t++)
+  {
+    for (unsigned i = 0; i < NTT_INCOMPLETE_SIZE; i++)
+    {
       int32_t tmp = 0;
       unsigned const multiplier =
           bit_reverse(i, NTT_INCOMPLETE_LAYERS) * NTT_LAYER_STRIDE;
 
-      for (unsigned j = 0; j < NTT_INCOMPLETE_SIZE; j++) {
+      for (unsigned j = 0; j < NTT_INCOMPLETE_SIZE; j++)
+      {
         int32_t cur;
         unsigned exp = (multiplier * j) % NTT_ROOT_ORDER;
         unsigned sub = (exp >= (NTT_ROOT_ORDER / 2));
@@ -108,9 +116,13 @@ void ntt_u32_C(int32_t *src) {
         cur = mod_mul_s32(src[NTT_LAYER_STRIDE * j + t], roots[exp], modulus);
 
         if (!sub)
+        {
           tmp = mod_add_s32(tmp, cur, modulus);
+        }
         else
+        {
           tmp = mod_sub_s32(tmp, cur, modulus);
+        }
       }
       res[NTT_LAYER_STRIDE * i + t] = tmp;
     }
@@ -120,20 +132,29 @@ void ntt_u32_C(int32_t *src) {
 }
 
 #if !defined(NTT_INCOMPLETE)
-void buf_bitrev_4(int32_t *src) {
-  for (unsigned i = 0; i < NTT_SIZE; i += 16) {
+void buf_bitrev_4(int32_t *src)
+{
+  for (unsigned i = 0; i < NTT_SIZE; i += 16)
+  {
     int32_t tmp[16];
     for (unsigned t = 0; t < 16; t++)
+    {
       tmp[t] = src[i + t];
+    }
 
     for (unsigned t0 = 0; t0 < 4; t0++)
+    {
       for (unsigned t1 = 0; t1 < 4; t1++)
+      {
         src[i + t0 * 4 + t1] = tmp[t1 * 4 + t0];
+      }
+    }
   }
 }
 #endif /* NTT_INCOMPLETE */
 
-int run_test_ntt() {
+int run_test_ntt()
+{
   debug_test_start("NTT u32");
   int32_t src[NTT_SIZE] __attribute__((aligned(16)));
   int32_t src_copy[NTT_SIZE] __attribute__((aligned(16)));
@@ -157,7 +178,8 @@ int run_test_ntt() {
 
   mod_reduce_buf_s32(src, NTT_SIZE, modulus);
   if (compare_buf_u32((uint32_t const *)src, (uint32_t const *)src_copy,
-                      NTT_SIZE) != 0) {
+                      NTT_SIZE) != 0)
+  {
     debug_print_buf_s32(src_copy, NTT_SIZE, "Reference");
     debug_print_buf_s32(src, NTT_SIZE, "MVE");
     debug_test_fail();
@@ -168,13 +190,16 @@ int run_test_ntt() {
   return (0);
 }
 
-int main(void) {
+int main(void)
+{
   int ret = 0;
 
 #if defined(TEST_NTT)
   ret |= run_test_ntt();
   if (ret != 0)
+  {
     return (1);
+  }
 #endif /* TEST_NTT */
 
   debug_printf("ALL GOOD!\n");

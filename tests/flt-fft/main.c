@@ -21,7 +21,8 @@ void hal_pmu_send_stats(char *s, pmu_stats const *stats);
 #define ALIGN(N) __attribute__((aligned(N)))
 
 #define MEASURE(fun)                                                  \
-  do {                                                                \
+  do                                                                  \
+  {                                                                   \
     hal_pmu_start_pmu_stats(&stats);                                  \
     for (size_t cnt = 0; cnt < REPEAT; cnt++)                         \
       fun(src, tw, SIZE);                                             \
@@ -33,19 +34,22 @@ void hal_pmu_send_stats(char *s, pmu_stats const *stats);
                   (REPEAT * (SIZE / 16))));                           \
   } while (0)
 
-#define CHECK(fun)                            \
-  do {                                        \
-    memcpy(src, orig, sizeof(src));           \
-    fun(src, tw, SIZE);                       \
-    if (memcmp(src, res, sizeof(src)) != 0) { \
-      debug_print_buf_u32(src, SIZE, "src");  \
-      debug_print_buf_u32(res, SIZE, "res");  \
-      debug_printf("FUNCTIONAL ERROR!\n");    \
-      return 1;                               \
-    }                                         \
+#define CHECK(fun)                           \
+  do                                         \
+  {                                          \
+    memcpy(src, orig, sizeof(src));          \
+    fun(src, tw, SIZE);                      \
+    if (memcmp(src, res, sizeof(src)) != 0)  \
+    {                                        \
+      debug_print_buf_u32(src, SIZE, "src"); \
+      debug_print_buf_u32(res, SIZE, "res"); \
+      debug_printf("FUNCTIONAL ERROR!\n");   \
+      return 1;                              \
+    }                                        \
   } while (0)
 
-int bench_fft() {
+int bench_fft()
+{
   pmu_stats stats;
   uint32_t orig[SIZE] ALIGN(16) = {0};
   uint32_t res[SIZE] ALIGN(16) = {0};
@@ -72,13 +76,15 @@ int bench_fft() {
   return (0);
 }
 
-int main(void) {
+int main(void)
+{
   hal_pmu_enable();
   debug_printf("FLT FFT test!\n");
   int ret = bench_fft();
   debug_printf("Done!\n:");
 
-  if (ret == 0) {
+  if (ret == 0)
+  {
     debug_printf("ALL GOOD!\n");
   }
 

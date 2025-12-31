@@ -50,7 +50,8 @@ void hal_pmu_send_stats(char *s, pmu_stats const *stats);
 #define FUNCNAME(uarch, unroll) cmplx_mag_sqr_fx_unroll##unroll##_opt_##uarch
 
 #define MEASURE(uarch, unroll)                                       \
-  do {                                                               \
+  do                                                                 \
+  {                                                                  \
     hal_pmu_start_pmu_stats(&stats);                                 \
     for (size_t cnt = 0; cnt < REPEAT; cnt++)                        \
       FUNCNAME(uarch, unroll)(src, src, SIZE);                       \
@@ -62,7 +63,8 @@ void hal_pmu_send_stats(char *s, pmu_stats const *stats);
                   (REPEAT * (SIZE / 4))));                           \
   } while (0)
 
-int bench_sqmag() {
+int bench_sqmag()
+{
   pmu_stats stats;
 
   debug_test_start("foo...");
@@ -74,7 +76,9 @@ int bench_sqmag() {
 
   hal_pmu_start_pmu_stats(&stats);
   for (size_t cnt = 0; cnt < REPEAT; cnt++)
+  {
     cmplx_mag_sqr_fx(src, src, SIZE);
+  }
   hal_pmu_finish_pmu_stats(&stats);
   /*Workaround for RA8M1 (cannot print %f)*/
   debug_printf("Original: %lu.%02lu cycles (avg)\n",
@@ -93,7 +97,8 @@ int bench_sqmag() {
   return (0);
 }
 
-int main(void) {
+int main(void)
+{
   hal_pmu_enable();
   debug_printf("Squared magnitude test!\n");
   bench_sqmag();
