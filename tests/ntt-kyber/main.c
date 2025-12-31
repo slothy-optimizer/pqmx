@@ -215,14 +215,6 @@ MAKE_TEST_FWD(l1222_no_trans_vld4_opt_m85,
               ntt_kyber_1_23_45_67_no_trans_vld4_opt_m85, 1)
 MAKE_TEST_FWD(l232_opt_size_m85, ntt_kyber_12_345_67_opt_size_m85, 1)
 
-uint64_t hal_get_time();
-
-void hal_pmu_enable();
-void hal_pmu_disable();
-void hal_pmu_start_pmu_stats(pmu_stats *s);
-void hal_pmu_finish_pmu_stats(pmu_stats *s);
-void hal_pmu_send_stats(char *s, pmu_stats const *stats);
-
 void hal_pmu_send_stats_wrapper(pmu_stats *stats)
 {
 #if defined(ENABLE_PMU_STATS)
