@@ -3,7 +3,8 @@
 #define MONT (-4186625)  // 2^32 % Q
 #define QINV 58728449    // q^(-1) mod 2^32
 
-static int32_t montgomery_reduce(int64_t a) {
+static int32_t montgomery_reduce(int64_t a)
+{
   int32_t t;
 
   t = (int32_t)((uint64_t)a * (uint64_t)QINV);
@@ -61,15 +62,19 @@ static const int32_t zetas[N] = {
  *
  * Arguments:   - uint32_t p[N]: input/output coefficient array
  **************************************************/
-void ntt_ref(int32_t a[N]) {
+void ntt_ref(int32_t a[N])
+{
   unsigned int len, start, j, k;
   int32_t zeta, t;
 
   k = 0;
-  for (len = 128; len > 0; len >>= 1) {
-    for (start = 0; start < N; start = j + len) {
+  for (len = 128; len > 0; len >>= 1)
+  {
+    for (start = 0; start < N; start = j + len)
+    {
       zeta = zetas[++k];
-      for (j = start; j < start + len; ++j) {
+      for (j = start; j < start + len; ++j)
+      {
         t = montgomery_reduce((int64_t)zeta * a[j + len]);
         a[j + len] = a[j] - t;
         a[j] = a[j] + t;
@@ -90,16 +95,20 @@ void ntt_ref(int32_t a[N]) {
  *
  * Arguments:   - uint32_t p[N]: input/output coefficient array
  **************************************************/
-void invntt_tomont_ref(int32_t a[N]) {
+void invntt_tomont_ref(int32_t a[N])
+{
   unsigned int start, len, j, k;
   int32_t t, zeta;
   const int32_t f = 41978;  // mont^2/256
 
   k = 256;
-  for (len = 1; len < N; len <<= 1) {
-    for (start = 0; start < N; start = j + len) {
+  for (len = 1; len < N; len <<= 1)
+  {
+    for (start = 0; start < N; start = j + len)
+    {
       zeta = -zetas[--k];
-      for (j = start; j < start + len; ++j) {
+      for (j = start; j < start + len; ++j)
+      {
         t = a[j];
         a[j] = t + a[j + len];
         a[j + len] = t - a[j + len];
@@ -108,7 +117,8 @@ void invntt_tomont_ref(int32_t a[N]) {
     }
   }
 
-  for (j = 0; j < N; ++j) {
+  for (j = 0; j < N; ++j)
+  {
     a[j] = montgomery_reduce((int64_t)f * a[j]);
   }
 }

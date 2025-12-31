@@ -73,9 +73,11 @@ extern uint32_t rcc_apb1_frequency;
 extern uint32_t rcc_apb2_frequency;
 #endif
 
-static void clock_setup(enum clock_mode clock) {
+static void clock_setup(enum clock_mode clock)
+{
 #if defined(DISCOVERY_BOARD)
-  switch (clock) {
+  switch (clock)
+  {
     case CLOCK_BENCHMARK:
       rcc_clock_setup_pll(&benchmarkclock);
       break;
@@ -89,7 +91,8 @@ static void clock_setup(enum clock_mode clock) {
 
   flash_prefetch_enable();
 #elif defined(STM32F7)
-  switch (clock) {
+  switch (clock)
+  {
     case CLOCK_BENCHMARK:
       rcc_clock_setup_hsi(&rcc_3v3[RCC_CLOCK_3V3_24MHZ]);
       break;
@@ -113,7 +116,8 @@ static void clock_setup(enum clock_mode clock) {
   rcc_wait_for_osc_ready(RCC_HSE);
 #if defined(NUCLEO_BOARD)
   /* NUCLEO-STM32F2 Board */
-  switch (clock) {
+  switch (clock)
+  {
     case CLOCK_BENCHMARK:
       rcc_ahb_frequency = 30000000;
       rcc_apb1_frequency = 30000000;
@@ -164,7 +168,8 @@ static void clock_setup(enum clock_mode clock) {
 #endif
 }
 
-void usart_setup() {
+void usart_setup()
+{
 #if defined(STM32F207ZG) || defined(STM32F7)
   rcc_periph_clock_enable(RCC_GPIOD);
   rcc_periph_clock_enable(RCC_USART3);
@@ -229,12 +234,14 @@ void usart_setup() {
 #define CCSIDR_SETS(x) \
   (((x) & SCB_CCSIDR_NUMSETS_Msk) >> SCB_CCSIDR_NUMSETS_Pos)
 
-static void SCB_EnableICache(void) {
+static void SCB_EnableICache(void)
+{
   SCB_ICIALLU = 0L;
   SCB_CCR |= (uint32_t)SCB_CCR_IC_Msk;
 }
 
-static void SCB_EnableDCache(void) {
+static void SCB_EnableDCache(void)
+{
   uint32_t ccsidr;
   uint32_t sets;
   uint32_t ways;
@@ -242,9 +249,11 @@ static void SCB_EnableDCache(void) {
   ccsidr = SCB_CCSIDR;
   /* invalidate D-Cache */
   sets = (uint32_t)(CCSIDR_SETS(ccsidr));
-  do {
+  do
+  {
     ways = (uint32_t)(CCSIDR_WAYS(ccsidr));
-    do {
+    do
+    {
       SCB_DCISW = (((sets << SCB_DCISW_SET_Pos) & SCB_DCISW_SET_Msk) |
                    ((ways << SCB_DCISW_WAY_Pos) & SCB_DCISW_WAY_Msk));
     } while (ways-- != 0U);
@@ -254,7 +263,8 @@ static void SCB_EnableDCache(void) {
 #endif
 
 
-void systick_setup() {
+void systick_setup()
+{
   /* Systick is always the same on libopencm3 */
   systick_set_clocksource(STK_CSR_CLKSOURCE_AHB);
   systick_set_reload(0xFFFFFFu);
@@ -262,7 +272,8 @@ void systick_setup() {
   systick_counter_enable();
 }
 static volatile unsigned long long overflowcnt = 0;
-void hal_setup(const enum clock_mode clock) {
+void hal_setup(const enum clock_mode clock)
+{
   clock_setup(clock);
   usart_setup();
   systick_setup();
@@ -282,22 +293,26 @@ void hal_setup(const enum clock_mode clock) {
     ;
 }
 
-void hal_send_str(const char *in) {
+void hal_send_str(const char *in)
+{
   const char *cur = in;
-  while (*cur) {
+  while (*cur)
+  {
     usart_send_blocking(SERIAL_USART, *cur);
     cur += 1;
   }
   usart_send_blocking(SERIAL_USART, '\n');
 }
 
-void debug_test_start(const char *testname) {
+void debug_test_start(const char *testname)
+{
   hal_setup(CLOCK_BENCHMARK);
   hal_send_str(testname);
   hal_send_str("...");
 }
 
-void debug_printf(const char *format, ...) {
+void debug_printf(const char *format, ...)
+{
   char str[200];
   va_list argp;
   va_start(argp, format);
@@ -312,12 +327,15 @@ void debug_test_fail() { hal_send_str("FAIL!\n"); }
 
 void sys_tick_handler(void) { ++overflowcnt; }
 
-uint64_t hal_get_time() {
-  while (true) {
+uint64_t hal_get_time()
+{
+  while (true)
+  {
     unsigned long long before = overflowcnt;
     unsigned long long result =
         (before + 1) * 16777216llu - systick_get_value();
-    if (overflowcnt == before) {
+    if (overflowcnt == before)
+    {
       return result;
     }
   }
@@ -326,14 +344,16 @@ uint64_t hal_get_time() {
 static uint64_t _measure_start = 0;
 
 /* Stubs to enable/disable measurements. */
-void measure_end() {
+void measure_end()
+{
   uint64_t dur = hal_get_time() - _measure_start;
   debug_printf("cycles: %llu\n", dur);
 }
 
 void measure_start() { _measure_start = hal_get_time(); }
 
-uint8_t get_random_byte() {
+uint8_t get_random_byte()
+{
   uint32_t data;
   randombytes((uint8_t *)&data, sizeof(data));
   return (uint8_t)data;
@@ -345,7 +365,8 @@ uint8_t get_random_byte() {
 extern char end;
 static char *heap_end = &end;
 
-void *__wrap__sbrk(int incr) {
+void *__wrap__sbrk(int incr)
+{
   char *prev_heap_end;
 
   prev_heap_end = heap_end;
@@ -354,7 +375,8 @@ void *__wrap__sbrk(int incr) {
   return (void *)prev_heap_end;
 }
 
-size_t hal_get_stack_size(void) {
+size_t hal_get_stack_size(void)
+{
   register char *cur_stack;
   asm volatile("mov %0, sp" : "=r"(cur_stack));
   return cur_stack - heap_end;
@@ -364,7 +386,8 @@ const uint32_t stackpattern = 0xDEADBEEFlu;
 
 static void *last_sp = NULL;
 
-void hal_spraystack(void) {
+void hal_spraystack(void)
+{
   char *_heap_end = heap_end;
   asm volatile(
       "mov %0, sp\n"
@@ -377,7 +400,8 @@ void hal_spraystack(void) {
       : "cc", "memory");
 }
 
-size_t hal_checkstack(void) {
+size_t hal_checkstack(void)
+{
   size_t result = 0;
   asm volatile(
       "sub %0, %1, %2\n"
@@ -402,7 +426,8 @@ size_t hal_checkstack(void) {
 #undef errno
 extern int errno;
 
-int __wrap__open(char *file, int flags, int mode) {
+int __wrap__open(char *file, int flags, int mode)
+{
   (void)file;
   (void)flags;
   (void)mode;
@@ -410,7 +435,8 @@ int __wrap__open(char *file, int flags, int mode) {
   return -1;
 }
 
-int __wrap__close(int fd) {
+int __wrap__close(int fd)
+{
   errno = ENOSYS;
   (void)fd;
   return -1;
@@ -418,32 +444,37 @@ int __wrap__close(int fd) {
 
 #include <sys/stat.h>
 
-int __wrap__fstat(int fd, struct stat *buf) {
+int __wrap__fstat(int fd, struct stat *buf)
+{
   (void)fd;
   (void)buf;
   errno = ENOSYS;
   return -1;
 }
 
-int __wrap__getpid(void) {
+int __wrap__getpid(void)
+{
   errno = ENOSYS;
   return -1;
 }
 
-int __wrap__isatty(int file) {
+int __wrap__isatty(int file)
+{
   (void)file;
   errno = ENOSYS;
   return 0;
 }
 
-int __wrap__kill(int pid, int sig) {
+int __wrap__kill(int pid, int sig)
+{
   (void)pid;
   (void)sig;
   errno = ENOSYS;
   return -1;
 }
 
-int __wrap__lseek(int fd, int ptr, int dir) {
+int __wrap__lseek(int fd, int ptr, int dir)
+{
   (void)fd;
   (void)ptr;
   (void)dir;
@@ -451,7 +482,8 @@ int __wrap__lseek(int fd, int ptr, int dir) {
   return -1;
 }
 
-int __wrap__read(int fd, char *ptr, int len) {
+int __wrap__read(int fd, char *ptr, int len)
+{
   (void)fd;
   (void)ptr;
   (void)len;
@@ -459,7 +491,8 @@ int __wrap__read(int fd, char *ptr, int len) {
   return -1;
 }
 
-int __wrap__write(int fd, const char *ptr, int len) {
+int __wrap__write(int fd, const char *ptr, int len)
+{
   (void)fd;
   (void)ptr;
   (void)len;

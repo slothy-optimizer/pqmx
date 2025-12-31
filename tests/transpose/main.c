@@ -58,13 +58,17 @@ static uint(BITWIDTH) dst1[ENTRIES];
 
 void generate_random_sample() { fill(src, ENTRIES); }
 
-void generate_simple_sample() {
+void generate_simple_sample()
+{
   unsigned idx;
   for (idx = 0; idx < ENTRIES; idx++)
+  {
     src[idx] = idx;
+  }
 }
 
-void generate_sample() {
+void generate_sample()
+{
 #if defined(TEST_TYPE_RANDOM)
   generate_random_sample();
 #else
@@ -72,14 +76,16 @@ void generate_sample() {
 #endif
 }
 
-static int test_transpose() {
+static int test_transpose()
+{
   debug_test_start("Test: Transpose");
   generate_simple_sample();
 
   transpose_asm(dst0, src);
   transpose_real(dst1, src, BLOCK, DIM_X, DIM_Y);
 
-  if (compare(dst0, dst1, ENTRIES) != 0) {
+  if (compare(dst0, dst1, ENTRIES) != 0)
+  {
     debug_test_fail();
     print(dst1, ENTRIES, "Expected");
     print(dst0, ENTRIES, "Actual");
@@ -90,12 +96,15 @@ static int test_transpose() {
   return (0);
 }
 
-int main(void) {
+int main(void)
+{
   int ret;
 
   ret = test_transpose();
   if (ret != 0)
+  {
     return (1);
+  }
   debug_printf("ALL GOOD!\n");
   return (0);
 }

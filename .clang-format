@@ -13,3 +13,6 @@ SortIncludes: false
 # IncludeCategories does not recognize <openssl/header.h>. We should
 # reconfigure IncludeCategories to match. For now, keep it at Preserve.
 IncludeBlocks: Preserve
+
+BreakBeforeBraces: Allman
+InsertBraces: true

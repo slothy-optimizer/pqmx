@@ -28,7 +28,8 @@
 /* Adds 8 consecutive 16-bit values from memory. */
 void mve_test(void *src, uint16_t *dst);
 
-int main(void) {
+int main(void)
+{
 #if defined(__ARM_FEATURE_MVE)
   uint16_t test_vector[] = {1, 2, 3, 4, 5, 6, 7, 8};
   uint16_t sum;
@@ -48,14 +49,16 @@ int main(void) {
   mve_test(test_vector, &sum);
   measure_end();
 
-  if (sum != 1 + 2 + 3 + 4 + 5 + 6 + 7 + 8) {
+  if (sum != 1 + 2 + 3 + 4 + 5 + 6 + 7 + 8)
+  {
     debug_test_fail();
     return (1);
   }
 #endif
 
   measure_start();
-  for (int i = 0; i < 1000; i++) {
+  for (int i = 0; i < 1000; i++)
+  {
     __asm__("nop");
   }
   measure_end();

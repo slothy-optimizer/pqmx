@@ -21,7 +21,8 @@
 #endif
 
 /* The startup file calls a SystemInit function. */
-void SystemInit(void) {
+void SystemInit(void)
+{
   /* Enable the FPU */
   SCB->CPACR |= ((3UL << 10 * 2) | /* set CP10 Full Access */
                  (3UL << 11 * 2)); /* set CP11 Full Access */
@@ -46,11 +47,14 @@ static volatile unsigned long long overflowcnt = 0;
 /* SysTick Interrupt */
 void SysTick_Handler(void) { ++overflowcnt; }
 
-uint64_t hal_get_time() {
-  while (1) {
+uint64_t hal_get_time()
+{
+  while (1)
+  {
     unsigned long long before = overflowcnt;
     unsigned long long result = (before + 1) * 16777216llu - SysTick->VAL;
-    if (overflowcnt == before) {
+    if (overflowcnt == before)
+    {
       return result;
     }
   }
@@ -59,7 +63,8 @@ uint64_t hal_get_time() {
 static uint64_t _measure_start = 0;
 
 /* Stubs to enable/disable measurements. */
-void measure_end() {
+void measure_end()
+{
   uint64_t dur = hal_get_time() - _measure_start;
   debug_printf("cycles: %llu\n", dur);
 }
@@ -69,15 +74,18 @@ void measure_start() { _measure_start = hal_get_time(); }
 
 void hal_setup(const enum clock_mode clock) { (void)clock; }
 
-static inline void uart_putc(int c) {
+static inline void uart_putc(int c)
+{
   while (CMSDK_UART0->STATE & CMSDK_UART_STATE_TXBF_Msk)
     ;
   CMSDK_UART0->DATA = c & 0xFFu;
 }
 
-void hal_send_str(const char *in) {
+void hal_send_str(const char *in)
+{
   const char *cur = in;
-  while (*cur) {
+  while (*cur)
+  {
     uart_putc(*cur);
     cur += 1;
   }
@@ -85,13 +93,15 @@ void hal_send_str(const char *in) {
 }
 
 
-void debug_test_start(const char *testname) {
+void debug_test_start(const char *testname)
+{
   hal_setup(CLOCK_BENCHMARK);
   hal_send_str(testname);
   hal_send_str("...");
 }
 
-void debug_printf(const char *format, ...) {
+void debug_printf(const char *format, ...)
+{
   char str[200];
   va_list argp;
   va_start(argp, format);
@@ -104,7 +114,8 @@ void debug_printf(const char *format, ...) {
 void debug_test_ok() { hal_send_str("Ok\n"); }
 void debug_test_fail() { hal_send_str("FAIL!\n"); }
 
-uint8_t get_random_byte() {
+uint8_t get_random_byte()
+{
   uint32_t data;
   randombytes((uint8_t *)&data, sizeof(data));
   return (uint8_t)data;
@@ -124,7 +135,8 @@ static const uint32_t REPORT_EXCEPTION = 0x18;
 static const uint32_t ApplicationExit = 0x20026;
 
 // Do a system call towards QEMU or the debugger.
-static uint32_t semihosting_syscall(uint32_t nr, const uint32_t arg) {
+static uint32_t semihosting_syscall(uint32_t nr, const uint32_t arg)
+{
   __asm__ volatile(
       "mov r0, %[nr]\n"
       "mov r1, %[arg]\n"
@@ -138,51 +150,61 @@ static uint32_t semihosting_syscall(uint32_t nr, const uint32_t arg) {
 
 // Register a destructor that will call qemu telling them that the program
 // has exited successfully.
-static void __attribute__((destructor)) semihosting_exit(void) {
+static void __attribute__((destructor)) semihosting_exit(void)
+{
   semihosting_syscall(REPORT_EXCEPTION, ApplicationExit);
 }
 
-void NMI_Handler(void) {
+void NMI_Handler(void)
+{
   hal_send_str("NMI_Handler");
   semihosting_syscall(REPORT_EXCEPTION, ApplicationExit);
 }
 
-void HardFault_Handler(void) {
+void HardFault_Handler(void)
+{
   hal_send_str("HardFault_Handler");
   semihosting_syscall(REPORT_EXCEPTION, ApplicationExit);
 }
 
-void MemManage_Handler(void) {
+void MemManage_Handler(void)
+{
   hal_send_str("MemManage_Handler");
   semihosting_syscall(REPORT_EXCEPTION, ApplicationExit);
 }
 
-void BusFault_Handler(void) {
+void BusFault_Handler(void)
+{
   hal_send_str("BusFault_Handler");
   semihosting_syscall(REPORT_EXCEPTION, ApplicationExit);
 }
 
-void UsageFault_Handler(void) {
+void UsageFault_Handler(void)
+{
   hal_send_str("UsageFault_Handler");
   semihosting_syscall(REPORT_EXCEPTION, ApplicationExit);
 }
 
-void SVC_Handler(void) {
+void SVC_Handler(void)
+{
   hal_send_str("SVC_Handler");
   semihosting_syscall(REPORT_EXCEPTION, ApplicationExit);
 }
 
-void DebugMon_Handler(void) {
+void DebugMon_Handler(void)
+{
   hal_send_str("DebugMon_Handler");
   semihosting_syscall(REPORT_EXCEPTION, ApplicationExit);
 }
 
-void PendSV_Handler(void) {
+void PendSV_Handler(void)
+{
   hal_send_str("PendSV_Handler");
   semihosting_syscall(REPORT_EXCEPTION, ApplicationExit);
 }
 
-void Default_Handler(void) {
+void Default_Handler(void)
+{
   semihosting_syscall(REPORT_EXCEPTION, ApplicationExit);
 }
 
@@ -192,7 +214,8 @@ void Default_Handler(void) {
 extern char end;
 static char *heap_end = &end;
 
-void *__wrap__sbrk(int incr) {
+void *__wrap__sbrk(int incr)
+{
   char *prev_heap_end;
 
   prev_heap_end = heap_end;
@@ -201,7 +224,8 @@ void *__wrap__sbrk(int incr) {
   return (void *)prev_heap_end;
 }
 
-size_t hal_get_stack_size(void) {
+size_t hal_get_stack_size(void)
+{
   register char *cur_stack;
   __asm__ volatile("mov %0, sp" : "=r"(cur_stack));
   return cur_stack - heap_end;
@@ -211,7 +235,8 @@ const uint32_t stackpattern = 0xDEADBEEFlu;
 
 static void *last_sp = NULL;
 
-void hal_spraystack(void) {
+void hal_spraystack(void)
+{
   char *_heap_end = heap_end;
   asm volatile(
       "mov %0, sp\n"
@@ -224,7 +249,8 @@ void hal_spraystack(void) {
       : "cc", "memory");
 }
 
-size_t hal_checkstack(void) {
+size_t hal_checkstack(void)
+{
   size_t result = 0;
   asm volatile(
       "sub %0, %1, %2\n"
@@ -249,7 +275,8 @@ size_t hal_checkstack(void) {
 #undef errno
 extern int errno;
 
-int __wrap__open(char *file, int flags, int mode) {
+int __wrap__open(char *file, int flags, int mode)
+{
   (void)file;
   (void)flags;
   (void)mode;
@@ -257,7 +284,8 @@ int __wrap__open(char *file, int flags, int mode) {
   return -1;
 }
 
-int __wrap__close(int fd) {
+int __wrap__close(int fd)
+{
   errno = ENOSYS;
   (void)fd;
   return -1;
@@ -265,32 +293,37 @@ int __wrap__close(int fd) {
 
 #include <sys/stat.h>
 
-int __wrap__fstat(int fd, struct stat *buf) {
+int __wrap__fstat(int fd, struct stat *buf)
+{
   (void)fd;
   (void)buf;
   errno = ENOSYS;
   return -1;
 }
 
-int __wrap__getpid(void) {
+int __wrap__getpid(void)
+{
   errno = ENOSYS;
   return -1;
 }
 
-int __wrap__isatty(int file) {
+int __wrap__isatty(int file)
+{
   (void)file;
   errno = ENOSYS;
   return 0;
 }
 
-int __wrap__kill(int pid, int sig) {
+int __wrap__kill(int pid, int sig)
+{
   (void)pid;
   (void)sig;
   errno = ENOSYS;
   return -1;
 }
 
-int __wrap__lseek(int fd, int ptr, int dir) {
+int __wrap__lseek(int fd, int ptr, int dir)
+{
   (void)fd;
   (void)ptr;
   (void)dir;
@@ -298,7 +331,8 @@ int __wrap__lseek(int fd, int ptr, int dir) {
   return -1;
 }
 
-int __wrap__read(int fd, char *ptr, int len) {
+int __wrap__read(int fd, char *ptr, int len)
+{
   (void)fd;
   (void)ptr;
   (void)len;
@@ -306,7 +340,8 @@ int __wrap__read(int fd, char *ptr, int len) {
   return -1;
 }
 
-int __wrap__write(int fd, const char *ptr, int len) {
+int __wrap__write(int fd, const char *ptr, int len)
+{
   (void)fd;
   (void)ptr;
   (void)len;

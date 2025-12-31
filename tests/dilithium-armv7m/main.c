@@ -81,7 +81,8 @@ void pqcrystals_dilithium_asm_reduce32_opt_m7(int32_t *);
 #define NTT_LAYER_STRIDE (1u << NTT_LAYER_GAP)
 
 
-typedef struct {
+typedef struct
+{
   char name[100];
   uint64_t cycles;
 } benchmark_result;
@@ -89,17 +90,22 @@ typedef struct {
 benchmark_result results[100];
 int benchmark_cnt = 0;
 
-static void add_benchmark_results(char *name, uint64_t cycles) {
+static void add_benchmark_results(char *name, uint64_t cycles)
+{
   if (benchmark_cnt == 100)
+  {
     return;
+  }
 
   results[benchmark_cnt].cycles = cycles;
   strncpy(results[benchmark_cnt].name, name, 100);
   benchmark_cnt++;
 }
 
-static void dump_benchmarks_tex(void) {
-  for (int i = 0; i < benchmark_cnt; i++) {
+static void dump_benchmarks_tex(void)
+{
+  for (int i = 0; i < benchmark_cnt; i++)
+  {
     debug_printf("\\DefineVar{%s_%s}{%llu}", DEVICE, results[i].name,
                  results[i].cycles);
   }
@@ -110,7 +116,8 @@ static void dump_benchmarks_tex(void) {
  */
 
 #define MAKE_TEST_NTT(var, func, ref_func, modulus)                        \
-  int test_##var() {                                                       \
+  int test_##var()                                                         \
+  {                                                                        \
     /* debug_test_start( "Test for " #func );*/                            \
     debug_printf("Test for " #func);                                       \
     int32_t src[NTT_SIZE] __attribute__((aligned(16)));                    \
@@ -129,7 +136,8 @@ static void dump_benchmarks_tex(void) {
     (func)(src);                                                           \
                                                                            \
     if (compare_buf_u32((uint32_t const *)src, (uint32_t const *)src_copy, \
-                        NTT_SIZE) != 0) {                                  \
+                        NTT_SIZE) != 0)                                    \
+    {                                                                      \
       debug_print_buf_s32(src_copy, NTT_SIZE, "Reference");                \
       debug_print_buf_s32(src, NTT_SIZE, "This");                          \
       debug_test_fail();                                                   \
@@ -141,7 +149,8 @@ static void dump_benchmarks_tex(void) {
   }
 
 #define MAKE_TEST_BASEMUL(var, func, ref_func, modulus)                    \
-  int test_##var() {                                                       \
+  int test_##var()                                                         \
+  {                                                                        \
     /* debug_test_start( "Test for " #func );*/                            \
     debug_printf("Test for " #func);                                       \
     int32_t src[NTT_SIZE] __attribute__((aligned(16)));                    \
@@ -166,7 +175,8 @@ static void dump_benchmarks_tex(void) {
     (func)(src, src1, src2);                                               \
                                                                            \
     if (compare_buf_u32((uint32_t const *)src, (uint32_t const *)src_copy, \
-                        NTT_SIZE) != 0) {                                  \
+                        NTT_SIZE) != 0)                                    \
+    {                                                                      \
       debug_print_buf_s32(src_copy, NTT_SIZE, "Reference");                \
       debug_print_buf_s32(src, NTT_SIZE, "This");                          \
       debug_test_fail();                                                   \
@@ -179,7 +189,8 @@ static void dump_benchmarks_tex(void) {
 
 
 #define MAKE_TEST_POINTMUL(var, func, ref_func, modulus)                   \
-  int test_##var() {                                                       \
+  int test_##var()                                                         \
+  {                                                                        \
     /* debug_test_start( "Test for " #func );*/                            \
     debug_printf("Test for " #func);                                       \
     int16_t src[NTT_SIZE] __attribute__((aligned(16)));                    \
@@ -199,7 +210,8 @@ static void dump_benchmarks_tex(void) {
     (func)(src, src1);                                                     \
                                                                            \
     if (compare_buf_u16((uint16_t const *)src, (uint16_t const *)src_copy, \
-                        NTT_SIZE) != 0) {                                  \
+                        NTT_SIZE) != 0)                                    \
+    {                                                                      \
       debug_print_buf_s16(src_copy, NTT_SIZE, "Reference");                \
       debug_print_buf_s16(src, NTT_SIZE, "This");                          \
       debug_test_fail();                                                   \
@@ -211,7 +223,8 @@ static void dump_benchmarks_tex(void) {
   }
 
 #define MAKE_TEST_ASYM_MUL(var, func, ref_func, modulus)                   \
-  int test_##var() {                                                       \
+  int test_##var()                                                         \
+  {                                                                        \
     /* debug_test_start( "Test for " #func );*/                            \
     debug_printf("Test for " #func);                                       \
     int32_t src[NTT_SIZE] __attribute__((aligned(16)));                    \
@@ -239,7 +252,8 @@ static void dump_benchmarks_tex(void) {
     (func)(src, src1, src2, src3);                                         \
                                                                            \
     if (compare_buf_u32((uint32_t const *)src, (uint32_t const *)src_copy, \
-                        NTT_SIZE) != 0) {                                  \
+                        NTT_SIZE) != 0)                                    \
+    {                                                                      \
       debug_print_buf_s32(src_copy, NTT_SIZE, "Reference");                \
       debug_print_buf_s32(src, NTT_SIZE, "This");                          \
       debug_test_fail();                                                   \
@@ -252,7 +266,8 @@ static void dump_benchmarks_tex(void) {
 
 
 #define MAKE_TEST_NTT_16(var, func, ref_func, modulus)                     \
-  int test_##var() {                                                       \
+  int test_##var()                                                         \
+  {                                                                        \
     /* debug_test_start( "Test for " #func );*/                            \
     debug_printf("Test for " #func);                                       \
     int16_t src[NTT_SIZE] __attribute__((aligned(16)));                    \
@@ -271,7 +286,8 @@ static void dump_benchmarks_tex(void) {
     (func)(src);                                                           \
                                                                            \
     if (compare_buf_u16((uint16_t const *)src, (uint16_t const *)src_copy, \
-                        NTT_SIZE) != 0) {                                  \
+                        NTT_SIZE) != 0)                                    \
+    {                                                                      \
       debug_print_buf_s16(src_copy, NTT_SIZE, "Reference");                \
       debug_print_buf_s16(src, NTT_SIZE, "This");                          \
       debug_test_fail();                                                   \
@@ -284,7 +300,8 @@ static void dump_benchmarks_tex(void) {
 
 
 #define MAKE_TEST_POINTMUL_16(var, func, ref_func, modulus)                \
-  int test_##var() {                                                       \
+  int test_##var()                                                         \
+  {                                                                        \
     /* debug_test_start( "Test for " #func );*/                            \
     debug_printf("Test for " #func);                                       \
     int16_t src[NTT_SIZE] __attribute__((aligned(16)));                    \
@@ -304,7 +321,8 @@ static void dump_benchmarks_tex(void) {
     (func)(src, src1);                                                     \
                                                                            \
     if (compare_buf_u16((uint16_t const *)src, (uint16_t const *)src_copy, \
-                        NTT_SIZE) != 0) {                                  \
+                        NTT_SIZE) != 0)                                    \
+    {                                                                      \
       debug_print_buf_s16(src_copy, NTT_SIZE, "Reference");                \
       debug_print_buf_s16(src, NTT_SIZE, "This");                          \
       debug_test_fail();                                                   \
@@ -316,7 +334,8 @@ static void dump_benchmarks_tex(void) {
   }
 
 #define MAKE_TEST_ASYM_MUL_16(var, func, ref_func, modulus)                \
-  int test_##var() {                                                       \
+  int test_##var()                                                         \
+  {                                                                        \
     /* debug_test_start( "Test for " #func );*/                            \
     debug_printf("Test for " #func);                                       \
     int16_t src[NTT_SIZE] __attribute__((aligned(16)));                    \
@@ -344,7 +363,8 @@ static void dump_benchmarks_tex(void) {
     (func)(src, src1, src2, src3);                                         \
                                                                            \
     if (compare_buf_u16((uint16_t const *)src, (uint16_t const *)src_copy, \
-                        NTT_SIZE) != 0) {                                  \
+                        NTT_SIZE) != 0)                                    \
+    {                                                                      \
       debug_print_buf_s16(src_copy, NTT_SIZE, "Reference");                \
       debug_print_buf_s16(src, NTT_SIZE, "This");                          \
       debug_test_fail();                                                   \
@@ -424,158 +444,173 @@ MAKE_TEST_NTT(caddq_pqm4_opt, pqcrystals_dilithium_asm_caddq_opt_m7,
               pqcrystals_dilithium_asm_caddq, 1 << 31)
 
 
-static int cmp_uint64_t(const void *a, const void *b) {
+static int cmp_uint64_t(const void *a, const void *b)
+{
   return (int)((*((const uint64_t *)a)) - (*((const uint64_t *)b)));
 }
 
-#define MAKE_BENCH_NTT(var, func)                                           \
-  int bench_##var() {                                                       \
-    uint64_t t1, t2;                                                        \
-    uint64_t cycles[REPEAT_MEDIAN];                                         \
-    int32_t src[NTT_SIZE] __attribute__((aligned(16)));                     \
-    (func)(src);                                                            \
-    for (size_t cnt_median = 0; cnt_median < REPEAT_MEDIAN; cnt_median++) { \
-      t1 = hal_get_time();                                                  \
-      for (size_t cnt = 0; cnt < REPEAT; cnt++)                             \
-        (func)(src);                                                        \
-      t2 = hal_get_time();                                                  \
-      cycles[cnt_median] = (t2 - t1) / REPEAT;                              \
-    }                                                                       \
-    qsort(cycles, REPEAT_MEDIAN, sizeof(uint64_t), cmp_uint64_t);           \
-    debug_printf(#var " repeat %d, %d", REPEAT *REPEAT_MEDIAN,              \
-                 (cycles[REPEAT_MEDIAN >> 1]));                             \
-    add_benchmark_results(#var, (cycles[REPEAT_MEDIAN >> 1]));              \
-    return (0);                                                             \
+#define MAKE_BENCH_NTT(var, func)                                         \
+  int bench_##var()                                                       \
+  {                                                                       \
+    uint64_t t1, t2;                                                      \
+    uint64_t cycles[REPEAT_MEDIAN];                                       \
+    int32_t src[NTT_SIZE] __attribute__((aligned(16)));                   \
+    (func)(src);                                                          \
+    for (size_t cnt_median = 0; cnt_median < REPEAT_MEDIAN; cnt_median++) \
+    {                                                                     \
+      t1 = hal_get_time();                                                \
+      for (size_t cnt = 0; cnt < REPEAT; cnt++)                           \
+        (func)(src);                                                      \
+      t2 = hal_get_time();                                                \
+      cycles[cnt_median] = (t2 - t1) / REPEAT;                            \
+    }                                                                     \
+    qsort(cycles, REPEAT_MEDIAN, sizeof(uint64_t), cmp_uint64_t);         \
+    debug_printf(#var " repeat %d, %d", REPEAT *REPEAT_MEDIAN,            \
+                 (cycles[REPEAT_MEDIAN >> 1]));                           \
+    add_benchmark_results(#var, (cycles[REPEAT_MEDIAN >> 1]));            \
+    return (0);                                                           \
   }
 
-#define MAKE_BENCH_BASEMUL(var, func)                                       \
-  int bench_##var() {                                                       \
-    uint64_t t1, t2;                                                        \
-    uint64_t cycles[REPEAT_MEDIAN];                                         \
-    int32_t src[NTT_SIZE] __attribute__((aligned(16)));                     \
-    int32_t src1[NTT_SIZE] __attribute__((aligned(16)));                    \
-    int32_t src2[NTT_SIZE] __attribute__((aligned(16)));                    \
-    (func)(src, src1, src2);                                                \
-    for (size_t cnt_median = 0; cnt_median < REPEAT_MEDIAN; cnt_median++) { \
-      t1 = hal_get_time();                                                  \
-      for (size_t cnt = 0; cnt < REPEAT; cnt++)                             \
-        (func)(src, src1, src2);                                            \
-      t2 = hal_get_time();                                                  \
-      cycles[cnt_median] = (t2 - t1) / REPEAT;                              \
-    }                                                                       \
-    qsort(cycles, REPEAT_MEDIAN, sizeof(uint64_t), cmp_uint64_t);           \
-    debug_printf(#var " repeat %d, %d", REPEAT *REPEAT_MEDIAN,              \
-                 (cycles[REPEAT_MEDIAN >> 1]));                             \
-    add_benchmark_results(#var, (cycles[REPEAT_MEDIAN >> 1]));              \
-    return (0);                                                             \
+#define MAKE_BENCH_BASEMUL(var, func)                                     \
+  int bench_##var()                                                       \
+  {                                                                       \
+    uint64_t t1, t2;                                                      \
+    uint64_t cycles[REPEAT_MEDIAN];                                       \
+    int32_t src[NTT_SIZE] __attribute__((aligned(16)));                   \
+    int32_t src1[NTT_SIZE] __attribute__((aligned(16)));                  \
+    int32_t src2[NTT_SIZE] __attribute__((aligned(16)));                  \
+    (func)(src, src1, src2);                                              \
+    for (size_t cnt_median = 0; cnt_median < REPEAT_MEDIAN; cnt_median++) \
+    {                                                                     \
+      t1 = hal_get_time();                                                \
+      for (size_t cnt = 0; cnt < REPEAT; cnt++)                           \
+        (func)(src, src1, src2);                                          \
+      t2 = hal_get_time();                                                \
+      cycles[cnt_median] = (t2 - t1) / REPEAT;                            \
+    }                                                                     \
+    qsort(cycles, REPEAT_MEDIAN, sizeof(uint64_t), cmp_uint64_t);         \
+    debug_printf(#var " repeat %d, %d", REPEAT *REPEAT_MEDIAN,            \
+                 (cycles[REPEAT_MEDIAN >> 1]));                           \
+    add_benchmark_results(#var, (cycles[REPEAT_MEDIAN >> 1]));            \
+    return (0);                                                           \
   }
 
-#define MAKE_BENCH_POINTMUL(var, func)                                      \
-  int bench_##var() {                                                       \
-    uint64_t t1, t2;                                                        \
-    uint64_t cycles[REPEAT_MEDIAN];                                         \
-    int16_t src[NTT_SIZE] __attribute__((aligned(16))) = {0};               \
-    int32_t src1[NTT_SIZE] __attribute__((aligned(16))) = {0};              \
-    (func)(src, src1);                                                      \
-    for (size_t cnt_median = 0; cnt_median < REPEAT_MEDIAN; cnt_median++) { \
-      t1 = hal_get_time();                                                  \
-      for (size_t cnt = 0; cnt < REPEAT; cnt++)                             \
-        (func)(src, src1);                                                  \
-      t2 = hal_get_time();                                                  \
-      cycles[cnt_median] = (t2 - t1) / REPEAT;                              \
-    }                                                                       \
-    qsort(cycles, REPEAT_MEDIAN, sizeof(uint64_t), cmp_uint64_t);           \
-    debug_printf(#var " repeat %d, %d", REPEAT *REPEAT_MEDIAN,              \
-                 (cycles[REPEAT_MEDIAN >> 1]));                             \
-    add_benchmark_results(#var, (cycles[REPEAT_MEDIAN >> 1]));              \
-    return (0);                                                             \
+#define MAKE_BENCH_POINTMUL(var, func)                                    \
+  int bench_##var()                                                       \
+  {                                                                       \
+    uint64_t t1, t2;                                                      \
+    uint64_t cycles[REPEAT_MEDIAN];                                       \
+    int16_t src[NTT_SIZE] __attribute__((aligned(16))) = {0};             \
+    int32_t src1[NTT_SIZE] __attribute__((aligned(16))) = {0};            \
+    (func)(src, src1);                                                    \
+    for (size_t cnt_median = 0; cnt_median < REPEAT_MEDIAN; cnt_median++) \
+    {                                                                     \
+      t1 = hal_get_time();                                                \
+      for (size_t cnt = 0; cnt < REPEAT; cnt++)                           \
+        (func)(src, src1);                                                \
+      t2 = hal_get_time();                                                \
+      cycles[cnt_median] = (t2 - t1) / REPEAT;                            \
+    }                                                                     \
+    qsort(cycles, REPEAT_MEDIAN, sizeof(uint64_t), cmp_uint64_t);         \
+    debug_printf(#var " repeat %d, %d", REPEAT *REPEAT_MEDIAN,            \
+                 (cycles[REPEAT_MEDIAN >> 1]));                           \
+    add_benchmark_results(#var, (cycles[REPEAT_MEDIAN >> 1]));            \
+    return (0);                                                           \
   }
 
-#define MAKE_BENCH_ASYM_MUL(var, func)                                      \
-  int bench_##var() {                                                       \
-    uint64_t t1, t2;                                                        \
-    uint64_t cycles[REPEAT_MEDIAN];                                         \
-    int32_t src[NTT_SIZE] __attribute__((aligned(16))) = {0};               \
-    int32_t src1[NTT_SIZE] __attribute__((aligned(16))) = {0};              \
-    int32_t src2[NTT_SIZE] __attribute__((aligned(16))) = {0};              \
-    int16_t src3[NTT_SIZE] __attribute__((aligned(16))) = {0};              \
-    (func)(src, src1, src2, src3);                                          \
-    for (size_t cnt_median = 0; cnt_median < REPEAT_MEDIAN; cnt_median++) { \
-      t1 = hal_get_time();                                                  \
-      for (size_t cnt = 0; cnt < REPEAT; cnt++)                             \
-        (func)(src, src1, src2, src3);                                      \
-      t2 = hal_get_time();                                                  \
-      cycles[cnt_median] = (t2 - t1) / REPEAT;                              \
-    }                                                                       \
-    qsort(cycles, REPEAT_MEDIAN, sizeof(uint64_t), cmp_uint64_t);           \
-    debug_printf(#var " repeat %d, %d", REPEAT *REPEAT_MEDIAN,              \
-                 (cycles[REPEAT_MEDIAN >> 1]));                             \
-    add_benchmark_results(#var, (cycles[REPEAT_MEDIAN >> 1]));              \
-    return (0);                                                             \
+#define MAKE_BENCH_ASYM_MUL(var, func)                                    \
+  int bench_##var()                                                       \
+  {                                                                       \
+    uint64_t t1, t2;                                                      \
+    uint64_t cycles[REPEAT_MEDIAN];                                       \
+    int32_t src[NTT_SIZE] __attribute__((aligned(16))) = {0};             \
+    int32_t src1[NTT_SIZE] __attribute__((aligned(16))) = {0};            \
+    int32_t src2[NTT_SIZE] __attribute__((aligned(16))) = {0};            \
+    int16_t src3[NTT_SIZE] __attribute__((aligned(16))) = {0};            \
+    (func)(src, src1, src2, src3);                                        \
+    for (size_t cnt_median = 0; cnt_median < REPEAT_MEDIAN; cnt_median++) \
+    {                                                                     \
+      t1 = hal_get_time();                                                \
+      for (size_t cnt = 0; cnt < REPEAT; cnt++)                           \
+        (func)(src, src1, src2, src3);                                    \
+      t2 = hal_get_time();                                                \
+      cycles[cnt_median] = (t2 - t1) / REPEAT;                            \
+    }                                                                     \
+    qsort(cycles, REPEAT_MEDIAN, sizeof(uint64_t), cmp_uint64_t);         \
+    debug_printf(#var " repeat %d, %d", REPEAT *REPEAT_MEDIAN,            \
+                 (cycles[REPEAT_MEDIAN >> 1]));                           \
+    add_benchmark_results(#var, (cycles[REPEAT_MEDIAN >> 1]));            \
+    return (0);                                                           \
   }
 
-#define MAKE_BENCH_NTT_16(var, func)                                        \
-  int bench_##var() {                                                       \
-    uint64_t t1, t2;                                                        \
-    uint64_t cycles[REPEAT_MEDIAN];                                         \
-    int16_t src[NTT_SIZE] __attribute__((aligned(16)));                     \
-    (func)(src);                                                            \
-    for (size_t cnt_median = 0; cnt_median < REPEAT_MEDIAN; cnt_median++) { \
-      t1 = hal_get_time();                                                  \
-      for (size_t cnt = 0; cnt < REPEAT; cnt++)                             \
-        (func)(src);                                                        \
-      t2 = hal_get_time();                                                  \
-      cycles[cnt_median] = (t2 - t1) / REPEAT;                              \
-    }                                                                       \
-    qsort(cycles, REPEAT_MEDIAN, sizeof(uint64_t), cmp_uint64_t);           \
-    debug_printf(#var " repeat %d, %d", REPEAT *REPEAT_MEDIAN,              \
-                 (cycles[REPEAT_MEDIAN >> 1]));                             \
-    add_benchmark_results(#var, (cycles[REPEAT_MEDIAN >> 1]));              \
-    return (0);                                                             \
+#define MAKE_BENCH_NTT_16(var, func)                                      \
+  int bench_##var()                                                       \
+  {                                                                       \
+    uint64_t t1, t2;                                                      \
+    uint64_t cycles[REPEAT_MEDIAN];                                       \
+    int16_t src[NTT_SIZE] __attribute__((aligned(16)));                   \
+    (func)(src);                                                          \
+    for (size_t cnt_median = 0; cnt_median < REPEAT_MEDIAN; cnt_median++) \
+    {                                                                     \
+      t1 = hal_get_time();                                                \
+      for (size_t cnt = 0; cnt < REPEAT; cnt++)                           \
+        (func)(src);                                                      \
+      t2 = hal_get_time();                                                \
+      cycles[cnt_median] = (t2 - t1) / REPEAT;                            \
+    }                                                                     \
+    qsort(cycles, REPEAT_MEDIAN, sizeof(uint64_t), cmp_uint64_t);         \
+    debug_printf(#var " repeat %d, %d", REPEAT *REPEAT_MEDIAN,            \
+                 (cycles[REPEAT_MEDIAN >> 1]));                           \
+    add_benchmark_results(#var, (cycles[REPEAT_MEDIAN >> 1]));            \
+    return (0);                                                           \
   }
 
-#define MAKE_BENCH_POINTMUL_16(var, func)                                   \
-  int bench_##var() {                                                       \
-    uint64_t t1, t2;                                                        \
-    uint64_t cycles[REPEAT_MEDIAN];                                         \
-    int16_t src[NTT_SIZE] __attribute__((aligned(16))) = {0};               \
-    int16_t src1[NTT_SIZE] __attribute__((aligned(16))) = {0};              \
-    (func)(src, src1);                                                      \
-    for (size_t cnt_median = 0; cnt_median < REPEAT_MEDIAN; cnt_median++) { \
-      t1 = hal_get_time();                                                  \
-      for (size_t cnt = 0; cnt < REPEAT; cnt++)                             \
-        (func)(src, src1);                                                  \
-      t2 = hal_get_time();                                                  \
-      cycles[cnt_median] = (t2 - t1) / REPEAT;                              \
-    }                                                                       \
-    qsort(cycles, REPEAT_MEDIAN, sizeof(uint64_t), cmp_uint64_t);           \
-    debug_printf(#var " repeat %d, %d", REPEAT *REPEAT_MEDIAN,              \
-                 (cycles[REPEAT_MEDIAN >> 1]));                             \
-    add_benchmark_results(#var, (cycles[REPEAT_MEDIAN >> 1]));              \
-    return (0);                                                             \
+#define MAKE_BENCH_POINTMUL_16(var, func)                                 \
+  int bench_##var()                                                       \
+  {                                                                       \
+    uint64_t t1, t2;                                                      \
+    uint64_t cycles[REPEAT_MEDIAN];                                       \
+    int16_t src[NTT_SIZE] __attribute__((aligned(16))) = {0};             \
+    int16_t src1[NTT_SIZE] __attribute__((aligned(16))) = {0};            \
+    (func)(src, src1);                                                    \
+    for (size_t cnt_median = 0; cnt_median < REPEAT_MEDIAN; cnt_median++) \
+    {                                                                     \
+      t1 = hal_get_time();                                                \
+      for (size_t cnt = 0; cnt < REPEAT; cnt++)                           \
+        (func)(src, src1);                                                \
+      t2 = hal_get_time();                                                \
+      cycles[cnt_median] = (t2 - t1) / REPEAT;                            \
+    }                                                                     \
+    qsort(cycles, REPEAT_MEDIAN, sizeof(uint64_t), cmp_uint64_t);         \
+    debug_printf(#var " repeat %d, %d", REPEAT *REPEAT_MEDIAN,            \
+                 (cycles[REPEAT_MEDIAN >> 1]));                           \
+    add_benchmark_results(#var, (cycles[REPEAT_MEDIAN >> 1]));            \
+    return (0);                                                           \
   }
 
-#define MAKE_BENCH_ASYM_MUL_16(var, func)                                   \
-  int bench_##var() {                                                       \
-    uint64_t t1, t2;                                                        \
-    uint64_t cycles[REPEAT_MEDIAN];                                         \
-    int16_t src[NTT_SIZE] __attribute__((aligned(16))) = {0};               \
-    int16_t src1[NTT_SIZE] __attribute__((aligned(16))) = {0};              \
-    int16_t src2[NTT_SIZE] __attribute__((aligned(16))) = {0};              \
-    int16_t src3[NTT_SIZE] __attribute__((aligned(16))) = {0};              \
-    (func)(src, src1, src2, src3);                                          \
-    for (size_t cnt_median = 0; cnt_median < REPEAT_MEDIAN; cnt_median++) { \
-      t1 = hal_get_time();                                                  \
-      for (size_t cnt = 0; cnt < REPEAT; cnt++)                             \
-        (func)(src, src1, src2, src3);                                      \
-      t2 = hal_get_time();                                                  \
-      cycles[cnt_median] = (t2 - t1) / REPEAT;                              \
-    }                                                                       \
-    qsort(cycles, REPEAT_MEDIAN, sizeof(uint64_t), cmp_uint64_t);           \
-    debug_printf(#var " repeat %d, %d", REPEAT *REPEAT_MEDIAN,              \
-                 (cycles[REPEAT_MEDIAN >> 1]));                             \
-    add_benchmark_results(#var, (cycles[REPEAT_MEDIAN >> 1]));              \
-    return (0);                                                             \
+#define MAKE_BENCH_ASYM_MUL_16(var, func)                                 \
+  int bench_##var()                                                       \
+  {                                                                       \
+    uint64_t t1, t2;                                                      \
+    uint64_t cycles[REPEAT_MEDIAN];                                       \
+    int16_t src[NTT_SIZE] __attribute__((aligned(16))) = {0};             \
+    int16_t src1[NTT_SIZE] __attribute__((aligned(16))) = {0};            \
+    int16_t src2[NTT_SIZE] __attribute__((aligned(16))) = {0};            \
+    int16_t src3[NTT_SIZE] __attribute__((aligned(16))) = {0};            \
+    (func)(src, src1, src2, src3);                                        \
+    for (size_t cnt_median = 0; cnt_median < REPEAT_MEDIAN; cnt_median++) \
+    {                                                                     \
+      t1 = hal_get_time();                                                \
+      for (size_t cnt = 0; cnt < REPEAT; cnt++)                           \
+        (func)(src, src1, src2, src3);                                    \
+      t2 = hal_get_time();                                                \
+      cycles[cnt_median] = (t2 - t1) / REPEAT;                            \
+    }                                                                     \
+    qsort(cycles, REPEAT_MEDIAN, sizeof(uint64_t), cmp_uint64_t);         \
+    debug_printf(#var " repeat %d, %d", REPEAT *REPEAT_MEDIAN,            \
+                 (cycles[REPEAT_MEDIAN >> 1]));                           \
+    add_benchmark_results(#var, (cycles[REPEAT_MEDIAN >> 1]));            \
+    return (0);                                                           \
   }
 
 // Q=8380417 polynomial multiplication
@@ -636,111 +671,140 @@ MAKE_BENCH_NTT(pqcrystals_dilithium_asm_caddq, pqcrystals_dilithium_asm_caddq)
 MAKE_BENCH_NTT(pqcrystals_dilithium_asm_caddq_opt_m7,
                pqcrystals_dilithium_asm_caddq_opt_m7)
 
-int main(void) {
+int main(void)
+{
   int ret = 0;
   debug_test_start("\nDilithium All Test!\n");
 
   /* Test cases */
 
   // Q=8380417 polynomial multiplication
-  if (test_ntt_pqm4() != 0) {
+  if (test_ntt_pqm4() != 0)
+  {
     return (1);
   }
-  if (test_ntt_pqm4_opt() != 0) {
-    return (1);
-  }
-
-  if (test_intt_pqm4() != 0) {
-    return (1);
-  }
-  if (test_intt_pqm4_opt() != 0) {
+  if (test_ntt_pqm4_opt() != 0)
+  {
     return (1);
   }
 
-  if (test_pointwise_montgomery_pqm4() != 0) {
+  if (test_intt_pqm4() != 0)
+  {
     return (1);
   }
-  if (test_pointwise_montgomery_pqm4_opt() != 0) {
+  if (test_intt_pqm4_opt() != 0)
+  {
     return (1);
   }
 
-  if (test_pointwise_acc_montgomery_pqm4() != 0) {
+  if (test_pointwise_montgomery_pqm4() != 0)
+  {
     return (1);
   }
-  if (test_pointwise_acc_montgomery_pqm4_opt() != 0) {
+  if (test_pointwise_montgomery_pqm4_opt() != 0)
+  {
+    return (1);
+  }
+
+  if (test_pointwise_acc_montgomery_pqm4() != 0)
+  {
+    return (1);
+  }
+  if (test_pointwise_acc_montgomery_pqm4_opt() != 0)
+  {
     return (1);
   }
 
   // Q=257 polynomial multiplication
-  if (test_fnt_257_pqm4() != 0) {
+  if (test_fnt_257_pqm4() != 0)
+  {
     return (1);
   }
-  if (test_fnt_257_pqm4_opt() != 0) {
-    return (1);
-  }
-
-  if (test_ifnt_257_pqm4() != 0) {
-    return (1);
-  }
-  if (test_ifnt_257_pqm4_opt() != 0) {
+  if (test_fnt_257_pqm4_opt() != 0)
+  {
     return (1);
   }
 
-  if (test_point_mul_257_16_pqm4() != 0) {
+  if (test_ifnt_257_pqm4() != 0)
+  {
     return (1);
   }
-  if (test_point_mul_257_16_pqm4_opt() != 0) {
+  if (test_ifnt_257_pqm4_opt() != 0)
+  {
     return (1);
   }
 
-  if (test_asymmetric_mul_257_16_pqm4() != 0) {
+  if (test_point_mul_257_16_pqm4() != 0)
+  {
     return (1);
   }
-  if (test_asymmetric_mul_257_16_pqm4_opt() != 0) {
+  if (test_point_mul_257_16_pqm4_opt() != 0)
+  {
+    return (1);
+  }
+
+  if (test_asymmetric_mul_257_16_pqm4() != 0)
+  {
+    return (1);
+  }
+  if (test_asymmetric_mul_257_16_pqm4_opt() != 0)
+  {
     return (1);
   }
 
   // Q=769 polynomial multiplication
-  if (test_ntt_769_pqm4() != 0) {
+  if (test_ntt_769_pqm4() != 0)
+  {
     return (1);
   }
-  if (test_ntt_769_pqm4_opt() != 0) {
-    return (1);
-  }
-
-  if (test_intt_769_pqm4() != 0) {
-    return (1);
-  }
-  if (test_intt_769_pqm4_opt() != 0) {
+  if (test_ntt_769_pqm4_opt() != 0)
+  {
     return (1);
   }
 
-  if (test_pointmul_769_pqm4() != 0) {
+  if (test_intt_769_pqm4() != 0)
+  {
     return (1);
   }
-  if (test_pointmul_769_pqm4_opt() != 0) {
+  if (test_intt_769_pqm4_opt() != 0)
+  {
     return (1);
   }
 
-  if (test_asymmetric_mul_769_pqm4() != 0) {
+  if (test_pointmul_769_pqm4() != 0)
+  {
     return (1);
   }
-  if (test_asymmetric_mul_769_pqm4_opt() != 0) {
+  if (test_pointmul_769_pqm4_opt() != 0)
+  {
+    return (1);
+  }
+
+  if (test_asymmetric_mul_769_pqm4() != 0)
+  {
+    return (1);
+  }
+  if (test_asymmetric_mul_769_pqm4_opt() != 0)
+  {
     return (1);
   }
 
   // other arithmetic
-  if (test_reduce32_pqm4() != 0) {
+  if (test_reduce32_pqm4() != 0)
+  {
     return (1);
   }
-  if (test_reduce32_pqm4_opt() != 0) {
+  if (test_reduce32_pqm4_opt() != 0)
+  {
     return (1);
   }
 
-  if (test_caddq_pqm4() != 0) {
+  if (test_caddq_pqm4() != 0)
+  {
     return (1);
   }
-  if (test_caddq_pqm4_opt() != 0) {
+  if (test_caddq_pqm4_opt() != 0)
+  {
     return (1);
   }
 

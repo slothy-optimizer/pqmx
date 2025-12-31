@@ -142,7 +142,8 @@ static void ntt_fast_opt_m7_wrap(int16_t *p) { ntt_fast_opt_m7(p, zetas_asm); }
 
 static void invntt_fast_wrap(int16_t *p) { invntt_fast(p, zetas_inv_CT_asm); }
 
-static void invntt_fast_opt_m7_wrap(int16_t *p) {
+static void invntt_fast_opt_m7_wrap(int16_t *p)
+{
   invntt_fast_opt_m7(p, zetas_inv_CT_asm);
 }
 
@@ -156,19 +157,22 @@ void basemul_asm_acc(int16_t *, const int16_t *, const int16_t *,
 void basemul_asm_acc_opt_m7(int16_t *, const int16_t *, const int16_t *,
                             const int32_t *);
 
-static void basemul_asm_wrap(int16_t *a, const int16_t *b, const int16_t *c) {
+static void basemul_asm_wrap(int16_t *a, const int16_t *b, const int16_t *c)
+{
   basemul_asm(a, b, c, zetas);
 }
 static void basemul_asm_opt_m7_wrap(int16_t *a, const int16_t *b,
-                                    const int16_t *c) {
+                                    const int16_t *c)
+{
   basemul_asm_opt_m7(a, b, c, zetas);
 }
-static void basemul_asm_acc_wrap(int16_t *a, const int16_t *b,
-                                 const int16_t *c) {
+static void basemul_asm_acc_wrap(int16_t *a, const int16_t *b, const int16_t *c)
+{
   basemul_asm_acc(a, b, c, zetas);
 }
 static void basemul_asm_acc_opt_m7_wrap(int16_t *a, const int16_t *b,
-                                        const int16_t *c) {
+                                        const int16_t *c)
+{
   basemul_asm_acc_opt_m7(a, b, c, zetas);
 }
 
@@ -185,20 +189,24 @@ void frombytes_mul_asm_acc_opt_m7(int16_t *r, const int16_t *b,
                                   const int32_t zetas[64]);
 
 void frombytes_mul_asm_wrap(int16_t *r, const int16_t *b,
-                            const unsigned char *c) {
+                            const unsigned char *c)
+{
   frombytes_mul_asm(r, b, c, zetas);
 }
 void frombytes_mul_asm_opt_m7_wrap(int16_t *r, const int16_t *b,
-                                   const unsigned char *c) {
+                                   const unsigned char *c)
+{
   frombytes_mul_asm_opt_m7(r, b, c, zetas);
 }
 
 void frombytes_mul_asm_acc_wrap(int16_t *r, const int16_t *b,
-                                const unsigned char *c) {
+                                const unsigned char *c)
+{
   frombytes_mul_asm_acc(r, b, c, zetas);
 }
 void frombytes_mul_asm_acc_opt_m7_wrap(int16_t *r, const int16_t *b,
-                                       const unsigned char *c) {
+                                       const unsigned char *c)
+{
   frombytes_mul_asm_acc_opt_m7(r, b, c, zetas);
 }
 

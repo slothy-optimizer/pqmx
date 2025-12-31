@@ -53,17 +53,21 @@ void __asm_asymmetric_mul_257_16(int32_t c[256], const int32_t a[256],
 void __asm_ifnt_257(int32_t *p, const int32_t twiddles[112], int32_t qprime,
                     int32_t q);
 
-void fnt_ntt(int32_t *a) {
+void fnt_ntt(int32_t *a)
+{
   __asm_fnt_257(a, twiddles_ntt_257_streamlined, FNT_Q_PRIME, FNT_Q);
 }
-void fnt_invntt_tomont(int32_t *a) {
+void fnt_invntt_tomont(int32_t *a)
+{
   __asm_ifnt_257(a, twiddles_intt_257_streamlined, FNT_Q_PRIME, FNT_Q);
 }
 
-void fnt_point_mul(int16_t *b_prime, int32_t *b) {
+void fnt_point_mul(int16_t *b_prime, int32_t *b)
+{
   __asm_point_mul_257_16(b_prime, b, FNT_Q_PRIME, FNT_Q, twiddles_basemul_257);
 }
-void fnt_asymmetric_mul(int32_t *c, int32_t *a, int32_t *b, int16_t *b_prime) {
+void fnt_asymmetric_mul(int32_t *c, int32_t *a, int32_t *b, int16_t *b_prime)
+{
   __asm_asymmetric_mul_257_16(c, a, b, b_prime);
 }
 
@@ -80,21 +84,25 @@ void __asm_asymmetric_mul_257_16_opt_m7(int32_t c[256], const int32_t a[256],
 void __asm_ifnt_257_opt_m7(int32_t *p, const int32_t twiddles[112],
                            int32_t qprime, int32_t q);
 
-void fnt_ntt_opt_m7(int32_t *a) {
+void fnt_ntt_opt_m7(int32_t *a)
+{
   __asm_fnt_257_opt_m7(a, twiddles_ntt_257_streamlined, FNT_Q_PRIME, FNT_Q);
 }
 
-void fnt_invntt_tomont_opt_m7(int32_t *a) {
+void fnt_invntt_tomont_opt_m7(int32_t *a)
+{
   __asm_ifnt_257_opt_m7(a, twiddles_intt_257_streamlined, FNT_Q_PRIME, FNT_Q);
 }
 
-void fnt_point_mul_opt_m7(int16_t *b_prime, int32_t *b) {
+void fnt_point_mul_opt_m7(int16_t *b_prime, int32_t *b)
+{
   __asm_point_mul_257_16_opt_m7(b_prime, b, FNT_Q_PRIME, FNT_Q,
                                 twiddles_basemul_257);
 }
 
 void fnt_asymmetric_mul_opt_m7(int32_t *c, int32_t *a, int32_t *b,
-                               int16_t *b_prime) {
+                               int16_t *b_prime)
+{
   __asm_asymmetric_mul_257_16_opt_m7(c, a, b, b_prime);
 }
 

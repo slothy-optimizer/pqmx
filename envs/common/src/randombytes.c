@@ -9,13 +9,16 @@
 // TODO Maybe we do not want to use the hardware RNG for all randomness, but
 // instead only read a seed and then expand that using fips202.
 
-int randombytes(uint8_t *obuf, size_t len) {
-  union {
+int randombytes(uint8_t *obuf, size_t len)
+{
+  union
+  {
     unsigned char aschar[4];
     uint32_t asint;
   } random;
 
-  while (len > 4) {
+  while (len > 4)
+  {
     random.asint = rng_get_random_blocking();
     *obuf++ = random.aschar[0];
     *obuf++ = random.aschar[1];
@@ -23,8 +26,10 @@ int randombytes(uint8_t *obuf, size_t len) {
     *obuf++ = random.aschar[3];
     len -= 4;
   }
-  if (len > 0) {
-    for (random.asint = rng_get_random_blocking(); len > 0; --len) {
+  if (len > 0)
+  {
+    for (random.asint = rng_get_random_blocking(); len > 0; --len)
+    {
       *obuf++ = random.aschar[len - 1];
     }
   }
@@ -46,7 +51,8 @@ static int32_t outleft = 0;
 #define ROTATE(x, b) (((x) << (b)) | ((x) >> (32 - (b))))
 #define MUSH(i, b) x = t[i] += (((x ^ seed[i]) + sum) ^ ROTATE(x, b));
 
-static void surf(uint32_t out[8]) {
+static void surf(uint32_t out[8])
+{
   uint32_t t[12];
   uint32_t x;
   uint32_t sum = 0;
@@ -54,15 +60,19 @@ static void surf(uint32_t out[8]) {
   int32_t i;
   int32_t loop;
 
-  for (i = 0; i < 12; ++i) {
+  for (i = 0; i < 12; ++i)
+  {
     t[i] = in[i] ^ seed[12 + i];
   }
-  for (i = 0; i < 8; ++i) {
+  for (i = 0; i < 8; ++i)
+  {
     out[i] = seed[24 + i];
   }
   x = t[11];
-  for (loop = 0; loop < 2; ++loop) {
-    for (r = 0; r < 16; ++r) {
+  for (loop = 0; loop < 2; ++loop)
+  {
+    for (r = 0; r < 16; ++r)
+    {
       sum += 0x9e3779b9;
       MUSH(0, 5)
       MUSH(1, 7)
@@ -77,27 +87,35 @@ static void surf(uint32_t out[8]) {
       MUSH(10, 9)
       MUSH(11, 13)
     }
-    for (i = 0; i < 8; ++i) {
+    for (i = 0; i < 8; ++i)
+    {
       out[i] ^= t[i + 4];
     }
   }
 }
 
 void randombytes_regen(void);
-void randombytes_regen(void) {
+void randombytes_regen(void)
+{
   uint32_t out[8];
-  if (!++in[0]) {
-    if (!++in[1]) {
-      if (!++in[2]) {
+  if (!++in[0])
+  {
+    if (!++in[1])
+    {
+      if (!++in[2])
+      {
         ++in[3];
       }
     }
   }
   surf(out);
   memcpy(out_buf, out, sizeof(out));
-  if (!++in[0]) {
-    if (!++in[1]) {
-      if (!++in[2]) {
+  if (!++in[0])
+  {
+    if (!++in[1])
+    {
+      if (!++in[2])
+      {
         ++in[3];
       }
     }
@@ -107,9 +125,12 @@ void randombytes_regen(void) {
   outleft = sizeof(out_buf);
 }
 
-int randombytes(uint8_t *buf, size_t xlen) {
-  while (xlen > 0) {
-    if (!outleft) {
+int randombytes(uint8_t *buf, size_t xlen)
+{
+  while (xlen > 0)
+  {
+    if (!outleft)
+    {
       randombytes_regen();
     }
     *buf = out_buf[--outleft];

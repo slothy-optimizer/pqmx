@@ -13,37 +13,44 @@
 
 
 // Context for incremental API
-typedef struct {
+typedef struct
+{
   uint64_t ctx[26];
 } shake128incctx;
 
 // Context for non-incremental API
-typedef struct {
+typedef struct
+{
   uint64_t ctx[25];
 } shake128ctx;
 
 // Context for incremental API
-typedef struct {
+typedef struct
+{
   uint64_t ctx[26];
 } shake256incctx;
 
 // Context for non-incremental API
-typedef struct {
+typedef struct
+{
   uint64_t ctx[25];
 } shake256ctx;
 
 // Context for incremental API
-typedef struct {
+typedef struct
+{
   uint64_t ctx[26];
 } sha3_256incctx;
 
 // Context for incremental API
-typedef struct {
+typedef struct
+{
   uint64_t ctx[26];
 } sha3_384incctx;
 
 // Context for incremental API
-typedef struct {
+typedef struct
+{
   uint64_t ctx[26];
 } sha3_512incctx;
 

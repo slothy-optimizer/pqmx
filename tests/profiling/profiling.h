@@ -19,7 +19,8 @@ void profile_full();
 
 #define MAKE_PROFILE(func)                              \
   void ubench_##func();                                 \
-  void profile_##func() {                               \
+  void profile_##func()                                 \
+  {                                                     \
     unsigned int median = measure(ubench_##func);       \
     debug_printf("[" #func "]: %lld cycles\n", median); \
   }

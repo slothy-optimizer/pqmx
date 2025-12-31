@@ -24,13 +24,15 @@
 static volatile unsigned long long overflowcnt = 0;
 
 #ifdef __clang__
-static int trace_putc(char c, FILE *file) {
+static int trace_putc(char c, FILE *file)
+{
   (void)file; /* Not used in this function */
   SEGGER_RTT_Write(0, &c, 1);
   return c;
 }
 
-static int null_getc(FILE *file) {
+static int null_getc(FILE *file)
+{
   (void)file; /* Not used in this function */
   return 0;
 }
@@ -45,15 +47,18 @@ __strong_reference(stdin, stderr);
 
 void Utils_Init(void) { SEGGER_RTT_Init(); }
 
-void delay_ms(uint32_t ms) {
+void delay_ms(uint32_t ms)
+{
   R_BSP_SoftwareDelay(ms, BSP_DELAY_UNITS_MILLISECONDS);
 }
 
 int utils_putchar(char c) { return (int)SEGGER_RTT_PutChar(0, c); }
 
-void utils_exit(int retcode) {
+void utils_exit(int retcode)
+{
   printf("---------- Program exited with return code %d ----------\n", retcode);
-  while (1) {
+  while (1)
+  {
     __asm volatile("NOP");
   }
 }
@@ -61,11 +66,14 @@ void utils_exit(int retcode) {
 
 void SysTick_Handler(void) { ++overflowcnt; }
 
-uint64_t hal_get_time() {
-  while (1) {
+uint64_t hal_get_time()
+{
+  while (1)
+  {
     unsigned long long before = overflowcnt;
     unsigned long long result = (before + 1) * 16777216llu - SysTick->VAL;
-    if (overflowcnt == before) {
+    if (overflowcnt == before)
+    {
       return result;
     }
   }
@@ -82,14 +90,16 @@ static uint64_t _measure_start = 0;
 #include <stdio.h>
 #include <stdarg.h>
 
-uint8_t get_random_byte() {
+uint8_t get_random_byte()
+{
   uint32_t data;
   randombytes((uint8_t *)&data, sizeof(data));
   return (uint8_t)data;
 }
 
 /* Stubs to enable/disable measurements. */
-void measure_end() {
+void measure_end()
+{
   uint64_t dur = hal_get_time() - _measure_start;
   debug_printf("cycles: %llu\n", dur);
 }
@@ -98,13 +108,15 @@ void measure_start() { _measure_start = hal_get_time(); }
 
 /* Debugging stubs */
 
-void debug_test_start(const char *testname) {
+void debug_test_start(const char *testname)
+{
   SysTick_Config(0xFFFFFFu);
   printf("%s ... ", testname);
   fflush(stdout);
 }
 
-void debug_printf(const char *format, ...) {
+void debug_printf(const char *format, ...)
+{
   va_list argp;
   va_start(argp, format);
   vprintf(format, argp);
@@ -114,7 +126,8 @@ void debug_printf(const char *format, ...) {
 void debug_test_ok() { printf("Ok\n"); }
 void debug_test_fail() { printf("FAIL!\n"); }
 
-void hal_pmu_enable() {
+void hal_pmu_enable()
+{
   CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
 
   // Disable DWT_CYCCNT in DWT_CTRL -- PMU doesn't work otherwise
@@ -127,7 +140,8 @@ void hal_pmu_enable() {
 
 void hal_pmu_disable() { ARM_PMU_Disable(); }
 
-void hal_pmu_start_pmu_stats(pmu_stats *s) {
+void hal_pmu_start_pmu_stats(pmu_stats *s)
+{
   memset(s, 0, sizeof(*s));
 
 #define ID_INST_RETIRED 0
@@ -162,7 +176,8 @@ void hal_pmu_start_pmu_stats(pmu_stats *s) {
   SysTick_Config(0xFFFFFFu);
 }
 
-void hal_pmu_finish_pmu_stats(pmu_stats *s) {
+void hal_pmu_finish_pmu_stats(pmu_stats *s)
+{
   ARM_PMU_CNTR_Disable(PMU_CNTENSET_CCNTR_ENABLE_Msk);
   ARM_PMU_CNTR_Disable(
       PMU_CNTENSET_CNT0_ENABLE_Msk | PMU_CNTENSET_CNT1_ENABLE_Msk |
@@ -186,7 +201,8 @@ void hal_pmu_finish_pmu_stats(pmu_stats *s) {
   s->stall_mve_resource = ARM_PMU_Get_EVCNTR(ID_MVE_STALL_RESOURCE);
 }
 
-void hal_pmu_send_stats(char *s, pmu_stats const *stats) {
+void hal_pmu_send_stats(char *s, pmu_stats const *stats)
+{
   printf("%s\n", s);
   printf("- cycles:               %lu\n", (unsigned long)stats->pmu_cycles);
   printf("- systick cycles:       %lu\n", (unsigned long)stats->systick_cycles);

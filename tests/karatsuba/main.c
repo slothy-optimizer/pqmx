@@ -50,9 +50,11 @@
 
 #if defined(TEST_KARATSUBA_INV) || defined(TEST_KARATSUBA_INV_DUAL_LOOP) || \
     defined(TEST_KARATSUBA_FWD)
-void karatsuba_evaluation_64_C(const uint16_t *src, uint16_t *dst) {
+void karatsuba_evaluation_64_C(const uint16_t *src, uint16_t *dst)
+{
   unsigned idx;
-  for (idx = 0; idx < 32; idx++) {
+  for (idx = 0; idx < 32; idx++)
+  {
     uint16_t even = src[2 * idx + 0];
     uint16_t odd = src[2 * idx + 1];
     uint16_t sum = even + odd;
@@ -65,12 +67,14 @@ void karatsuba_evaluation_64_C(const uint16_t *src, uint16_t *dst) {
 #endif /* any Karatsuba */
 
 #if defined(TEST_KARATSUBA_INV) || defined(TEST_KARATSUBA_INV_DUAL_LOOP)
-void split_even_odd_32(uint16_t *src) {
+void split_even_odd_32(uint16_t *src)
+{
   unsigned idx;
   uint16_t tmp[32];
   copy_buf_u16(tmp, src, 32);
 
-  for (idx = 0; idx < 16; idx++) {
+  for (idx = 0; idx < 16; idx++)
+  {
     uint16_t even = tmp[2 * idx + 0];
     uint16_t odd = tmp[2 * idx + 1];
 
@@ -109,7 +113,8 @@ MAKE_SCHOOLBOOK(16, 64)
 #endif /* TEST_KARATSUBA_INV || TEST_KARATSUBA_INV_DUAL_LOOP */
 
 #if defined(TEST_KARATSUBA_FWD)
-int test_karatsuba_fwd(void) {
+int test_karatsuba_fwd(void)
+{
   debug_test_start("Test: 64->32x3 Karatsuba evaluation, looped");
 
 #define POLY_COEFFS 64
@@ -125,7 +130,8 @@ int test_karatsuba_fwd(void) {
   memset(input, 0, sizeof(input));
   input[0] = 1;
 
-  for (unsigned idx = 0; idx < KARATSUBA_FWD_ITERATIONS; idx++) {
+  for (unsigned idx = 0; idx < KARATSUBA_FWD_ITERATIONS; idx++)
+  {
     uint16_t *cur_input;
     uint16_t *cur_eval;
     cur_input = input + idx * POLY_COEFFS;
@@ -137,7 +143,8 @@ int test_karatsuba_fwd(void) {
   karatsuba_fwd_dual_32_loop(input, eval_mve);
   measure_end();
 
-  if (compare_buf_u16(eval_ref, eval_mve, TOTAL_EVAL_COEFFS) != 0) {
+  if (compare_buf_u16(eval_ref, eval_mve, TOTAL_EVAL_COEFFS) != 0)
+  {
     debug_test_fail();
     debug_print_buf_u16(eval_ref, TOTAL_EVAL_COEFFS, "Ref");
     debug_print_buf_u16(eval_mve, TOTAL_EVAL_COEFFS, "MVE");
@@ -156,7 +163,8 @@ int test_karatsuba_fwd(void) {
 
 #if defined(TEST_KARATSUBA_INV)
 #if !defined(TEST_CORE_ONLY)
-int test_karatsuba_inv(void) {
+int test_karatsuba_inv(void)
+{
   debug_test_start("Test: 32x3 -> 64 Karatsuba interpolation");
 
   uint16_t input_A[64];
@@ -213,7 +221,8 @@ int test_karatsuba_inv(void) {
   karatsuba_inv_dual_32(eval_C, C_kara);
   measure_end();
 
-  if (compare_buf_u16(C_ref, C_kara, 64) != 0) {
+  if (compare_buf_u16(C_ref, C_kara, 64) != 0)
+  {
     debug_test_fail();
     debug_print_buf_u16(C_ref, 64, "Ref");
     debug_print_buf_u16(C_kara, 64, "MVE");
@@ -224,7 +233,8 @@ int test_karatsuba_inv(void) {
   return (0);
 }
 #else  /* TEST_CORE_ONLY */
-int test_karatsuba_inv(void) {
+int test_karatsuba_inv(void)
+{
   /* TODO */
   return (0);
 }
@@ -233,7 +243,8 @@ int test_karatsuba_inv(void) {
 
 #if defined(TEST_KARATSUBA_INV_DUAL_LOOP)
 #if !defined(TEST_CORE_ONLY)
-int test_karatsuba_inv_dual_loop(void) {
+int test_karatsuba_inv_dual_loop(void)
+{
   debug_test_start("Test: 32x3 -> 64 Karatsuba interpolation, looped");
 
 #define POLY_COEFFS 64
@@ -255,7 +266,8 @@ int test_karatsuba_inv_dual_loop(void) {
   fill_random_u16(input_A, TOTAL_POLY_COEFFS);
   fill_random_u16(input_B, TOTAL_POLY_COEFFS);
 
-  for (unsigned idx = 0; idx < KARATSUBA_INV_ITERATIONS; idx++) {
+  for (unsigned idx = 0; idx < KARATSUBA_INV_ITERATIONS; idx++)
+  {
     uint16_t *cur_A, *cur_B, *cur_C;
     uint16_t *cur_eval_A, *cur_eval_B, *cur_eval_C;
     uint16_t *eval_A_even, *eval_A_odd, *eval_A_sum;
@@ -297,7 +309,8 @@ int test_karatsuba_inv_dual_loop(void) {
   karatsuba_inv_dual_32_loop(eval_C, C_kara);
   measure_end();
 
-  if (compare_buf_u16(C_ref, C_kara, TOTAL_POLY_COEFFS) != 0) {
+  if (compare_buf_u16(C_ref, C_kara, TOTAL_POLY_COEFFS) != 0)
+  {
     debug_test_fail();
     debug_print_buf_u16(C_ref, TOTAL_POLY_COEFFS, "Ref");
     debug_print_buf_u16(C_kara, TOTAL_POLY_COEFFS, "MVE");
@@ -308,14 +321,16 @@ int test_karatsuba_inv_dual_loop(void) {
   return (0);
 }
 #else  /* TEST_CORE_ONLY */
-int test_karatsuba_inv_dual_loop(void) {
+int test_karatsuba_inv_dual_loop(void)
+{
   /* TODO */
   return (0);
 }
 #endif /* TEST_CORE_ONLY */
 #endif /* TEST_KARATSUBA_INV_DUAL_LOOP */
 
-int main(void) {
+int main(void)
+{
   int ret = 0;
 
 #if defined(TEST_KARATSUBA_INV)
@@ -330,7 +345,8 @@ int main(void) {
   ret |= test_karatsuba_fwd();
 #endif /* TEST_KARATSUBA_FWD */
 
-  if (ret == 0) {
+  if (ret == 0)
+  {
     debug_printf("ALL GOOD!\n");
   }
 

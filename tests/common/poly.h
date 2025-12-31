@@ -119,36 +119,42 @@ void mod_mul_buf_s16(int16_t *src_a, int16_t *src_b, int16_t *dst,
 #define SCHOOLBOOK_FACTOR(dim, idx) 1
 #endif
 
-#define MAKE_SCHOOLBOOK_(BITWIDTH, DIM)                                       \
-  void C_SCHOOLBOOK_SYMBOL_NAME(BITWIDTH, DIM)(uint(BITWIDTH) * r,            \
-                                               uint(BITWIDTH) const *src_a,   \
-                                               uint(BITWIDTH) const *src_b) { \
-    unsigned i, j;                                                            \
-                                                                              \
-    for (i = 0; i < 2 * DIM; i++)                                             \
-      r[SCHOOLBOOK_OFFSET_FROM_INDEX_DST(DIM, i)] = 0;                        \
-                                                                              \
-    for (i = 0; i < DIM; i++) {                                               \
-      for (j = 0; j < DIM; j++) {                                             \
-        r[SCHOOLBOOK_OFFSET_FROM_INDEX_DST(DIM, i + j)] +=                    \
-            SCHOOLBOOK_FACTOR(DIM, i + j) *                                   \
-            src_a[SCHOOLBOOK_OFFSET_FROM_INDEX_SRCA(DIM, i)] *                \
-            src_b[SCHOOLBOOK_OFFSET_FROM_INDEX_SRCB(DIM, j)];                 \
-      }                                                                       \
-    }                                                                         \
+#define MAKE_SCHOOLBOOK_(BITWIDTH, DIM)                                     \
+  void C_SCHOOLBOOK_SYMBOL_NAME(BITWIDTH, DIM)(uint(BITWIDTH) * r,          \
+                                               uint(BITWIDTH) const *src_a, \
+                                               uint(BITWIDTH) const *src_b) \
+  {                                                                         \
+    unsigned i, j;                                                          \
+                                                                            \
+    for (i = 0; i < 2 * DIM; i++)                                           \
+      r[SCHOOLBOOK_OFFSET_FROM_INDEX_DST(DIM, i)] = 0;                      \
+                                                                            \
+    for (i = 0; i < DIM; i++)                                               \
+    {                                                                       \
+      for (j = 0; j < DIM; j++)                                             \
+      {                                                                     \
+        r[SCHOOLBOOK_OFFSET_FROM_INDEX_DST(DIM, i + j)] +=                  \
+            SCHOOLBOOK_FACTOR(DIM, i + j) *                                 \
+            src_a[SCHOOLBOOK_OFFSET_FROM_INDEX_SRCA(DIM, i)] *              \
+            src_b[SCHOOLBOOK_OFFSET_FROM_INDEX_SRCB(DIM, j)];               \
+      }                                                                     \
+    }                                                                       \
   }
 
 #define MAKE_INT_SCHOOLBOOK_(BITWIDTH, DIM)                                    \
   void C_SCHOOLBOOK_SYMBOL_NAME(BITWIDTH, DIM)(                                \
       sint(BITWIDTH) * r, sint(BITWIDTH) const *a, sint(BITWIDTH) const *b,    \
-      sint(BITWIDTH) modulus) {                                                \
+      sint(BITWIDTH) modulus)                                                  \
+  {                                                                            \
     unsigned i, j;                                                             \
                                                                                \
     for (i = 0; i < 2 * DIM; i++)                                              \
       r[SCHOOLBOOK_OFFSET_FROM_INDEX_DST(DIM, i)] = 0;                         \
                                                                                \
-    for (i = 0; i < DIM; i++) {                                                \
-      for (j = 0; j < DIM; j++) {                                              \
+    for (i = 0; i < DIM; i++)                                                  \
+    {                                                                          \
+      for (j = 0; j < DIM; j++)                                                \
+      {                                                                        \
         int64_t tmp = r[SCHOOLBOOK_OFFSET_FROM_INDEX_DST(DIM, i + j)] +        \
                       (SCHOOLBOOK_FACTOR(DIM, i + j) *                         \
                        (int64_t)a[SCHOOLBOOK_OFFSET_FROM_INDEX_SRCA(DIM, i)] * \
@@ -162,14 +168,17 @@ void mod_mul_buf_s16(int16_t *src_a, int16_t *src_b, int16_t *dst,
 #define MAKE_INT_SCHOOLBOOK_VARSIZE_(BITWIDTH_IN, BITWIDTH_OUT, DIM)           \
   void C_SCHOOLBOOK_VARSIZE_SYMBOL_NAME(BITWIDTH_IN, BITWIDTH_OUT, DIM)(       \
       sint(BITWIDTH_OUT) * r, sint(BITWIDTH_IN) const *a,                      \
-      sint(BITWIDTH_IN) const *b, sint(BITWIDTH_IN) modulus) {                 \
+      sint(BITWIDTH_IN) const *b, sint(BITWIDTH_IN) modulus)                   \
+  {                                                                            \
     unsigned i, j;                                                             \
                                                                                \
     for (i = 0; i < 2 * DIM; i++)                                              \
       r[SCHOOLBOOK_OFFSET_FROM_INDEX_DST(DIM, i)] = 0;                         \
                                                                                \
-    for (i = 0; i < DIM; i++) {                                                \
-      for (j = 0; j < DIM; j++) {                                              \
+    for (i = 0; i < DIM; i++)                                                  \
+    {                                                                          \
+      for (j = 0; j < DIM; j++)                                                \
+      {                                                                        \
         int64_t tmp = r[SCHOOLBOOK_OFFSET_FROM_INDEX_DST(DIM, i + j)] +        \
                       (SCHOOLBOOK_FACTOR(DIM, i + j) *                         \
                        (int64_t)a[SCHOOLBOOK_OFFSET_FROM_INDEX_SRCA(DIM, i)] * \
@@ -183,14 +192,17 @@ void mod_mul_buf_s16(int16_t *src_a, int16_t *src_b, int16_t *dst,
 #define MAKE_SCHOOLBOOK_VARSIZE_(BITWIDTH_IN, BITWIDTH_OUT, DIM)         \
   void C_SCHOOLBOOK_VARSIZE_SYMBOL_NAME(BITWIDTH_IN, BITWIDTH_OUT, DIM)( \
       uint(BITWIDTH_OUT) * r, uint(BITWIDTH_IN) const *a,                \
-      uint(BITWIDTH_IN) const *b) {                                      \
+      uint(BITWIDTH_IN) const *b)                                        \
+  {                                                                      \
     unsigned i, j;                                                       \
                                                                          \
     for (i = 0; i < 2 * DIM; i++)                                        \
       r[SCHOOLBOOK_OFFSET_FROM_INDEX_DST(DIM, i)] = 0;                   \
                                                                          \
-    for (i = 0; i < DIM; i++) {                                          \
-      for (j = 0; j < DIM; j++) {                                        \
+    for (i = 0; i < DIM; i++)                                            \
+    {                                                                    \
+      for (j = 0; j < DIM; j++)                                          \
+      {                                                                  \
         uint64_t tmp =                                                   \
             r[SCHOOLBOOK_OFFSET_FROM_INDEX_DST(DIM, i + j)] +            \
             (SCHOOLBOOK_FACTOR(DIM, i + j) *                             \

@@ -4,19 +4,25 @@
 #include <stdlib.h>
 #include <string.h>
 
-static int cmp_uint64_t(const void *a, const void *b) {
+static int cmp_uint64_t(const void *a, const void *b)
+{
   return (int)((*((const uint64_t *)a)) - (*((const uint64_t *)b)));
 }
 
-unsigned int measure(ubench_t func) {
+unsigned int measure(ubench_t func)
+{
   uint64_t t0, t1;
   uint64_t cycles[TEST_COUNT];
   unsigned char foo[1000], foo1[1000], foo2[1000], foo3[1000], foo4[1000];
   for (unsigned cnt = 0; cnt < WARMUP_ITERATIONS; cnt++)
+  {
     func(foo, foo1, foo2, foo3, foo4);
-  for (unsigned cnt = 0; cnt < TEST_COUNT; cnt++) {
+  }
+  for (unsigned cnt = 0; cnt < TEST_COUNT; cnt++)
+  {
     t0 = hal_get_time();
-    for (unsigned cntp = 0; cntp < ITER_PER_TEST; cntp++) {
+    for (unsigned cntp = 0; cntp < ITER_PER_TEST; cntp++)
+    {
       func(foo, foo1, foo2, foo3, foo4);
     }
     t1 = hal_get_time();
@@ -29,12 +35,14 @@ unsigned int measure(ubench_t func) {
 }
 
 
-void profile_full() {
+void profile_full()
+{
   const unsigned maxchars = 80;
   char tmp[maxchars + 1];
 
   debug_printf("===== Stepwise profiling =======\n");
-  for (unsigned int i = 0; i < num_ubenchs_prefix; i++) {
+  for (unsigned int i = 0; i < num_ubenchs_prefix; i++)
+  {
     unsigned int median = measure(ubenchs_prefix[i]);
     median = median % maxchars;
     memset(tmp, '.', maxchars);

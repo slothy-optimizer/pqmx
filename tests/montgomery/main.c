@@ -92,18 +92,24 @@ void cyclic_mul_u16_core_mve(int16_t *, int16_t *, int16_t *);
 #define TEST_REPEAT 1
 
 /* Reduce array of 16-bit values w.r.t. constant modulus. */
-void reduce_q_u16(int16_t *src, size_t size) {
-  for (unsigned idx = 0; idx < size; idx++) {
+void reduce_q_u16(int16_t *src, size_t size)
+{
+  for (unsigned idx = 0; idx < size; idx++)
+  {
     src[idx] = src[idx] % mod_q16;
     if (src[idx] < 0)
+    {
       src[idx] += mod_q16;
+    }
   }
 }
 
 /* Reference C-implementation for multiplication in F_q[X]/(X^2-1). */
 static void cyclic_mul_u16_C(int16_t const *src_a, int16_t const *src_b,
-                             int16_t *dst, size_t size) {
-  for (unsigned idx = 0; idx < size; idx += 2) {
+                             int16_t *dst, size_t size)
+{
+  for (unsigned idx = 0; idx < size; idx += 2)
+  {
     int16_t a0 = src_a[idx + 0];
     int16_t a1 = src_a[idx + 1];
     int16_t b0 = src_b[idx + 0];
@@ -116,10 +122,14 @@ static void cyclic_mul_u16_C(int16_t const *src_a, int16_t const *src_b,
     int16_t res1 = c1 % mod_q16;
 
     if (res0 < 0)
+    {
       res0 += mod_q16;
+    }
 
     if (res1 < 0)
+    {
       res1 += mod_q16;
+    }
 
     dst[idx + 0] = res0;
     dst[idx + 1] = res1;
@@ -135,22 +145,29 @@ static void cyclic_mul_u16_C(int16_t const *src_a, int16_t const *src_b,
  * This function multiplies with 2^{16,32} modulo q to remove
  * the Montgomery scalar.
  */
-void mul_q_u16(int16_t *src, int32_t c, size_t size) {
-  for (unsigned idx = 0; idx < size; idx++) {
+void mul_q_u16(int16_t *src, int32_t c, size_t size)
+{
+  for (unsigned idx = 0; idx < size; idx++)
+  {
     int32_t tmp;
     src[idx] = src[idx] % mod_q16;
     if (src[idx] < 0)
+    {
       src[idx] += mod_q16;
+    }
 
     tmp = (int32_t)src[idx] * c;
     src[idx] = tmp % mod_q16;
     if (src[idx] < 0)
+    {
       src[idx] += mod_q16;
+    }
   }
 }
 
 #if !defined(TEST_CORE_ONLY)
-int test_cyclic_mul_u16() {
+int test_cyclic_mul_u16()
+{
   int16_t src_a[SIZE];
   int16_t src_b[SIZE];
   int16_t dst_mve[SIZE];
@@ -160,7 +177,8 @@ int test_cyclic_mul_u16() {
 
   srand(time(NULL));
 
-  for (unsigned idx = 0; idx < SIZE; idx++) {
+  for (unsigned idx = 0; idx < SIZE; idx++)
+  {
     src_a[idx] = rand() % (2 * mod_q16) - mod_q16;
     src_b[idx] = rand() % (2 * mod_q16) - mod_q16;
   }
@@ -176,7 +194,8 @@ int test_cyclic_mul_u16() {
   reduce_q_u16(dst_mve, SIZE);
   mul_q_u16(dst_mve, (int32_t)1 << 15, SIZE);
 
-  if (memcmp(dst_C, dst_mve, sizeof(dst_C)) != 0) {
+  if (memcmp(dst_C, dst_mve, sizeof(dst_C)) != 0)
+  {
     debug_test_fail();
     debug_print_buf_s16(src_a, SIZE, "A");
     debug_print_buf_s16(src_b, SIZE, "B");
@@ -189,7 +208,8 @@ int test_cyclic_mul_u16() {
   return (0);
 }
 #else  /* TEST_CORE_ONLY */
-int test_cyclic_mul_u16() {
+int test_cyclic_mul_u16()
+{
   int16_t src_a[SIZE];
   int16_t src_b[SIZE];
   int16_t dst_mve[SIZE];
@@ -200,7 +220,8 @@ int test_cyclic_mul_u16() {
 
 #define DEG2_U16_SINGLE_SIZE 8
 #if !defined(TEST_CORE_ONLY)
-int test_cyclic_mul_u16_single() {
+int test_cyclic_mul_u16_single()
+{
   int16_t src_a[DEG2_U16_SINGLE_SIZE];
   int16_t src_b[DEG2_U16_SINGLE_SIZE];
   int16_t dst_mve[DEG2_U16_SINGLE_SIZE];
@@ -210,7 +231,8 @@ int test_cyclic_mul_u16_single() {
 
   srand(time(NULL));
 
-  for (unsigned idx = 0; idx < DEG2_U16_SINGLE_SIZE; idx++) {
+  for (unsigned idx = 0; idx < DEG2_U16_SINGLE_SIZE; idx++)
+  {
     src_a[idx] = rand() % (2 * mod_q16) - mod_q16;
     src_b[idx] = rand() % (2 * mod_q16) - mod_q16;
   }
@@ -226,7 +248,8 @@ int test_cyclic_mul_u16_single() {
   reduce_q_u16(dst_mve, DEG2_U16_SINGLE_SIZE);
   mul_q_u16(dst_mve, (int32_t)1 << 15, DEG2_U16_SINGLE_SIZE);
 
-  if (memcmp(dst_C, dst_mve, sizeof(dst_C)) != 0) {
+  if (memcmp(dst_C, dst_mve, sizeof(dst_C)) != 0)
+  {
     debug_test_fail();
     debug_print_buf_s16(src_a, DEG2_U16_SINGLE_SIZE, "A");
     debug_print_buf_s16(src_b, DEG2_U16_SINGLE_SIZE, "B");
@@ -239,7 +262,8 @@ int test_cyclic_mul_u16_single() {
   return (0);
 }
 #else  /* TEST_CORE_ONLY */
-int test_cyclic_mul_u16_single() {
+int test_cyclic_mul_u16_single()
+{
   int16_t src_a[DEG2_U16_SINGLE_SIZE];
   int16_t src_b[DEG2_U16_SINGLE_SIZE];
   int16_t dst_mve[DEG2_U16_SINGLE_SIZE];
@@ -250,8 +274,10 @@ int test_cyclic_mul_u16_single() {
 
 /* Reference C-implementation for multiplication in F_q[X]/(X^2-1). */
 static void cyclic_mul_u32_C(int32_t const *src_a, int32_t const *src_b,
-                             int32_t *dst, size_t size) {
-  for (unsigned idx = 0; idx < size; idx += 2) {
+                             int32_t *dst, size_t size)
+{
+  for (unsigned idx = 0; idx < size; idx += 2)
+  {
     int64_t a0 = src_a[idx + 0];
     int64_t a1 = src_a[idx + 1];
     int64_t b0 = src_b[idx + 0];
@@ -264,10 +290,14 @@ static void cyclic_mul_u32_C(int32_t const *src_a, int32_t const *src_b,
     int32_t res1 = c1 % mod_q32;
 
     if (res0 < 0)
+    {
       res0 += mod_q32;
+    }
 
     if (res1 < 0)
+    {
       res1 += mod_q32;
+    }
 
     dst[idx + 0] = res0;
     dst[idx + 1] = res1;
@@ -275,8 +305,10 @@ static void cyclic_mul_u32_C(int32_t const *src_a, int32_t const *src_b,
 }
 
 static void cyclic_mul_deg4_u32_C(int32_t const *src_a, int32_t const *src_b,
-                                  int32_t *dst, size_t size) {
-  for (unsigned idx = 0; idx < size; idx += 4) {
+                                  int32_t *dst, size_t size)
+{
+  for (unsigned idx = 0; idx < size; idx += 4)
+  {
     int64_t a0 = src_a[idx + 0];
     int64_t a1 = src_a[idx + 1];
     int64_t a2 = src_a[idx + 2];
@@ -297,13 +329,21 @@ static void cyclic_mul_deg4_u32_C(int32_t const *src_a, int32_t const *src_b,
     int32_t res3 = c3 % mod_q32;
 
     if (res0 < 0)
+    {
       res0 += mod_q32;
+    }
     if (res1 < 0)
+    {
       res1 += mod_q32;
+    }
     if (res2 < 0)
+    {
       res2 += mod_q32;
+    }
     if (res3 < 0)
+    {
       res3 += mod_q32;
+    }
 
     dst[idx + 0] = res0;
     dst[idx + 1] = res1;
@@ -313,8 +353,10 @@ static void cyclic_mul_deg4_u32_C(int32_t const *src_a, int32_t const *src_b,
 }
 
 static void twisted_mul_deg4_u32_C(int32_t const *src_a, int32_t const *src_b,
-                                   int32_t *dst, size_t size) {
-  for (unsigned idx = 0, idxb = 0; idx < size; idx += 4, idxb += 8) {
+                                   int32_t *dst, size_t size)
+{
+  for (unsigned idx = 0, idxb = 0; idx < size; idx += 4, idxb += 8)
+  {
     int64_t a0 = src_a[idx + 3];
     int64_t a1 = src_a[idx + 2];
     int64_t a2 = src_a[idx + 1];
@@ -338,13 +380,21 @@ static void twisted_mul_deg4_u32_C(int32_t const *src_a, int32_t const *src_b,
     int32_t res3 = c3 % mod_q32;
 
     if (res0 < 0)
+    {
       res0 += mod_q32;
+    }
     if (res1 < 0)
+    {
       res1 += mod_q32;
+    }
     if (res2 < 0)
+    {
       res2 += mod_q32;
+    }
     if (res3 < 0)
+    {
       res3 += mod_q32;
+    }
 
     dst[idx + 0] = res0;
     dst[idx + 1] = res1;
@@ -354,9 +404,10 @@ static void twisted_mul_deg4_u32_C(int32_t const *src_a, int32_t const *src_b,
 }
 
 static void twisted_mul_deg4_u32_expand_C(int32_t *dst, int32_t const *src,
-                                          int32_t const *twiddles,
-                                          size_t size) {
-  for (unsigned idx = 0; idx < size; idx += 4) {
+                                          int32_t const *twiddles, size_t size)
+{
+  for (unsigned idx = 0; idx < size; idx += 4)
+  {
     unsigned twiddle_idx = idx / 4;
     int64_t a0 = src[idx + 0];
     int64_t a1 = src[idx + 1];
@@ -371,13 +422,21 @@ static void twisted_mul_deg4_u32_expand_C(int32_t *dst, int32_t const *src,
     int32_t t3 = (a3 * twiddle) % mod_q32;
 
     if (t0 < 0)
+    {
       t0 += mod_q32;
+    }
     if (t1 < 0)
+    {
       t1 += mod_q32;
+    }
     if (t2 < 0)
+    {
       t2 += mod_q32;
+    }
     if (t3 < 0)
+    {
       t3 += mod_q32;
+    }
 
     dst[2 * idx + 0] = a3;
     dst[2 * idx + 1] = a2;
@@ -394,10 +453,12 @@ static void twisted_mul_deg4_u32_expand_double_C(int32_t *dst,
                                                  int32_t const *src,
                                                  int32_t const *twiddles,
                                                  int32_t const *twiddle_fix_ptr,
-                                                 size_t size) {
+                                                 size_t size)
+{
   int64_t twiddle_fix = twiddle_fix_ptr[0];
 
-  for (unsigned idx = 0; idx < size; idx += 4) {
+  for (unsigned idx = 0; idx < size; idx += 4)
+  {
     unsigned twiddle_idx = idx / 4;
     int64_t a0 = src[idx + 0];
     int64_t a1 = src[idx + 1];
@@ -412,13 +473,21 @@ static void twisted_mul_deg4_u32_expand_double_C(int32_t *dst,
     int32_t t3 = (a3 * twiddle) % mod_q32;
 
     if (t0 < 0)
+    {
       t0 += mod_q32;
+    }
     if (t1 < 0)
+    {
       t1 += mod_q32;
+    }
     if (t2 < 0)
+    {
       t2 += mod_q32;
+    }
     if (t3 < 0)
+    {
       t3 += mod_q32;
+    }
 
     dst[2 * idx + 4] = t3;
     dst[2 * idx + 5] = t2;
@@ -431,13 +500,21 @@ static void twisted_mul_deg4_u32_expand_double_C(int32_t *dst,
     t3 = (a3 * twiddle_fix) % mod_q32;
 
     if (t0 < 0)
+    {
       t0 += mod_q32;
+    }
     if (t1 < 0)
+    {
       t1 += mod_q32;
+    }
     if (t2 < 0)
+    {
       t2 += mod_q32;
+    }
     if (t3 < 0)
+    {
       t3 += mod_q32;
+    }
 
     dst[2 * idx + 0] = t3;
     dst[2 * idx + 1] = t2;
@@ -447,8 +524,10 @@ static void twisted_mul_deg4_u32_expand_double_C(int32_t *dst,
 }
 
 /* Reference C-implementation for multiplication in F_q[X]/(X^4-1). */
-static void cyclic_mul_deg4_u32_add_sub_C(int32_t *dst, size_t size) {
-  for (unsigned idx = 0; idx < size; idx += 8, dst += 8) {
+static void cyclic_mul_deg4_u32_add_sub_C(int32_t *dst, size_t size)
+{
+  for (unsigned idx = 0; idx < size; idx += 8, dst += 8)
+  {
     int32_t a0 = dst[0];
     int32_t a1 = dst[1];
     int32_t a2 = dst[2];
@@ -476,8 +555,10 @@ static void cyclic_mul_deg4_u32_add_sub_C(int32_t *dst, size_t size) {
 /* Reference C-implementation for multiplication in F_q[X]/(X^4-1). */
 static void cyclic_mul_deg4_u32_long_C(int32_t const *src_a,
                                        int32_t const *src_b, int64_t *dst,
-                                       size_t size) {
-  for (unsigned idx = 0; idx < size; idx += 4) {
+                                       size_t size)
+{
+  for (unsigned idx = 0; idx < size; idx += 4)
+  {
     int64_t a0 = src_a[idx + 0];
     int64_t a1 = src_a[idx + 1];
     int64_t a2 = src_a[idx + 2];
@@ -508,29 +589,40 @@ static void cyclic_mul_deg4_u32_long_C(int32_t const *src_a,
  * This function multiplies with 2^{16,32} modulo q to remove
  * the Montgomery scalar.
  */
-void mul_q_u32(int32_t *src, int64_t c, size_t size) {
-  for (unsigned idx = 0; idx < size; idx++) {
+void mul_q_u32(int32_t *src, int64_t c, size_t size)
+{
+  for (unsigned idx = 0; idx < size; idx++)
+  {
     int64_t tmp;
     src[idx] = src[idx] % mod_q32;
     if (src[idx] < 0)
+    {
       src[idx] += mod_q32;
+    }
     tmp = (int64_t)src[idx] * c;
     src[idx] = tmp % mod_q32;
     if (src[idx] < 0)
+    {
       src[idx] += mod_q32;
+    }
   }
 }
 
-void reduce_q_u32(int32_t *src, size_t size) {
-  for (unsigned idx = 0; idx < size; idx++) {
+void reduce_q_u32(int32_t *src, size_t size)
+{
+  for (unsigned idx = 0; idx < size; idx++)
+  {
     src[idx] = src[idx] % mod_q32;
     if (src[idx] < 0)
+    {
       src[idx] += mod_q32;
+    }
   }
 }
 
 #if !defined(TEST_CORE_ONLY)
-int test_cyclic_mul_u32() {
+int test_cyclic_mul_u32()
+{
   int32_t src_a[SIZE];
   int32_t src_b[SIZE];
 
@@ -541,7 +633,8 @@ int test_cyclic_mul_u32() {
 
   srand(time(NULL));
 
-  for (unsigned idx = 0; idx < SIZE; idx++) {
+  for (unsigned idx = 0; idx < SIZE; idx++)
+  {
     src_a[idx] = rand() % mod_q32;
     src_b[idx] = rand() % mod_q32;
   }
@@ -559,7 +652,8 @@ int test_cyclic_mul_u32() {
   reduce_q_u32(dst_mve, SIZE);
   mul_q_u32(dst_mve, (int64_t)1 << 31, SIZE);
 
-  if (memcmp(dst_C, dst_mve, sizeof(dst_C)) != 0) {
+  if (memcmp(dst_C, dst_mve, sizeof(dst_C)) != 0)
+  {
     debug_test_fail();
     debug_print_buf_s32(src_a, SIZE, "A");
     debug_print_buf_s32(src_b, SIZE, "B");
@@ -572,7 +666,8 @@ int test_cyclic_mul_u32() {
   return (0);
 }
 #else  /* TEST_CORE_ONLY */
-int test_cyclic_mul_u32() {
+int test_cyclic_mul_u32()
+{
   int32_t src_a[SIZE];
   int32_t src_b[SIZE];
   int32_t dst_mve[SIZE];
@@ -582,7 +677,8 @@ int test_cyclic_mul_u32() {
 #endif /* TEST_CORE_ONLY */
 
 #if !defined(TEST_CORE_ONLY)
-int test_cyclic_mul_deg4_u32() {
+int test_cyclic_mul_deg4_u32()
+{
   int32_t src_a[SIZE];
   int32_t src_b[SIZE];
 
@@ -593,7 +689,8 @@ int test_cyclic_mul_deg4_u32() {
 
   srand(time(NULL));
 
-  for (unsigned idx = 0; idx < SIZE; idx++) {
+  for (unsigned idx = 0; idx < SIZE; idx++)
+  {
     src_a[idx] = rand() % mod_q32;
     src_b[idx] = rand() % mod_q32;
   }
@@ -614,7 +711,8 @@ int test_cyclic_mul_deg4_u32() {
   reduce_q_u32(dst_mve, SIZE);
   mul_q_u32(dst_mve, (int64_t)1 << 31, SIZE);
 
-  if (memcmp(dst_C, dst_mve, sizeof(int32_t) * SIZE) != 0) {
+  if (memcmp(dst_C, dst_mve, sizeof(int32_t) * SIZE) != 0)
+  {
     debug_print_buf_s32(src_a, SIZE, "A");
     debug_print_buf_s32(src_b, SIZE, "B");
     debug_print_buf_s32(dst_C, SIZE, "Ref");
@@ -628,7 +726,8 @@ int test_cyclic_mul_deg4_u32() {
   return (0);
 }
 #else  /* TEST_CORE_ONLY */
-int test_cyclic_mul_deg4_u32() {
+int test_cyclic_mul_deg4_u32()
+{
   int32_t src_a[SIZE];
   int32_t src_b[SIZE];
   int32_t dst_mve[SIZE];
@@ -641,7 +740,8 @@ int test_cyclic_mul_deg4_u32() {
 
 #define DEG4_U32_SINGLE_SIZE 8
 #if !defined(TEST_CORE_ONLY)
-int test_cyclic_mul_deg4_u32_single() {
+int test_cyclic_mul_deg4_u32_single()
+{
   int32_t src_a[DEG4_U32_SINGLE_SIZE];
   int32_t src_b[DEG4_U32_SINGLE_SIZE];
 
@@ -653,7 +753,8 @@ int test_cyclic_mul_deg4_u32_single() {
 
   srand(time(NULL));
 
-  for (unsigned idx = 0; idx < DEG4_U32_SINGLE_SIZE; idx++) {
+  for (unsigned idx = 0; idx < DEG4_U32_SINGLE_SIZE; idx++)
+  {
     src_a[idx] = rand() % mod_q32;
     src_b[idx] = rand() % mod_q32;
   }
@@ -672,7 +773,8 @@ int test_cyclic_mul_deg4_u32_single() {
   reduce_q_u32(dst_mve, DEG4_U32_SINGLE_SIZE);
   mul_q_u32(dst_mve, (int64_t)1 << 31, DEG4_U32_SINGLE_SIZE);
 
-  if (memcmp(dst_C, dst_mve, sizeof(int32_t) * DEG4_U32_SINGLE_SIZE) != 0) {
+  if (memcmp(dst_C, dst_mve, sizeof(int32_t) * DEG4_U32_SINGLE_SIZE) != 0)
+  {
     debug_print_buf_s32(src_a, DEG4_U32_SINGLE_SIZE, "A");
     debug_print_buf_s32(src_b, DEG4_U32_SINGLE_SIZE, "B");
     debug_print_buf_s32(dst_C, DEG4_U32_SINGLE_SIZE, "Ref");
@@ -686,7 +788,8 @@ int test_cyclic_mul_deg4_u32_single() {
   return (0);
 }
 #else  /* TEST_CORE_ONLY */
-int test_cyclic_mul_deg4_u32_single() {
+int test_cyclic_mul_deg4_u32_single()
+{
   int32_t src_a[DEG4_U32_SINGLE_SIZE];
   int32_t src_b[DEG4_U32_SINGLE_SIZE];
   int32_t dst_mve[DEG4_U32_SINGLE_SIZE];
@@ -695,8 +798,10 @@ int test_cyclic_mul_deg4_u32_single() {
 }
 #endif /* TEST_CORE_ONLY */
 
-void rev_deg4_u32(int32_t *src, int len) {
-  for (; len > 0; len -= 4) {
+void rev_deg4_u32(int32_t *src, int len)
+{
+  for (; len > 0; len -= 4)
+  {
     uint32_t a0, a1, a2, a3;
     a0 = src[0];
     a1 = src[1];
@@ -712,8 +817,10 @@ void rev_deg4_u32(int32_t *src, int len) {
   }
 }
 
-void rev_twist_u32(int32_t *dst, int32_t *src, int len) {
-  for (; len > 0; len -= 4) {
+void rev_twist_u32(int32_t *dst, int32_t *src, int len)
+{
+  for (; len > 0; len -= 4)
+  {
     dst[0] = src[3];
     dst[1] = src[2];
     dst[2] = src[1];
@@ -729,7 +836,8 @@ void rev_twist_u32(int32_t *dst, int32_t *src, int len) {
 }
 
 #if !defined(TEST_CORE_ONLY)
-int test_twisted_cyclic_mul_deg4_u32() {
+int test_twisted_cyclic_mul_deg4_u32()
+{
   int32_t src_a[VECTOR_LENGTH];
   int32_t src_b[VECTOR_LENGTH];
   int32_t src_b_expanded[2 * VECTOR_LENGTH];
@@ -776,7 +884,8 @@ int test_twisted_cyclic_mul_deg4_u32() {
   mul_q_u32(dst_mve, (int64_t)1 << 32, VECTOR_LENGTH);
 
   if (compare_buf_u32((uint32_t *)dst_C, (uint32_t *)dst_mve, VECTOR_LENGTH) !=
-      0) {
+      0)
+  {
     debug_print_buf_s32(src_a, VECTOR_LENGTH, "A");
     debug_print_buf_s32(src_b, VECTOR_LENGTH, "B");
     debug_print_buf_s32(src_b_expanded, 2 * VECTOR_LENGTH, "B full");
@@ -791,7 +900,8 @@ int test_twisted_cyclic_mul_deg4_u32() {
   return (0);
 }
 
-int test_twisted_cyclic_mul_deg4_u32_expand() {
+int test_twisted_cyclic_mul_deg4_u32_expand()
+{
   int32_t twiddles[2 * (VECTOR_LENGTH / 4)] __attribute__((aligned(16)));
   int32_t src[VECTOR_LENGTH] __attribute__((aligned(16)));
   int32_t src_expanded[2 * VECTOR_LENGTH] __attribute__((aligned(16)));
@@ -803,12 +913,15 @@ int test_twisted_cyclic_mul_deg4_u32_expand() {
   fill_random_u32((uint32_t *)twiddles, 2 * (VECTOR_LENGTH / 4));
 
   for (unsigned i = 0; i < VECTOR_LENGTH / 4; i++)
+  {
     twiddles[2 * i] = twiddles[2 * i] % mod_q32;
+  }
 
   memset(src_expanded, 0, sizeof(src_expanded));
 
   /* Prepare twisted twiddles */
-  for (unsigned i = 0; i < VECTOR_LENGTH / 4; i++) {
+  for (unsigned i = 0; i < VECTOR_LENGTH / 4; i++)
+  {
     uint32_t t = twiddles[2 * i];
     twiddles[2 * i + 1] =
         (uint32_t)((uint32_t)t * (uint32_t)mod_q32_inv_u32_neg);
@@ -823,18 +936,23 @@ int test_twisted_cyclic_mul_deg4_u32_expand() {
   // Normalize and compare
   reduce_q_u32(src_expanded, 2 * VECTOR_LENGTH);
   for (unsigned i = 0; i < VECTOR_LENGTH; i += 4)
+  {
     mul_q_u32(src_expanded + 2 * i + 4, (int64_t)1 << 31, 4);
+  }
 
   reduce_q_u32(src_expanded_C, 2 * VECTOR_LENGTH);
   reduce_q_u32(src_expanded, 2 * VECTOR_LENGTH);
 
   if (compare_buf_u32((uint32_t *)src_expanded_C, (uint32_t *)src_expanded,
-                      2 * VECTOR_LENGTH) != 0) {
+                      2 * VECTOR_LENGTH) != 0)
+  {
     debug_print_buf_s32(src_expanded_C, 2 * VECTOR_LENGTH, "ref");
     debug_print_buf_s32(src_expanded, 2 * VECTOR_LENGTH, "mve");
 
-    for (unsigned i = 0; i < 2 * VECTOR_LENGTH; i++) {
-      if (src_expanded_C[i] != src_expanded[i]) {
+    for (unsigned i = 0; i < 2 * VECTOR_LENGTH; i++)
+    {
+      if (src_expanded_C[i] != src_expanded[i])
+      {
         debug_printf("Failure at index %u: %d != %d\n", i, src_expanded[i],
                      src_expanded_C[i]);
       }
@@ -848,7 +966,8 @@ int test_twisted_cyclic_mul_deg4_u32_expand() {
   return (0);
 }
 
-int test_twisted_cyclic_mul_deg4_u32_expand_double() {
+int test_twisted_cyclic_mul_deg4_u32_expand_double()
+{
   int32_t twiddle_fix[2];
   int32_t twiddles[2 * (VECTOR_LENGTH / 4)] __attribute__((aligned(16)));
   int32_t src[VECTOR_LENGTH] __attribute__((aligned(16)));
@@ -863,12 +982,15 @@ int test_twisted_cyclic_mul_deg4_u32_expand_double() {
   twiddle_fix[0] = twiddle_fix[0] % mod_q32;
 
   for (unsigned i = 0; i < VECTOR_LENGTH / 4; i++)
+  {
     twiddles[2 * i] = twiddles[2 * i] % mod_q32;
+  }
 
   memset(src_expanded, 0, sizeof(src_expanded));
 
   /* Prepare twisted twiddles */
-  for (unsigned i = 0; i < VECTOR_LENGTH / 4; i++) {
+  for (unsigned i = 0; i < VECTOR_LENGTH / 4; i++)
+  {
     uint32_t t = twiddles[2 * i];
     twiddles[2 * i + 1] =
         (uint32_t)((uint32_t)t * (uint32_t)mod_q32_inv_u32_neg);
@@ -895,12 +1017,15 @@ int test_twisted_cyclic_mul_deg4_u32_expand_double() {
   reduce_q_u32(src_expanded, 2 * VECTOR_LENGTH);
 
   if (compare_buf_u32((uint32_t *)src_expanded_C, (uint32_t *)src_expanded,
-                      2 * VECTOR_LENGTH) != 0) {
+                      2 * VECTOR_LENGTH) != 0)
+  {
     debug_print_buf_s32(src_expanded_C, 2 * VECTOR_LENGTH, "ref");
     debug_print_buf_s32(src_expanded, 2 * VECTOR_LENGTH, "mve");
 
-    for (unsigned i = 0; i < 2 * VECTOR_LENGTH; i++) {
-      if (src_expanded_C[i] != src_expanded[i]) {
+    for (unsigned i = 0; i < 2 * VECTOR_LENGTH; i++)
+    {
+      if (src_expanded_C[i] != src_expanded[i])
+      {
         debug_printf("Failure at index %u: %d != %d\n", i, src_expanded[i],
                      src_expanded_C[i]);
       }
@@ -914,7 +1039,8 @@ int test_twisted_cyclic_mul_deg4_u32_expand_double() {
   return (0);
 }
 
-int test_twisted_cyclic_mul_deg4_u32_add_sub() {
+int test_twisted_cyclic_mul_deg4_u32_add_sub()
+{
   int32_t src_a[VECTOR_LENGTH] __attribute__((aligned(16)));
   int32_t src_b[VECTOR_LENGTH] __attribute__((aligned(16)));
   int32_t src_b_expanded[2 * VECTOR_LENGTH] __attribute__((aligned(16)));
@@ -966,10 +1092,15 @@ int test_twisted_cyclic_mul_deg4_u32_add_sub() {
   mul_q_u32(dst_mve, (int64_t)1 << 32, VECTOR_LENGTH);
 
   if (compare_buf_u32((uint32_t *)dst_C, (uint32_t *)dst_mve, VECTOR_LENGTH) !=
-      0) {
+      0)
+  {
     for (unsigned idx = 0; idx < VECTOR_LENGTH; idx++)
+    {
       if (dst_C[idx] != dst_mve[idx])
+      {
         debug_printf("[%u]: %d != %d\n", idx, dst_C[idx], dst_mve[idx]);
+      }
+    }
 
     debug_print_buf_s32(src_a, VECTOR_LENGTH, "A");
     debug_print_buf_s32(src_b, VECTOR_LENGTH, "B");
@@ -985,7 +1116,8 @@ int test_twisted_cyclic_mul_deg4_u32_add_sub() {
   return (0);
 }
 
-int test_twisted_cyclic_mul_deg4_u32_add_sub_rev() {
+int test_twisted_cyclic_mul_deg4_u32_add_sub_rev()
+{
   int32_t src_a[VECTOR_LENGTH] __attribute__((aligned(16)));
   int32_t src_b_expanded[2 * VECTOR_LENGTH] __attribute__((aligned(16)));
 
@@ -1030,10 +1162,15 @@ int test_twisted_cyclic_mul_deg4_u32_add_sub_rev() {
   mul_q_u32(dst_mve, (int64_t)1 << 32, VECTOR_LENGTH);
 
   if (compare_buf_u32((uint32_t *)dst_C, (uint32_t *)dst_mve, VECTOR_LENGTH) !=
-      0) {
+      0)
+  {
     for (unsigned idx = 0; idx < VECTOR_LENGTH; idx++)
+    {
       if (dst_C[idx] != dst_mve[idx])
+      {
         debug_printf("[%u]: %d != %d\n", idx, dst_C[idx], dst_mve[idx]);
+      }
+    }
 
     debug_print_buf_s32(src_a, VECTOR_LENGTH, "A");
     debug_print_buf_s32(src_b_expanded, 2 * VECTOR_LENGTH, "B full");
@@ -1050,7 +1187,8 @@ int test_twisted_cyclic_mul_deg4_u32_add_sub_rev() {
 
 #else  /* TEST_CORE_ONLY */
 
-int test_twisted_cyclic_mul_deg4_u32_expand() {
+int test_twisted_cyclic_mul_deg4_u32_expand()
+{
   int32_t twiddles[2 * (VECTOR_LENGTH / 4)] __attribute__((aligned(16)));
   int32_t src[VECTOR_LENGTH] __attribute__((aligned(16)));
   int32_t src_expanded[2 * VECTOR_LENGTH] __attribute__((aligned(16)));
@@ -1063,7 +1201,8 @@ int test_twisted_cyclic_mul_deg4_u32_expand() {
   return (0);
 }
 
-int test_twisted_cyclic_mul_deg4_u32_add_sub() {
+int test_twisted_cyclic_mul_deg4_u32_add_sub()
+{
   int32_t src_a[VECTOR_LENGTH];
   int32_t src_b[VECTOR_LENGTH];
   int32_t src_b_expanded[2 * VECTOR_LENGTH];
@@ -1074,7 +1213,8 @@ int test_twisted_cyclic_mul_deg4_u32_add_sub() {
   return (0);
 }
 
-int test_twisted_cyclic_mul_deg4_u32() {
+int test_twisted_cyclic_mul_deg4_u32()
+{
   int32_t src_a[VECTOR_LENGTH];
   int32_t src_b[2 * VECTOR_LENGTH];
   int32_t dst_mve[VECTOR_LENGTH];
@@ -1086,7 +1226,8 @@ int test_twisted_cyclic_mul_deg4_u32() {
 #endif /* TEST_CORE_ONLY */
 
 #if !defined(TEST_CORE_ONLY)
-int test_twisted_cyclic_mul_deg4_u32_long() {
+int test_twisted_cyclic_mul_deg4_u32_long()
+{
   int32_t src_a[VECTOR_LENGTH];
   int32_t src_b[VECTOR_LENGTH];
   int32_t src_b_expanded[2 * VECTOR_LENGTH];
@@ -1123,7 +1264,8 @@ int test_twisted_cyclic_mul_deg4_u32_long() {
   measure_end();
 
   if (compare_buf_u64((uint64_t *)dst_C, (uint64_t *)dst_mve, VECTOR_LENGTH) !=
-      0) {
+      0)
+  {
     debug_print_buf_s32(src_a, VECTOR_LENGTH, "A");
     debug_print_buf_s32(src_b, VECTOR_LENGTH, "B");
     debug_print_buf_s32(src_b_expanded, 2 * VECTOR_LENGTH, "B full");
@@ -1138,7 +1280,8 @@ int test_twisted_cyclic_mul_deg4_u32_long() {
   return (0);
 }
 #else  /* TEST_CORE_ONLY */
-int test_twisted_cyclic_mul_deg4_u32_long() {
+int test_twisted_cyclic_mul_deg4_u32_long()
+{
   int32_t src_a[VECTOR_LENGTH];
   int32_t src_b[2 * VECTOR_LENGTH];
   int64_t dst_mve[VECTOR_LENGTH];
@@ -1150,11 +1293,12 @@ int test_twisted_cyclic_mul_deg4_u32_long() {
 #endif /* TEST_CORE_ONLY */
 
 
-void montgomery_u16_C(int16_t const *src_a, int16_t const *src_b,
-                      int16_t *dst) {
+void montgomery_u16_C(int16_t const *src_a, int16_t const *src_b, int16_t *dst)
+{
   unsigned idx;
   int16_t b = 2 * src_b[0];
-  for (idx = 0; idx < SIZE; idx++) {
+  for (idx = 0; idx < SIZE; idx++)
+  {
     int32_t v;
     int16_t hi;
     uint16_t lo, tmp, hi_fix;
@@ -1174,14 +1318,18 @@ void montgomery_u16_C(int16_t const *src_a, int16_t const *src_b,
   }
 }
 
-void mult_u16_C(int16_t const *src_a, int16_t b, int16_t *dst) {
+void mult_u16_C(int16_t const *src_a, int16_t b, int16_t *dst)
+{
   unsigned idx;
   for (idx = 0; idx < SIZE; idx++)
+  {
     dst[idx] = (int16_t)((src_a[idx] * b) % mod_q16);
+  }
 }
 
 #if !defined(TEST_CORE_ONLY)
-int test_montgomery_u16_round() {
+int test_montgomery_u16_round()
+{
   uint16_t montgomery_multiplier;
   int16_t real_multiplier;
 
@@ -1197,7 +1345,9 @@ int test_montgomery_u16_round() {
   /* Step 0: Prepare input */
 
   for (unsigned idx = 0; idx < SIZE; idx++)
+  {
     src_a[idx] = rand() % mod_q16;
+  }
 
   montgomery_multiplier = (rand() % mod_q16);
 
@@ -1211,7 +1361,9 @@ int test_montgomery_u16_round() {
    * longer but works for any factor, whether even or not.
    */
   if (montgomery_multiplier % 2 == 0)
+  {
     montgomery_multiplier += mod_q16;
+  }
 
   /* Our implementation of Montgomery multiplication multiplies with
    * _twice_ the scalar. Moreover, we always also multiply with the
@@ -1237,7 +1389,8 @@ int test_montgomery_u16_round() {
   reduce_q_u16(dst_mve, SIZE);
 
   if (memcmp(dst_C, dst_mve, sizeof(dst_C)) != 0 ||
-      memcmp(dst, dst_mve, sizeof(dst_C)) != 0) {
+      memcmp(dst, dst_mve, sizeof(dst_C)) != 0)
+  {
     debug_print_buf_s16(dst, SIZE, "Mul");
     debug_print_buf_s16(dst_C, SIZE, "Ref");
     debug_print_buf_s16(dst_mve, SIZE, "MVE");
@@ -1249,7 +1402,8 @@ int test_montgomery_u16_round() {
   return (0);
 }
 #else  /* TEST_CORE_ONLY */
-int test_montgomery_u16_round() {
+int test_montgomery_u16_round()
+{
   int16_t src_a[SIZE];
   uint16_t src_b[2];
   int16_t dst_mve[SIZE];
@@ -1258,14 +1412,17 @@ int test_montgomery_u16_round() {
 }
 #endif /* TEST_CORE_ONLY */
 
-void mult_u32_C(int32_t *src_a, int32_t *src_b, int32_t *dst, size_t size) {
+void mult_u32_C(int32_t *src_a, int32_t *src_b, int32_t *dst, size_t size)
+{
   mod_mul_buf_s32(src_a, src_b, dst, size, mod_q32);
 }
 
 void montgomery_pt_double_u32_C(int32_t const *src_a, int32_t const *src_b,
-                                int32_t *dst, size_t size) {
+                                int32_t *dst, size_t size)
+{
   unsigned idx;
-  for (idx = 0; idx < size; idx++) {
+  for (idx = 0; idx < size; idx++)
+  {
     int64_t v;
     int32_t hi;
     uint32_t lo, tmp, hi_fix;
@@ -1286,9 +1443,11 @@ void montgomery_pt_double_u32_C(int32_t const *src_a, int32_t const *src_b,
 }
 
 void montgomery_pt_u32_C(int32_t const *src_a, int32_t const *src_b,
-                         int32_t *dst, size_t size) {
+                         int32_t *dst, size_t size)
+{
   unsigned idx;
-  for (idx = 0; idx < size; idx++) {
+  for (idx = 0; idx < size; idx++)
+  {
     int64_t v;
     int32_t hi;
     uint32_t lo, tmp, hi_fix;
@@ -1310,9 +1469,11 @@ void montgomery_pt_u32_C(int32_t const *src_a, int32_t const *src_b,
 
 void montgomery_pt_u32_with_halving_C(int32_t const *src_a,
                                       int32_t const *src_b, int32_t *dst,
-                                      size_t size) {
+                                      size_t size)
+{
   unsigned idx;
-  for (idx = 0; idx < size; idx++) {
+  for (idx = 0; idx < size; idx++)
+  {
     int64_t v;
     int32_t hi;
     uint32_t lo, tmp, hi_fix;
@@ -1332,12 +1493,14 @@ void montgomery_pt_u32_with_halving_C(int32_t const *src_a,
   }
 }
 
-void buf_reduce_u32(int32_t *src, size_t size) {
+void buf_reduce_u32(int32_t *src, size_t size)
+{
   mod_reduce_buf_s32(src, size, mod_q32);
 }
 
 #if !defined(TEST_CORE_ONLY)
-int test_montgomery_pt_u32_round() {
+int test_montgomery_pt_u32_round()
+{
   int32_t src_a[SIZE];
   int32_t src_b_[SIZE + 2];
   int32_t *const src_b = src_b_ + 2;
@@ -1383,7 +1546,8 @@ int test_montgomery_pt_u32_round() {
   buf_reduce_u32(dst_mve, SIZE);
 
   if (memcmp(dst_C, dst_mve, sizeof(dst_C)) != 0 ||
-      memcmp(dst, dst_mve, sizeof(dst_C)) != 0) {
+      memcmp(dst, dst_mve, sizeof(dst_C)) != 0)
+  {
     debug_print_buf_s32(dst, SIZE, "Mul");
     debug_print_buf_s32(dst_C, SIZE, "Ref");
     debug_print_buf_s32(dst_mve, SIZE, "MVE");
@@ -1395,7 +1559,8 @@ int test_montgomery_pt_u32_round() {
   return (0);
 }
 #else  /* TEST_CORE_ONLY */
-int test_montgomery_pt_u32_round() {
+int test_montgomery_pt_u32_round()
+{
   int32_t src_a[SIZE];
   int32_t src_b_[SIZE + 2];
   int32_t dst_mve[SIZE];
@@ -1411,7 +1576,8 @@ int test_montgomery_pt_u32_round() {
 #endif /* TEST_CORE_ONLY */
 
 #if !defined(TEST_CORE_ONLY)
-int test_montgomery_pt_u32() {
+int test_montgomery_pt_u32()
+{
   int32_t src_a[SIZE];
   int32_t src_b[SIZE];
 
@@ -1454,7 +1620,8 @@ int test_montgomery_pt_u32() {
   buf_reduce_u32(dst_mve, SIZE);
 
   if (memcmp(dst_C, dst_mve, sizeof(dst_C)) != 0 ||
-      memcmp(dst, dst_mve, sizeof(dst_C)) != 0) {
+      memcmp(dst, dst_mve, sizeof(dst_C)) != 0)
+  {
     debug_print_buf_s32(dst, SIZE, "Mul");
     debug_print_buf_s32(dst_C, SIZE, "Ref");
     debug_print_buf_s32(dst_mve, SIZE, "MVE");
@@ -1466,7 +1633,8 @@ int test_montgomery_pt_u32() {
   return (0);
 }
 #else  /* TEST_CORE_ONLY */
-int test_montgomery_pt_u32() {
+int test_montgomery_pt_u32()
+{
   int32_t src_a[SIZE];
   int32_t src_b_[SIZE + 2];
   int32_t dst_mve[SIZE];
@@ -1480,7 +1648,8 @@ int test_montgomery_pt_u32() {
 #endif /* TEST_CORE_ONLY */
 
 #if !defined(TEST_CORE_ONLY)
-int test_montgomery_pt_acc_u32() {
+int test_montgomery_pt_acc_u32()
+{
   int32_t src_a[SIZE];
   int32_t src_b[SIZE];
 
@@ -1520,7 +1689,8 @@ int test_montgomery_pt_acc_u32() {
   buf_reduce_u32(acc_mve, SIZE);
   buf_reduce_u32(acc, SIZE);
 
-  if (memcmp(acc_mve, acc, sizeof(dst_C)) != 0) {
+  if (memcmp(acc_mve, acc, sizeof(dst_C)) != 0)
+  {
     debug_print_buf_s32(acc, SIZE, "Ref");
     debug_print_buf_s32(acc_mve, SIZE, "MVE");
     debug_test_fail();
@@ -1531,7 +1701,8 @@ int test_montgomery_pt_acc_u32() {
   return (0);
 }
 #else  /* TEST_CORE_ONLY */
-int test_montgomery_pt_acc_u32() {
+int test_montgomery_pt_acc_u32()
+{
   int32_t src_a[SIZE];
   int32_t src_b_[SIZE + 2];
   int32_t dst_mve[SIZE];
@@ -1548,7 +1719,8 @@ int test_montgomery_pt_acc_u32() {
 #endif /* TEST_CORE_ONLY */
 
 #if !defined(TEST_CORE_ONLY)
-int test_montgomery_round_pt_acc_u32_x2() {
+int test_montgomery_round_pt_acc_u32_x2()
+{
   int32_t src_a0[SIZE];
   int32_t src_a1[SIZE];
   int32_t src_b[SIZE];
@@ -1604,14 +1776,16 @@ int test_montgomery_round_pt_acc_u32_x2() {
   buf_reduce_u32(acc0, SIZE);
   buf_reduce_u32(acc1, SIZE);
 
-  if (memcmp(acc0_mve, acc0, sizeof(acc0)) != 0) {
+  if (memcmp(acc0_mve, acc0, sizeof(acc0)) != 0)
+  {
     debug_print_buf_s32(acc0, SIZE, "Ref 0");
     debug_print_buf_s32(acc0_mve, SIZE, "MVE 0");
     debug_test_fail();
     return (1);
   }
 
-  if (memcmp(acc1_mve, acc1, sizeof(acc1)) != 0) {
+  if (memcmp(acc1_mve, acc1, sizeof(acc1)) != 0)
+  {
     debug_print_buf_s32(acc1, SIZE, "Ref 1");
     debug_print_buf_s32(acc1_mve, SIZE, "MVE 1");
     debug_test_fail();
@@ -1622,7 +1796,8 @@ int test_montgomery_round_pt_acc_u32_x2() {
   return (0);
 }
 #else  /* TEST_CORE_ONLY */
-int test_montgomery_round_pt_acc_u32_x2() {
+int test_montgomery_round_pt_acc_u32_x2()
+{
   int32_t src_a0[SIZE];
   int32_t src_a1[SIZE];
   int32_t src_b[SIZE];
@@ -1640,7 +1815,8 @@ int test_montgomery_round_pt_acc_u32_x2() {
 #endif /* TEST_CORE_ONLY */
 
 #if !defined(TEST_CORE_ONLY)
-int test_montgomery_round_pt_acc_u32_x4() {
+int test_montgomery_round_pt_acc_u32_x4()
+{
   int32_t src_a0[SIZE];
   int32_t src_a1[SIZE];
   int32_t src_a2[SIZE];
@@ -1740,28 +1916,32 @@ int test_montgomery_round_pt_acc_u32_x4() {
   buf_reduce_u32(acc2, SIZE);
   buf_reduce_u32(acc3, SIZE);
 
-  if (memcmp(acc0_mve, acc0, sizeof(acc0)) != 0) {
+  if (memcmp(acc0_mve, acc0, sizeof(acc0)) != 0)
+  {
     debug_print_buf_s32(acc0, SIZE, "Ref 0");
     debug_print_buf_s32(acc0_mve, SIZE, "MVE 0");
     debug_test_fail();
     return (1);
   }
 
-  if (memcmp(acc1_mve, acc1, sizeof(acc1)) != 0) {
+  if (memcmp(acc1_mve, acc1, sizeof(acc1)) != 0)
+  {
     debug_print_buf_s32(acc1, SIZE, "Ref 1");
     debug_print_buf_s32(acc1_mve, SIZE, "MVE 1");
     debug_test_fail();
     return (1);
   }
 
-  if (memcmp(acc2_mve, acc2, sizeof(acc2)) != 0) {
+  if (memcmp(acc2_mve, acc2, sizeof(acc2)) != 0)
+  {
     debug_print_buf_s32(acc2, SIZE, "Ref 2");
     debug_print_buf_s32(acc2_mve, SIZE, "MVE 2");
     debug_test_fail();
     return (1);
   }
 
-  if (memcmp(acc3_mve, acc3, sizeof(acc3)) != 0) {
+  if (memcmp(acc3_mve, acc3, sizeof(acc3)) != 0)
+  {
     debug_print_buf_s32(acc3, SIZE, "Ref 3");
     debug_print_buf_s32(acc3_mve, SIZE, "MVE 3");
     debug_test_fail();
@@ -1772,7 +1952,8 @@ int test_montgomery_round_pt_acc_u32_x4() {
   return (0);
 }
 #else  /* TEST_CORE_ONLY */
-int test_montgomery_round_pt_acc_u32_x4() {
+int test_montgomery_round_pt_acc_u32_x4()
+{
   int32_t src_a0[SIZE];
   int32_t src_a1[SIZE];
   int32_t src_a2[SIZE];
@@ -1796,7 +1977,8 @@ int test_montgomery_round_pt_acc_u32_x4() {
 #endif /* TEST_CORE_ONLY */
 
 #if !defined(TEST_CORE_ONLY)
-int test_montgomery_round_pt_acc_u32() {
+int test_montgomery_round_pt_acc_u32()
+{
   int32_t src_a0[SIZE];
   int32_t src_b[SIZE];
 
@@ -1838,7 +2020,8 @@ int test_montgomery_round_pt_acc_u32() {
   buf_reduce_u32(acc0_mve, SIZE);
   buf_reduce_u32(acc0, SIZE);
 
-  if (memcmp(acc0_mve, acc0, sizeof(acc0)) != 0) {
+  if (memcmp(acc0_mve, acc0, sizeof(acc0)) != 0)
+  {
     debug_print_buf_s32(acc0, SIZE, "Ref 0");
     debug_print_buf_s32(acc0_mve, SIZE, "MVE 0");
     debug_test_fail();
@@ -1849,7 +2032,8 @@ int test_montgomery_round_pt_acc_u32() {
   return (0);
 }
 #else  /* TEST_CORE_ONLY */
-int test_montgomery_round_pt_acc_u32() {
+int test_montgomery_round_pt_acc_u32()
+{
   int32_t src_a0[SIZE];
   int32_t src_b[SIZE];
   int32_t acc0_mve[SIZE];
@@ -1864,18 +2048,22 @@ int test_montgomery_round_pt_acc_u32() {
 #endif /* TEST_CORE_ONLY */
 
 
-void mult_u16_pt_C(int16_t const *src_a, int16_t const *src_b, int16_t *dst) {
+void mult_u16_pt_C(int16_t const *src_a, int16_t const *src_b, int16_t *dst)
+{
   unsigned idx;
-  for (idx = 0; idx < SIZE; idx++) {
+  for (idx = 0; idx < SIZE; idx++)
+  {
     int32_t tmp = (int32_t)src_a[idx] * (int32_t)src_b[idx];
     dst[idx] = (int32_t)(tmp % mod_q16);
   }
 }
 
 void montgomery_pt_u16_C(int16_t const *src_a, int16_t const *src_b,
-                         int16_t *dst) {
+                         int16_t *dst)
+{
   unsigned idx;
-  for (idx = 0; idx < SIZE; idx++) {
+  for (idx = 0; idx < SIZE; idx++)
+  {
     int32_t v;
     int16_t hi;
     uint16_t lo, tmp, hi_fix;
@@ -1895,16 +2083,21 @@ void montgomery_pt_u16_C(int16_t const *src_a, int16_t const *src_b,
   }
 }
 
-void buf_reduce_u16(int16_t *src, size_t size) {
-  for (unsigned i = 0; i < size; i++) {
+void buf_reduce_u16(int16_t *src, size_t size)
+{
+  for (unsigned i = 0; i < size; i++)
+  {
     src[i] = src[i] % mod_q16;
     if (src[i] < 0)
+    {
       src[i] += mod_q16;
+    }
   }
 }
 
 #if !defined(TEST_CORE_ONLY)
-int test_montgomery_pt_u16_round() {
+int test_montgomery_pt_u16_round()
+{
   int16_t src_a[SIZE];
   int16_t src_b_[SIZE + 2];
   int16_t *const src_b = src_b_ + 2;
@@ -1944,28 +2137,35 @@ int test_montgomery_pt_u16_round() {
   buf_reduce_u16(dst_mve, SIZE);
 
   if (memcmp(dst_C, dst_mve, sizeof(dst_C)) != 0 ||
-      memcmp(dst, dst_mve, sizeof(dst_C)) != 0) {
+      memcmp(dst, dst_mve, sizeof(dst_C)) != 0)
+  {
     uint16_t log2a[SIZE], log2b[SIZE];
     int known_failure = 0;
 
-    for (unsigned i = 0; i < SIZE; i++) {
+    for (unsigned i = 0; i < SIZE; i++)
+    {
       log2a[i] = 0;
-      while (src_a[i] != 0 && src_a[i] % 2 == 0) {
+      while (src_a[i] != 0 && src_a[i] % 2 == 0)
+      {
         log2a[i]++;
         src_a[i] >>= 1;
       }
 
       log2b[i] = 0;
-      while (src_b[i] != 0 && src_b[i] % 2 == 0) {
+      while (src_b[i] != 0 && src_b[i] % 2 == 0)
+      {
         log2b[i]++;
         src_b[i] >>= 1;
       }
 
       if (log2a[i] + log2b[i] == 14)
+      {
         known_failure = 1;
+      }
     }
 
-    if (known_failure) {
+    if (known_failure)
+    {
       debug_test_ok();
       return (0);
     }
@@ -1983,7 +2183,8 @@ int test_montgomery_pt_u16_round() {
   return (0);
 }
 #else  /* TEST_CORE_ONLY */
-int test_montgomery_pt_u16_round() {
+int test_montgomery_pt_u16_round()
+{
   int16_t src_a[SIZE];
   int16_t src_b_[SIZE + 2];
   int16_t dst_mve[SIZE];
@@ -1994,7 +2195,8 @@ int test_montgomery_pt_u16_round() {
 }
 #endif /* TEST_CORE_ONLY */
 
-int main() {
+int main()
+{
   int ret = 0;
 
 #if defined(TEST_CYCLIC_MUL_U16)
@@ -2058,7 +2260,8 @@ int main() {
   ret |= test_montgomery_pt_u16_round();
 #endif /* TEST_MONTGOMERY_PT_U16_ROUND */
 
-  if (ret == 0) {
+  if (ret == 0)
+  {
     debug_printf("ALL GOOD!\n");
   }
 

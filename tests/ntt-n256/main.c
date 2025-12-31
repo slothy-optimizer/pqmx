@@ -110,8 +110,10 @@ int32_t modulus_inv_u32 = 375649793;
 int32_t roots[NTT_ROOT_ORDER / 2] __attribute__((aligned(16))) = {0};
 uint32_t roots_twisted[NTT_ROOT_ORDER / 2] __attribute__((aligned(16))) = {0};
 
-void build_roots() {
-  for (unsigned i = 0; i < NTT_ROOT_ORDER / 2; i++) {
+void build_roots()
+{
+  for (unsigned i = 0; i < NTT_ROOT_ORDER / 2; i++)
+  {
     roots[i] = mod_pow_s32(base_root, i, modulus);
     roots_twisted[i] = roots[i] * modulus_inv_u32;
 
@@ -126,9 +128,11 @@ void build_roots() {
   }
 }
 
-unsigned bit_reverse(unsigned in, unsigned width) {
+unsigned bit_reverse(unsigned in, unsigned width)
+{
   unsigned out = 0;
-  while (width--) {
+  while (width--)
+  {
     out <<= 1;
     out |= (in % 2);
     in >>= 1;
@@ -136,12 +140,15 @@ unsigned bit_reverse(unsigned in, unsigned width) {
   return (out);
 }
 
-void ntt_u32_C(int32_t *src) {
+void ntt_u32_C(int32_t *src)
+{
   int32_t res[NTT_SIZE];
   build_roots();
 
-  for (unsigned t = 0; t < NTT_LAYER_STRIDE; t++) {
-    for (unsigned i = 0; i < NTT_INCOMPLETE_SIZE; i++) {
+  for (unsigned t = 0; t < NTT_LAYER_STRIDE; t++)
+  {
+    for (unsigned i = 0; i < NTT_INCOMPLETE_SIZE; i++)
+    {
       int32_t tmp = 0;
       /* A negacyclic FFT is half of a full FFT, where we've 'chosen -1'
        * in the first layer. That explains the corrections by
@@ -151,7 +158,8 @@ void ntt_u32_C(int32_t *src) {
           bit_reverse(i + NTT_INCOMPLETE_SIZE, NTT_INCOMPLETE_LAYERS + 1) *
           NTT_LAYER_STRIDE;
 
-      for (unsigned j = 0; j < NTT_INCOMPLETE_SIZE; j++) {
+      for (unsigned j = 0; j < NTT_INCOMPLETE_SIZE; j++)
+      {
         int32_t cur;
         unsigned exp = (multiplier * j) % NTT_ROOT_ORDER;
         unsigned sub = (exp >= (NTT_ROOT_ORDER / 2));
@@ -170,9 +178,13 @@ void ntt_u32_C(int32_t *src) {
         cur = mod_mul_s32(src[NTT_LAYER_STRIDE * j + t], roots[exp], modulus);
 
         if (!sub)
+        {
           tmp = mod_add_s32(tmp, cur, modulus);
+        }
         else
+        {
           tmp = mod_sub_s32(tmp, cur, modulus);
+        }
       }
       res[NTT_LAYER_STRIDE * i + t] = tmp;
     }
@@ -182,15 +194,23 @@ void ntt_u32_C(int32_t *src) {
 }
 
 #if !defined(NTT_INCOMPLETE)
-void buf_bitrev_4(int32_t *src) {
-  for (unsigned i = 0; i < NTT_SIZE; i += 16) {
+void buf_bitrev_4(int32_t *src)
+{
+  for (unsigned i = 0; i < NTT_SIZE; i += 16)
+  {
     int32_t tmp[16];
     for (unsigned t = 0; t < 16; t++)
+    {
       tmp[t] = src[i + t];
+    }
 
     for (unsigned t0 = 0; t0 < 4; t0++)
+    {
       for (unsigned t1 = 0; t1 < 4; t1++)
+      {
         src[i + t0 * 4 + t1] = tmp[t1 * 4 + t0];
+      }
+    }
   }
 }
 #endif /* NTT_INCOMPLETE */
@@ -205,7 +225,8 @@ void hal_pmu_start_pmu_stats(pmu_stats *s);
 void hal_pmu_finish_pmu_stats(pmu_stats *s);
 void hal_pmu_send_stats(char *s, pmu_stats const *stats);
 
-int run_test_ntt() {
+int run_test_ntt()
+{
   debug_test_start("NTT u32");
   int32_t src[NTT_SIZE] __attribute__((aligned(16)));
   int32_t src_copy[NTT_SIZE] __attribute__((aligned(16)));
@@ -226,7 +247,8 @@ int run_test_ntt() {
 
   mod_reduce_buf_s32(src, NTT_SIZE, modulus);
   if (compare_buf_u32((uint32_t const *)src, (uint32_t const *)src_copy,
-                      NTT_SIZE) != 0) {
+                      NTT_SIZE) != 0)
+  {
     debug_print_buf_s32(src_copy, NTT_SIZE, "Reference");
     debug_print_buf_s32(src, NTT_SIZE, "MVE");
     debug_test_fail();
@@ -241,7 +263,9 @@ int run_test_ntt() {
 
   hal_pmu_start_pmu_stats(&stats);
   for (size_t cnt = 0; cnt < REPEAT; cnt++)
+  {
     ntt_u32_mve(src);
+  }
   hal_pmu_finish_pmu_stats(&stats);
   /*Workaround for RA8M1 (cannot print %f)*/
   debug_printf("ntt_u32_mve: %lu.%02lu cycles (avg)\n",
@@ -255,7 +279,8 @@ int run_test_ntt() {
   return (0);
 }
 #else  /* TEST_CORE_ONLY */
-int run_test_ntt() {
+int run_test_ntt()
+{
   int32_t src[NTT_SIZE] __attribute__((aligned(16)));
   debug_test_start("NTT forward u32");
   measure_start();
@@ -267,7 +292,8 @@ int run_test_ntt() {
 #endif /* TEST_CORE_ONLY */
 
 #if !defined(TEST_CORE_ONLY)
-int32_t ntt_root_for_block(int layer, int block) {
+int32_t ntt_root_for_block(int layer, int block)
+{
   int log;
   int32_t root;
   log = bit_reverse((1 << layer) + block, NTT_LAYERS);
@@ -276,7 +302,8 @@ int32_t ntt_root_for_block(int layer, int block) {
   return (root);
 }
 
-int run_test_ntt_incomplete_double() {
+int run_test_ntt_incomplete_double()
+{
   debug_test_start("NTT incomplete double u32");
   int32_t src[NTT_SIZE] __attribute__((aligned(16)));
   int32_t src_copy[NTT_SIZE] __attribute__((aligned(16)));
@@ -293,12 +320,14 @@ int run_test_ntt_incomplete_double() {
   ntt_u32_C(src_copy);
 
   /* Duplicate output of reference NTT */
-  for (unsigned idx = 0; idx < NTT_SIZE; idx += 4) {
+  for (unsigned idx = 0; idx < NTT_SIZE; idx += 4)
+  {
     int32_t root;
     unsigned block_idx = idx / 16;
     unsigned idx_in_block = (idx / 4) % 4;
 
-    switch (idx_in_block) {
+    switch (idx_in_block)
+    {
       case 0:
         root = 1 * ntt_root_for_block(5, 2 * block_idx + 0);
         break;
@@ -334,7 +363,8 @@ int run_test_ntt_incomplete_double() {
   mod_reduce_buf_s32(dst_mve, 2 * NTT_SIZE, modulus);
 
   if (compare_buf_u32((uint32_t const *)dst_mve, (uint32_t const *)dst_C,
-                      2 * NTT_SIZE) != 0) {
+                      2 * NTT_SIZE) != 0)
+  {
     debug_print_buf_s32(dst_C, 2 * NTT_SIZE, "Reference");
     debug_print_buf_s32(dst_mve, 2 * NTT_SIZE, "MVE");
     debug_test_fail();
@@ -345,7 +375,8 @@ int run_test_ntt_incomplete_double() {
   return (0);
 }
 #else  /* TEST_CORE_ONLY */
-int run_test_ntt_incomplete_double() {
+int run_test_ntt_incomplete_double()
+{
   int32_t src[NTT_SIZE] __attribute__((aligned(16)));
   int32_t dst_mve[2 * NTT_SIZE] __attribute__((aligned(16)));
   debug_test_start("NTT incomplete double u32");
@@ -360,7 +391,8 @@ int run_test_ntt_incomplete_double() {
 #endif /* TEST_CORE_ONLY */
 
 #if !defined(TEST_CORE_ONLY)
-int run_test_ntt_fwd_inv() {
+int run_test_ntt_fwd_inv()
+{
   debug_test_start("NTT forward-inverse u32");
   int32_t src[NTT_SIZE] __attribute__((aligned(16)));
   int32_t src_copy[NTT_SIZE] __attribute__((aligned(16)));
@@ -387,7 +419,9 @@ int run_test_ntt_fwd_inv() {
    * TODO: This needs to go into the inverse-NTT itself. */
   pow_2k_inv = mod_pow_s32((modulus + 1) / 2, NTT_INCOMPLETE_LAYERS, modulus);
   for (unsigned idx = 0; idx < NTT_SIZE; idx++)
+  {
     src[idx] = mod_mul_s32(src[idx], pow_2k_inv, modulus);
+  }
 
   mod_reduce_buf_s32_signed(src, NTT_SIZE, modulus);
 #endif
@@ -399,26 +433,37 @@ int run_test_ntt_fwd_inv() {
 
   int max_frac_low = 0;
   int max_frac_high = 0;
-  for (unsigned idx = 0; idx < NTT_SIZE; idx += 16) {
+  for (unsigned idx = 0; idx < NTT_SIZE; idx += 16)
+  {
     int64_t val = src[idx];
     int frac = (val * 1000) / modulus;
     printf("[%u]: %lld approx (%d/1000) * modulus\n", idx, val, frac);
 
     if ((idx >= NTT_SIZE / 2) && frac > max_frac_high)
+    {
       max_frac_high = frac;
+    }
     if ((idx < NTT_SIZE / 2) && frac > max_frac_low)
+    {
       max_frac_low = frac;
+    }
   }
   printf("Max frac high: %d / 1000\n", max_frac_high);
   printf("Max frac low:  %d / 1000\n", max_frac_low);
 
   if (compare_buf_u32((uint32_t const *)src, (uint32_t const *)src_copy,
-                      NTT_SIZE) != 0) {
-    for (unsigned idx = 0; idx < NTT_SIZE; idx++) {
+                      NTT_SIZE) != 0)
+  {
+    for (unsigned idx = 0; idx < NTT_SIZE; idx++)
+    {
       if (src[idx] != src_copy[idx])
+      {
         debug_printf("Fail at %u\n", idx);
+      }
       else
+      {
         debug_printf("OK at %u\n", idx);
+      }
     }
 
     debug_print_buf_s32(src_copy, NTT_SIZE, "Original");
@@ -431,7 +476,8 @@ int run_test_ntt_fwd_inv() {
   return (0);
 }
 #else  /* TEST_CORE_ONLY */
-int run_test_ntt_fwd_inv() {
+int run_test_ntt_fwd_inv()
+{
   int32_t src[NTT_SIZE] __attribute__((aligned(16)));
   debug_test_start("NTT inverse u32");
   measure_start();
@@ -442,25 +488,32 @@ int run_test_ntt_fwd_inv() {
 }
 #endif /* TEST_CORE_ONLY */
 
-int main(void) {
+int main(void)
+{
   int ret = 0;
 
 #if defined(TEST_NTT)
   ret |= run_test_ntt();
   if (ret != 0)
+  {
     return (1);
+  }
 #endif /* TEST_NTT */
 
 #if defined(TEST_NTT_DOUBLE)
   ret |= run_test_ntt_incomplete_double();
   if (ret != 0)
+  {
     return (1);
+  }
 #endif /* TEST_NTT_DOUBLE */
 
 #if defined(TEST_NTT_FWD_INV)
   ret |= run_test_ntt_fwd_inv();
   if (ret != 0)
+  {
     return (1);
+  }
 #endif /* TEST_NTT_FWD_INV */
 
   debug_printf("ALL GOOD!\n");

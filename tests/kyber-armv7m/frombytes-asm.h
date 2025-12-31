@@ -42,31 +42,37 @@ void frombytes_mul_asm_acc_32_16_opt_m7(int16_t *r, const int16_t *b,
 
 
 void frombytes_mul_asm_16_32_wrap(int32_t *r_tmp, const int16_t *b,
-                                  const unsigned char *c) {
+                                  const unsigned char *c)
+{
   frombytes_mul_asm_16_32(r_tmp, b, c, zetas);
 }
 void frombytes_mul_asm_16_32_opt_m7_wrap(int32_t *r_tmp, const int16_t *b,
-                                         const unsigned char *c) {
+                                         const unsigned char *c)
+{
   frombytes_mul_asm_16_32_opt_m7(r_tmp, b, c, zetas);
 }
 
 void frombytes_mul_asm_acc_32_32_wrap(int32_t *r_tmp, const int16_t *b,
-                                      const unsigned char *c) {
+                                      const unsigned char *c)
+{
   frombytes_mul_asm_acc_32_32(r_tmp, b, c, zetas);
 }
 void frombytes_mul_asm_acc_32_32_opt_m7_wrap(int32_t *r_tmp, const int16_t *b,
-                                             const unsigned char *c) {
+                                             const unsigned char *c)
+{
   frombytes_mul_asm_acc_32_32_opt_m7(r_tmp, b, c, zetas);
 }
 
 void frombytes_mul_asm_acc_32_16_wrap(int16_t *r, const int16_t *b,
                                       const unsigned char *c,
-                                      const int32_t *r_tmp) {
+                                      const int32_t *r_tmp)
+{
   frombytes_mul_asm_acc_32_16(r, b, c, zetas, r_tmp);
 }
 void frombytes_mul_asm_acc_32_16_opt_m7_wrap(int16_t *r, const int16_t *b,
                                              const unsigned char *c,
-                                             const int32_t *r_tmp) {
+                                             const int32_t *r_tmp)
+{
   frombytes_mul_asm_acc_32_16_opt_m7(r, b, c, zetas, r_tmp);
 }
 
