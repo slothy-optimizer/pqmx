@@ -78,6 +78,12 @@ extern void measure_end();
 
 uint64_t hal_get_time();
 
+void hal_pmu_enable();
+void hal_pmu_disable();
+void hal_pmu_start_pmu_stats(pmu_stats *s);
+void hal_pmu_finish_pmu_stats(pmu_stats *s);
+void hal_pmu_send_stats(char *s, pmu_stats const *stats);
+
 /* Debugging stubs
  *
  * Those stubs can either be defined as macros (which is especially
