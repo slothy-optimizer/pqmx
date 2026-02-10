@@ -4,7 +4,6 @@
  */
 #include <stddef.h>
 #include <stdint.h>
-#include "ARMCM55.h"
 
 typedef struct cmdline_s
 {
@@ -12,7 +11,10 @@ typedef struct cmdline_s
   char *argv[];
 } cmdline_t;
 
-#define CMDLINE_ADDR ((cmdline_t *)0x70000)
+#ifndef CMDLINE_BASE_ADDR
+#define CMDLINE_BASE_ADDR 0x70000
+#endif
+#define CMDLINE_ADDR ((cmdline_t *)CMDLINE_BASE_ADDR)
 
 /* Provide a prototype for the real main that the C library expects. */
 extern int __real_main(int argc, char *argv[]);

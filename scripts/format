@@ -39,6 +39,7 @@ nproc=$(getconf _NPROCESSORS_ONLN || echo 1)
 # Exclude third-party platform files
 git ls-files -- ":/*.c" ":/*.h" \
   ":!envs/ek-ra8m1/src/RA8M1/*" \
+  ":!envs/m33-an524/src/platform/*" \
   ":!envs/m55-an547/src/platform/*" \
   ":!envs/m85-an555/src/platform/*" | xargs -P $nproc -I {} sh -c '
   # Ignore symlinks

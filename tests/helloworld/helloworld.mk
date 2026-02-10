@@ -4,6 +4,7 @@ TESTS += helloworld
 # All further variables must be prefixed with the capitalized test name
 
 # Platforms this test should run on (matching the directory name in envs/)
+HELLOWORLD_PLATFORMS += m33-an524
 HELLOWORLD_PLATFORMS += m55-an547
 HELLOWORLD_PLATFORMS += m85-an555
 HELLOWORLD_PLATFORMS += m4-an386
