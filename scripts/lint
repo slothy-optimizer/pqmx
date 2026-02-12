@@ -116,6 +116,7 @@ gh_group_start "Linting c files with clang-format"
 # Exclude third-party platform files
 checkerr "Lint C" "$(clang-format $(git ls-files ":/*.c" ":/*.h" \
   ":!envs/ek-ra8m1/src/RA8M1/*" \
+  ":!envs/m33-an524/src/platform/*" \
   ":!envs/m55-an547/src/platform/*" \
   ":!envs/m85-an555/src/platform/*") --Werror --dry-run 2>&1 | grep "error:" | cut -d ':' -f 1,2 | tr ':' ' ')"
 gh_group_end
