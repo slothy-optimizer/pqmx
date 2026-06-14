@@ -27,3 +27,6 @@ jobs:
     - name: Run lint
       run: |
         lint
+    - name: NUCLEO-N657X0-Q host unit tests
+      run: |
+        cd envs/nucleo-n657x0-q/host && python3 -m unittest -v
