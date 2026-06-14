@@ -5,6 +5,7 @@ TESTS += unpack
 
 # Platforms this test should run on (matching the directory name in envs/)
 UNPACK_PLATFORMS += m55-an547
+UNPACK_PLATFORMS += nucleo-n657x0-q
 UNPACK_PLATFORMS += m85-an555
 UNPACK_PLATFORMS += ek-ra8m1
 

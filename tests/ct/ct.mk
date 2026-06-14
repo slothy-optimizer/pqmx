@@ -5,6 +5,7 @@ TESTS += ct
 
 # Platforms this test should run on (matching the directory name in envs/)
 CT_PLATFORMS += m55-an547
+CT_PLATFORMS += nucleo-n657x0-q
 CT_PLATFORMS += m85-an555
 CT_PLATFORMS += ek-ra8m1
 

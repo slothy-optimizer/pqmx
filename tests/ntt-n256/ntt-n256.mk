@@ -5,6 +5,7 @@ TESTS += ntt-n256
 
 # Platforms this test should run on (matching the directory name in envs/)
 NTT_N256_PLATFORMS += m55-an547
+NTT_N256_PLATFORMS += nucleo-n657x0-q
 NTT_N256_PLATFORMS += m85-an555
 NTT_N256_PLATFORMS += ek-ra8m1
 

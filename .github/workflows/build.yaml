@@ -21,3 +21,29 @@ jobs:
     - name: Make all
       run: |
         make -j$(nproc)
+  # Build the NUCLEO-N657X0-Q platform in its dedicated devshell (which adds the
+  # patched st-openocd). No board is required: building exercises the Cube nix
+  # package and the env Makefile. The hardware flash/run flow is board-only.
+  nucleo-n657x0-q:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: nix develop .#nucleo-n657x0-q -c bash -e {0}
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: true
+    - name: Setup nix
+      uses: ./.github/actions/setup-nix
+      with:
+        devShell: nucleo-n657x0-q
+        script: |
+          arm-none-eabi-gcc --version
+          openocd --version
+    - name: Build nucleo-n657x0-q targets
+      run: |
+        for t in $(make -np 2>/dev/null | grep -oE 'build-nucleo-n657x0-q_[^ :]+' | sort -u); do
+          echo "::group::$t"
+          make "$t"
+          echo "::endgroup::"
+        done

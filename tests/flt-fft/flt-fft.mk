@@ -5,6 +5,7 @@ TESTS += flt-fft
 
 # Platforms this test should run on (matching the directory name in envs/)
 FLT_FFT_PLATFORMS += m55-an547
+FLT_FFT_PLATFORMS += nucleo-n657x0-q
 FLT_FFT_PLATFORMS += m85-an555
 FLT_FFT_PLATFORMS += ek-ra8m1
 

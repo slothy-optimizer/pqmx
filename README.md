@@ -95,6 +95,7 @@ The repository supports multiple test environments for different Arm Cortex-M pr
 - [Arm® MPS2 with Cortex®-M7 (AN500)](https://developer.arm.com/documentation/dai0500/latest/)
 - STM32 Nucleo-F767ZI (Cortex-M7) development board
 - STM32F4-Discovery (Cortex-M4) development board
+- [STM32 NUCLEO-N657X0-Q (Cortex-M55) development board](envs/nucleo-n657x0-q/) - physical hardware platform, RAM-loaded over OpenOCD + GDB
 
 Previously, the freely available FVPs for the Arm<sup>&reg;</sup> Corstone&trade;-300 MPS2 and Arm<sup>&reg;</sup> Corstone&trade;-300 MPS3 were also supported.
 However, these are currently no longer maintained (see https://github.com/slothy-optimizer/pqmx/issues/7).
@@ -107,6 +108,8 @@ environment, you can test that it works against the HelloWorld test in [`tests/h
 To run the tests in qemu, the target `run-m55-an547_{test_name}` can be used. It will build the executable from the sources and run it using `qemu-system-arm -M mps3-an547  -nographic -semihosting -kernel`.
 
 For the EK-RA8M1 hardware board, use `flash-ek-ra8m1-{test_name}` to flash the test and then connect via telnet to view output (see [envs/ek-ra8m1/README.md](envs/ek-ra8m1/README.md) for detailed setup instructions).
+
+For the STM32 NUCLEO-N657X0-Q hardware board, use `flash-nucleo-n657x0-q_{test_name}` from the dedicated devshell (`nix develop .#nucleo-n657x0-q`). The board is never flashed to ROM: a FLEXMEM configuration binary expands ITCM/DTCM in RAM, then the test ELF is loaded into the expanded layout over OpenOCD + `arm-none-eabi-gdb` and its captured stdout is harvested (see [envs/nucleo-n657x0-q/README.md](envs/nucleo-n657x0-q/README.md) for detailed setup instructions).
 
 ## License
 
@@ -136,7 +139,7 @@ experimental-features = nix-command flakes
 The code in this repository can then be generated, compiled and run via `make`:
 * `make {build,run,flash}-{platform}-{test_name}` builds/runs/flashes the chosen test in the chosen test environment.
 
-**Available platforms:** `m55-an547`, `m85-an555`, `ek-ra8m1`, `m4-an386`, `m7-an500`, `nucleo-f767zi`, `stm32f4discovery`
+**Available platforms:** `m55-an547`, `m85-an555`, `ek-ra8m1`, `m4-an386`, `m7-an500`, `nucleo-f767zi`, `stm32f4discovery`, `nucleo-n657x0-q`
 
 **Example tests:** `helloworld`, `ntt-kyber`, `ntt-dilithium`, `sqmag`, `karatsuba`, `montgomery`, `keccak`
 

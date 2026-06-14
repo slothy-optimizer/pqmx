@@ -5,6 +5,7 @@ TESTS += ntt-512
 
 # Platforms this test should run on (matching the directory name in envs/)
 NTT_512_PLATFORMS += m55-an547
+NTT_512_PLATFORMS += nucleo-n657x0-q
 NTT_512_PLATFORMS += m85-an555
 NTT_512_PLATFORMS += ek-ra8m1
 

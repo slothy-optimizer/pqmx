@@ -2,4 +2,5 @@
 **/*.elf
 **/*.bin
 **/*.hex
+**/__pycache__/
 .direnv

@@ -5,6 +5,7 @@ TESTS += chunk
 
 # Platforms this test should run on (matching the directory name in envs/)
 CHUNK_PLATFORMS += m55-an547
+CHUNK_PLATFORMS += nucleo-n657x0-q
 CHUNK_PLATFORMS += m85-an555
 CHUNK_PLATFORMS += ek-ra8m1
 

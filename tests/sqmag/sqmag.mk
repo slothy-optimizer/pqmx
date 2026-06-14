@@ -5,6 +5,7 @@ TESTS += sqmag
 
 # Platforms this test should run on (matching the directory name in envs/)
 SQMAG_PLATFORMS += m55-an547
+SQMAG_PLATFORMS += nucleo-n657x0-q
 SQMAG_PLATFORMS += m85-an555
 SQMAG_PLATFORMS += ek-ra8m1
 

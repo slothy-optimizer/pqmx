@@ -5,6 +5,7 @@ TESTS += ntt-1024/double-rev4
 
 # Platforms this test should run on (matching the directory name in envs/)
 NTT_1024_DOUBLE_REV4_PLATFORMS += m55-an547
+NTT_1024_DOUBLE_REV4_PLATFORMS += nucleo-n657x0-q
 NTT_1024_DOUBLE_REV4_PLATFORMS += m85-an555
 NTT_1024_DOUBLE_REV4_PLATFORMS += ek-ra8m1
 

@@ -5,6 +5,7 @@ TESTS += keccak
 
 # Platforms this test should run on (matching the directory name in envs/)
 KECCAK_PLATFORMS += m55-an547
+KECCAK_PLATFORMS += nucleo-n657x0-q
 KECCAK_PLATFORMS += m85-an555
 KECCAK_PLATFORMS += m4-an386
 KECCAK_PLATFORMS += m7-an500

@@ -5,6 +5,7 @@ TESTS += ntt-384
 
 # Platforms this test should run on (matching the directory name in envs/)
 NTT_384_PLATFORMS += m55-an547
+NTT_384_PLATFORMS += nucleo-n657x0-q
 NTT_384_PLATFORMS += m85-an555
 NTT_384_PLATFORMS += ek-ra8m1
 

@@ -5,6 +5,7 @@ TESTS += permute
 
 # Platforms this test should run on (matching the directory name in envs/)
 PERMUTE_PLATFORMS += m55-an547
+PERMUTE_PLATFORMS += nucleo-n657x0-q
 PERMUTE_PLATFORMS += m85-an555
 PERMUTE_PLATFORMS += ek-ra8m1
 

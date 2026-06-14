@@ -5,6 +5,7 @@ TESTS += montgomery
 
 # Platforms this test should run on (matching the directory name in envs/)
 MONTGOMERY_PLATFORMS += m55-an547
+MONTGOMERY_PLATFORMS += nucleo-n657x0-q
 MONTGOMERY_PLATFORMS += m85-an555
 MONTGOMERY_PLATFORMS += ek-ra8m1
 

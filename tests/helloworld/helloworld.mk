@@ -12,6 +12,7 @@ HELLOWORLD_PLATFORMS += m7-an500
 HELLOWORLD_PLATFORMS += nucleo-f767zi
 HELLOWORLD_PLATFORMS += stm32f4discovery
 HELLOWORLD_PLATFORMS += ek-ra8m1
+HELLOWORLD_PLATFORMS += nucleo-n657x0-q
 
 # C sources required for this test
 HELLOWORLD_SOURCES += main.c
